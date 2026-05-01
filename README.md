@@ -1,2 +1,2 @@
 # Site-Analise-Regressao
-um site de regressao linearcom integracao com excel
+um site de analise de regressao com integracao ao excel
