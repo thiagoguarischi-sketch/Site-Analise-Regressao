@@ -1,0 +1,66 @@
+# ==========================
+
+# DEPENDÊNCIAS
+
+# ==========================
+
+node_modules/
+server/node_modules/
+
+# ==========================
+
+# VARIÁVEIS DE AMBIENTE
+
+# ==========================
+
+.env
+server/.env
+
+# ==========================
+
+# LOGS
+
+# ==========================
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================
+
+# SISTEMA OPERACIONAL
+
+# ==========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================
+
+# EDITORES
+
+# ==========================
+
+.vscode/
+.idea/
+
+# ==========================
+
+# CACHE E TEMPORÁRIOS
+
+# ==========================
+
+.cache/
+*.tmp
+*.temp
+
+# ==========================
+
+# BUILD E COBERTURA
+
+# ==========================
+
+dist/
+build/
+coverage/

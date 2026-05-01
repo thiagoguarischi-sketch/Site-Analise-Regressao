@@ -1,0 +1,32 @@
+{
+  "name": "site-rl",
+  "version": "1.0.0",
+  "description": "um site de analise de regressao com integracao ao excel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiagoguarischi-sketch/Site-Analise-Regressao.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/thiagoguarischi-sketch/Site-Analise-Regressao/issues"
+  },
+  "homepage": "https://github.com/thiagoguarischi-sketch/Site-Analise-Regressao#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
