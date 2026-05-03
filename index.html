@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RegLinear — Análise Estatística</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="vendor/xlsx-bundle.js"></script>
+<style>
+  :root {
+    --bg: #0B0F1A;
+    --bg2: #16161F;
+    --bg3: #1E1E2E;
+    --bg4: #252538;
+    --x: #7B6FFF;
+    --x2: #6055e0;
+    --y: #00D4A0;
+    --acc: #FF6B6B;
+    --acc2: #FFB347;
+    --txt: #F0EFF8;
+    --txt2: #9B9AB8;
+    --txt3: #5A5975;
+    --brd: #2A2A3E;
+    --brd2: #3A3A55;
+    --card-r: 12px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+  /* ====== AUTH OVERLAY ====== */
+  #auth-overlay {
+    position:fixed; inset:0; z-index:1000;
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    transition: opacity .4s, visibility .4s;
+  }
+  #auth-overlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+
+  .auth-bg {
+    position:absolute; inset:0; overflow:hidden;
+  }
+  .auth-bg::before {
+    content:'';
+    position:absolute;
+    width:600px; height:600px;
+    background: radial-gradient(circle, rgba(123,111,255,.15) 0%, transparent 70%);
+    top:-100px; left:-100px;
+    animation: pulse-glow 6s ease-in-out infinite;
+  }
+  .auth-bg::after {
+    content:'';
+    position:absolute;
+    width:500px; height:500px;
+    background: radial-gradient(circle, rgba(0,212,160,.1) 0%, transparent 70%);
+    bottom:-100px; right:-100px;
+    animation: pulse-glow 6s ease-in-out infinite 3s;
+  }
+  @keyframes pulse-glow {
+    0%,100% { transform:scale(1); opacity:.5; }
+    50% { transform:scale(1.2); opacity:1; }
+  }
+
+  .particle {
+    position:absolute;
+    width:3px; height:3px;
+    background:var(--x);
+    border-radius:50%;
+    opacity:0;
+    animation: float-up linear infinite;
+  }
+  @keyframes float-up {
+    0% { transform:translateY(0) translateX(0); opacity:0; }
+    10% { opacity:.6; }
+    90% { opacity:.3; }
+    100% { transform:translateY(-100vh) translateX(calc(var(--drift)*1px)); opacity:0; }
+  }
+
+  .auth-card {
+    position:relative; z-index:1;
+    background:var(--bg2);
+    border:1px solid var(--brd2);
+    border-radius:20px;
+    padding:40px;
+    width:420px;
+    animation: slide-up .5s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes slide-up {
+    from { transform:translateY(30px); opacity:0; }
+    to { transform:translateY(0); opacity:1; }
+  }
+  .auth-logo {
+    display:flex; align-items:center; gap:10px; margin-bottom:8px;
+  }
+  .auth-logo-icon {
+    width:36px; height:36px;
+    background:linear-gradient(135deg,var(--x),var(--y));
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px;
+  }
+  .auth-logo-text {
+    font-size:22px; font-weight:700; letter-spacing:-.5px;
+    background:linear-gradient(135deg,var(--txt) 0%,var(--txt2) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .auth-subtitle { color:var(--txt3); font-size:13px; margin-bottom:28px; }
+
+  .auth-tabs {
+    display:flex; gap:4px;
+    background:var(--bg3);
+    border-radius:10px; padding:4px;
+    margin-bottom:24px;
+  }
+  .auth-tab {
+    flex:1; padding:8px;
+    border:none; background:transparent;
+    color:var(--txt2); font-size:13px; font-weight:500;
+    border-radius:8px; cursor:pointer;
+    transition:.2s;
+  }
+  .auth-tab.active {
+    background:var(--x); color:#fff;
+    box-shadow:0 2px 12px rgba(123,111,255,.4);
+  }
+
+  .auth-form { display:none; flex-direction:column; gap:14px; }
+  .auth-form.active { display:flex; }
+
+  .field-group { display:flex; flex-direction:column; gap:6px; }
+  .field-label { font-size:12px; color:var(--txt2); font-weight:500; }
+  .field-input {
+    padding:10px 14px;
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:8px; color:var(--txt);
+    font-size:14px; outline:none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .field-input:focus {
+    border-color:var(--x);
+    box-shadow:0 0 0 3px rgba(123,111,255,.15);
+  }
+  .field-input::placeholder { color:var(--txt3); }
+
+  .pw-wrap { position:relative; }
+  .pw-wrap .field-input { padding-right:40px; width:100%; }
+  .pw-toggle {
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    background:none; border:none; color:var(--txt3); cursor:pointer;
+    font-size:14px; padding:2px;
+  }
+  .pw-toggle:hover { color:var(--txt); }
+
+  .pw-strength { height:3px; border-radius:2px; background:var(--bg4); margin-top:6px; overflow:hidden; }
+  .pw-strength-bar { height:100%; width:0; border-radius:2px; transition: width .3s, background .3s; }
+
+  .btn-primary {
+    padding:11px 20px;
+    background:linear-gradient(135deg,var(--x),var(--x2));
+    border:none; border-radius:8px;
+    color:#fff; font-size:14px; font-weight:600;
+    cursor:pointer; transition:.2s;
+    position:relative; overflow:hidden;
+  }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(123,111,255,.4); }
+  .btn-primary:active { transform:translateY(0); }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+  .btn-ghost {
+    padding:10px 20px;
+    background:transparent; border:1px solid var(--brd2);
+    border-radius:8px; color:var(--txt2);
+    font-size:13px; cursor:pointer; transition:.2s;
+  }
+  .btn-ghost:hover { border-color:var(--x); color:var(--x); }
+
+  .auth-divider {
+    display:flex; align-items:center; gap:12px;
+    color:var(--txt3); font-size:12px;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content:''; flex:1; height:1px; background:var(--brd);
+  }
+
+  .btn-demo {
+    padding:10px; background:var(--bg3);
+    border:1px solid var(--brd2); border-radius:8px;
+    color:var(--txt2); font-size:13px;
+    cursor:pointer; transition:.2s;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .btn-demo:hover { border-color:var(--y); color:var(--y); }
+
+  .auth-error {
+    padding:10px 14px;
+    background:rgba(255,107,107,.1); border:1px solid rgba(255,107,107,.3);
+    border-radius:8px; color:var(--acc);
+    font-size:13px; display:none;
+  }
+  .auth-error.show { display:block; }
+
+  .auth-success {
+    padding:10px 14px;
+    background:rgba(0,212,160,.1); border:1px solid rgba(0,212,160,.3);
+    border-radius:8px; color:var(--y);
+    font-size:13px; display:none;
+  }
+  .auth-success.show { display:block; }
+
+  .loading-dots span {
+    display:inline-block; width:6px; height:6px;
+    background:currentColor; border-radius:50%; margin:0 2px;
+    animation: dot-bounce .8s infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay:.15s; }
+  .loading-dots span:nth-child(3) { animation-delay:.3s; }
+  @keyframes dot-bounce {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-5px); }
+  }
+
+  .sync-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; background:rgba(0,212,160,.1);
+    border:1px solid rgba(0,212,160,.3);
+    border-radius:20px; font-size:11px; color:var(--y);
+    margin-top:4px;
+  }
+  .sync-dot { width:6px; height:6px; border-radius:50%; background:var(--y); animation: sync-pulse 2s infinite; }
+  @keyframes sync-pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+
+  /* ====== APP ====== */
+  #app-container { display:none; min-height:100vh; flex-direction:column; }
+  #app-container.visible { display:flex; }
+
+  .topbar {
+    height:56px; background:var(--bg2);
+    border-bottom:1px solid var(--brd);
+    display:flex; align-items:center;
+    padding:0 20px; gap:16px;
+    position:sticky; top:0; z-index:100;
+  }
+  .topbar-logo {
+    display:flex; align-items:center; gap:8px;
+    font-weight:700; font-size:16px; letter-spacing:-.3px;
+    margin-right:8px;
+  }
+  .topbar-logo-icon {
+    width:28px; height:28px;
+    background:linear-gradient(135deg,var(--x),var(--y));
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+  }
+  .topbar-nav { display:flex; gap:2px; flex:1; }
+  .tab-btn {
+    padding:7px 14px;
+    background:transparent; border:none;
+    color:var(--txt2); font-size:13px;
+    border-radius:8px; cursor:pointer; transition:.15s;
+    position:relative;
+  }
+  .tab-btn:hover { background:var(--bg3); color:var(--txt); }
+  .tab-btn.active { color:var(--x); background:rgba(123,111,255,.1); }
+  .tab-badge {
+    position:absolute; top:3px; right:5px;
+    background:var(--x); color:#fff;
+    font-size:9px; border-radius:10px;
+    padding:1px 5px; line-height:1.4;
+  }
+
+  .user-area {
+    display:flex; align-items:center; gap:10px; margin-left:auto;
+  }
+  .user-avatar {
+    width:32px; height:32px; border-radius:50%;
+    background:linear-gradient(135deg,var(--x),var(--y));
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:600; color:#fff;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .user-avatar:hover { transform:scale(1.05); }
+  .user-name { font-size:13px; color:var(--txt2); }
+  .sync-status {
+    display:flex; align-items:center; gap:5px;
+    font-size:11px; color:var(--y);
+  }
+  .sync-icon { width:6px; height:6px; border-radius:50%; background:var(--y); animation: sync-pulse 2s infinite; }
+
+  .main-area { flex:1; padding:24px; max-width:1100px; margin:0 auto; width:100%; }
+
+  /* Panels */
+  .panel { display:none; }
+  .panel.active { display:block; animation: fade-in .3s ease; }
+  @keyframes fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Cards */
+  .card {
+    background:var(--bg2); border:1px solid var(--brd);
+    border-radius:var(--card-r); padding:20px;
+    margin-bottom:16px;
+  }
+  .card-title {
+    font-size:14px; font-weight:600; color:var(--txt);
+    margin-bottom:16px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card-title-icon {
+    width:26px; height:26px; border-radius:7px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+  }
+
+  /* Data input */
+  .data-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .data-row { display:grid; grid-template-columns:40px 1fr 1fr; gap:8px; align-items:center; margin-bottom:8px; }
+  .data-row-n { color:var(--txt3); font-size:12px; text-align:center; }
+  .data-input {
+    padding:8px 12px; background:var(--bg3);
+    border:1px solid var(--brd); border-radius:7px;
+    color:var(--txt); font-size:13px; outline:none;
+    transition: border-color .15s;
+  }
+  .data-input:focus { border-color:var(--x); }
+  .data-header { display:grid; grid-template-columns:40px 1fr 1fr; gap:8px; margin-bottom:6px; }
+  .data-header-label { font-size:11px; font-weight:600; text-align:center; padding:4px; border-radius:5px; }
+  .data-header-x { background:rgba(123,111,255,.15); color:var(--x); }
+  .data-header-y { background:rgba(0,212,160,.15); color:var(--y); }
+
+  .label-input {
+    width:100%; padding:6px 10px;
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:6px; color:var(--txt); font-size:13px; outline:none;
+  }
+  .label-input:focus { border-color:var(--x); }
+
+  /* Mode toggle */
+  .mode-toggle {
+    display:inline-flex;
+    background:var(--bg3); border-radius:8px; padding:3px; gap:2px;
+    margin-bottom:16px;
+  }
+  .mode-btn {
+    padding:7px 16px; border:none; background:transparent;
+    color:var(--txt2); font-size:12px; font-weight:500;
+    border-radius:6px; cursor:pointer; transition:.2s;
+  }
+  .mode-btn.active { background:var(--x); color:#fff; }
+
+  /* Metrics */
+  .metrics-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+  .metric {
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:10px; padding:14px 12px; text-align:center;
+  }
+  .metric-val { font-size:22px; font-weight:700; }
+  .metric-lab { font-size:11px; color:var(--txt3); margin-top:3px; }
+  .metric-x { color:var(--x); }
+  .metric-y { color:var(--y); }
+  .metric-g { color:var(--acc2); }
+
+  .chart-wrap { position:relative; height:300px; margin:12px 0; }
+
+  /* Alert badges */
+  .alert { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:8px; }
+  .alert-ok { background:rgba(0,212,160,.08); border:1px solid rgba(0,212,160,.2); color:var(--y); }
+  .alert-warn { background:rgba(255,179,71,.08); border:1px solid rgba(255,179,71,.2); color:var(--acc2); }
+  .alert-err { background:rgba(255,107,107,.08); border:1px solid rgba(255,107,107,.2); color:var(--acc); }
+
+  /* Diag charts */
+  .diag-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .diag-card { background:var(--bg3); border:1px solid var(--brd); border-radius:10px; padding:14px; }
+  .diag-title { font-size:12px; font-weight:600; color:var(--txt2); margin-bottom:10px; }
+  .diag-chart-wrap { position:relative; height:180px; }
+
+  /* Table */
+  .data-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .data-table th { background:var(--bg3); padding:8px 12px; text-align:left; color:var(--txt2); font-weight:500; }
+  .data-table td { padding:7px 12px; border-bottom:1px solid var(--brd); color:var(--txt); }
+  .data-table tr:last-child td { border:none; }
+  .tbl-wrap { overflow-x:auto; border-radius:8px; border:1px solid var(--brd); }
+
+  /* History cards */
+  .hcard {
+    background:var(--bg2); border:1px solid var(--brd);
+    border-radius:var(--card-r); overflow:hidden;
+    margin-bottom:12px; transition:.2s;
+  }
+  .hcard:hover { border-color:var(--brd2); }
+  .hcard-head {
+    display:flex; align-items:center; gap:12px;
+    padding:14px 16px; cursor:pointer;
+  }
+  .hcard-mini { width:80px; height:50px; }
+  .hcard-info { flex:1; }
+  .hcard-name { font-size:14px; font-weight:600; }
+  .hcard-meta { font-size:11px; color:var(--txt3); margin-top:2px; }
+  .hcard-r2 { font-size:18px; font-weight:700; color:var(--y); }
+  .hcard-actions { display:none; gap:8px; padding:0 16px 14px; }
+  .hcard.expanded .hcard-actions { display:flex; }
+
+  /* Profile */
+  .profile-header {
+    display:flex; align-items:center; gap:20px; margin-bottom:24px;
+  }
+  .profile-avatar-big {
+    width:64px; height:64px; border-radius:50%;
+    background:linear-gradient(135deg,var(--x),var(--y));
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; font-weight:700; color:#fff;
+    flex-shrink:0;
+  }
+  .profile-info-name { font-size:20px; font-weight:700; }
+  .profile-info-email { font-size:13px; color:var(--txt2); margin-top:2px; }
+  .profile-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  .stat-card { background:var(--bg3); border-radius:10px; padding:14px; text-align:center; }
+  .stat-val { font-size:22px; font-weight:700; color:var(--x); }
+  .stat-lab { font-size:11px; color:var(--txt3); margin-top:3px; }
+
+  .form-section { margin-bottom:20px; }
+  .form-section-title { font-size:13px; font-weight:600; color:var(--txt2); margin-bottom:12px; text-transform:uppercase; letter-spacing:.5px; }
+  .form-row { margin-bottom:12px; }
+  .form-label { font-size:12px; color:var(--txt2); margin-bottom:5px; display:block; }
+  .form-input {
+    width:100%; padding:9px 12px;
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:8px; color:var(--txt); font-size:13px; outline:none;
+    transition: border-color .15s;
+  }
+  .form-input:focus { border-color:var(--x); }
+
+  /* Toast */
+  #toast {
+    position:fixed; bottom:24px; right:24px;
+    background:var(--bg2); border:1px solid var(--brd2);
+    border-radius:10px; padding:12px 16px;
+    font-size:13px; color:var(--txt);
+    transform:translateY(100px); opacity:0;
+    transition:.3s cubic-bezier(.16,1,.3,1);
+    z-index:500; max-width:300px;
+    display:flex; align-items:center; gap:8px;
+  }
+  #toast.show { transform:translateY(0); opacity:1; }
+  #toast.ok .toast-icon { color:var(--y); }
+  #toast.err .toast-icon { color:var(--acc); }
+  #toast.info .toast-icon { color:var(--x); }
+
+  /* Cloud sync indicator */
+  .cloud-saving {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; color:var(--txt3);
+  }
+  .cloud-saving.active { color:var(--y); }
+  .cloud-saving svg { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ====== SIDEBAR ====== */
+  #app-body {
+    display:flex; flex:1; padding-left:56px;
+  }
+  #sidebar {
+    width:56px; background:var(--bg2);
+    border-right:1px solid var(--brd);
+    display:flex; flex-direction:column; align-items:center;
+    padding:12px 0; gap:4px;
+    position:fixed; top:56px; left:0; height:calc(100vh - 56px);
+    z-index:50; flex-shrink:0;
+  }
+  #content-area { flex:1; min-width:0; }
+  .sidebar-btn {
+    width:40px; height:40px;
+    background:transparent; border:none;
+    border-radius:10px; color:var(--txt3);
+    font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:.15s; position:relative;
+  }
+  .sidebar-btn:hover { background:var(--bg3); color:var(--txt); }
+  .sidebar-btn.active { background:rgba(123,111,255,.15); color:var(--x); }
+  .sidebar-badge {
+    position:absolute; top:4px; right:4px;
+    background:var(--x); color:#fff;
+    font-size:9px; border-radius:10px;
+    padding:1px 4px; line-height:1.4; min-width:14px; text-align:center;
+    display:none;
+  }
+  .sidebar-tooltip {
+    position:absolute; left:52px; top:50%; transform:translateY(-50%);
+    background:var(--bg4); border:1px solid var(--brd2);
+    border-radius:6px; padding:4px 10px;
+    font-size:12px; color:var(--txt); white-space:nowrap;
+    pointer-events:none; opacity:0; transition:.15s;
+    z-index:200;
+  }
+  .sidebar-btn:hover .sidebar-tooltip { opacity:1; }
+  .sidebar-divider { width:28px; height:1px; background:var(--brd); margin:6px 0; }
+
+  #content-area { flex:1; overflow-y:auto; }
+
+  /* Responsive */
+  @media (max-width:768px) {
+    .main-area { padding:12px; }
+    .diag-grid { grid-template-columns:1fr; }
+    .data-grid { grid-template-columns:1fr; }
+    .profile-stats { grid-template-columns:1fr 1fr; }
+    #sidebar { width:48px; }
+  }
+
+  /* Smooth transitions */
+  .fade-enter { animation: fade-in .3s ease; }
+  .shake { animation: shake .3s ease; }
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    25% { transform:translateX(-8px); }
+    75% { transform:translateX(8px); }
+  }
+
+  /* Import */
+  .drop-zone {
+    border:2px dashed var(--brd2); border-radius:12px;
+    padding:32px; text-align:center; cursor:pointer;
+    transition:.2s;
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color:var(--x); background:rgba(123,111,255,.05);
+  }
+  .drop-icon { font-size:32px; margin-bottom:8px; }
+  .drop-text { font-size:14px; color:var(--txt2); }
+  .drop-subtext { font-size:12px; color:var(--txt3); margin-top:4px; }
+
+  /* URL import */
+  .url-row { display:flex; gap:8px; margin-top:12px; }
+  .url-input {
+    flex:1; padding:9px 12px;
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:8px; color:var(--txt); font-size:13px; outline:none;
+  }
+  .url-input:focus { border-color:var(--x); }
+
+  /* Preview table */
+  .preview-wrap { margin-top:16px; overflow-x:auto; max-height:220px; overflow-y:auto; }
+
+  /* ANOVA */
+  .anova-table { width:100%; font-size:12px; border-collapse:collapse; }
+  .anova-table th { background:rgba(123,111,255,.1); padding:7px 10px; color:var(--x); font-weight:600; text-align:left; }
+  .anova-table td { padding:6px 10px; border-bottom:1px solid var(--brd); }
+
+  /* Residuals */
+  .resid-table { font-size:12px; }
+
+  /* Interpretation box */
+  .interp-box {
+    background:var(--bg3); border-left:3px solid var(--x);
+    border-radius:0 8px 8px 0; padding:12px 16px;
+    font-size:13px; line-height:1.6; color:var(--txt2);
+    margin-top:12px;
+  }
+  .interp-box.green { border-left-color:var(--y); }
+  .interp-box.amber { border-left-color:var(--acc2); }
+
+  /* Prediction */
+  .pred-result {
+    background:rgba(0,212,160,.05); border:1px solid rgba(0,212,160,.2);
+    border-radius:10px; padding:16px; margin-top:12px;
+  }
+  .pred-val { font-size:28px; font-weight:700; color:var(--y); }
+  .pred-interval { font-size:13px; color:var(--txt2); margin-top:6px; }
+
+  /* History cards */
+  .history-item {
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:10px; padding:14px 16px;
+    margin-bottom:10px; transition:.2s;
+  }
+  .history-item:hover { border-color:var(--brd2); background:var(--bg4); }
+  .history-title { font-size:14px; font-weight:600; color:var(--txt); margin-bottom:4px; }
+  .history-desc { font-size:12px; color:var(--txt2); margin-bottom:6px; }
+  .history-date { font-size:11px; color:var(--txt3); margin-bottom:10px; }
+  .history-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .history-badge {
+    display:inline-flex; align-items:center;
+    padding:2px 8px; border-radius:20px; font-size:10px; font-weight:600;
+    margin-bottom:6px;
+  }
+  .history-badge-simples { background:rgba(123,111,255,.15); color:var(--x); border:1px solid rgba(123,111,255,.3); }
+  .history-badge-multipla { background:rgba(0,212,160,.1); color:var(--y); border:1px solid rgba(0,212,160,.25); }
+  .history-badge-logistica { background:rgba(255,107,107,.12); color:var(--acc); border:1px solid rgba(255,107,107,.3); }
+
+  /* Modal overlay */
+  #modal-overlay {
+    position:fixed; inset:0; z-index:900;
+    background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden; transition:.25s;
+  }
+  #modal-overlay.open { opacity:1; visibility:visible; }
+  .modal-card {
+    background:var(--bg2); border:1px solid var(--brd2);
+    border-radius:16px; padding:28px; width:90%; max-width:520px;
+    max-height:80vh; overflow-y:auto;
+    animation: slide-up .3s cubic-bezier(.16,1,.3,1);
+  }
+  .modal-title { font-size:16px; font-weight:700; margin-bottom:4px; }
+  .modal-subtitle { font-size:12px; color:var(--txt3); margin-bottom:20px; }
+  .modal-section { margin-bottom:16px; }
+  .modal-section-title { font-size:11px; font-weight:600; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+  .modal-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--brd); font-size:13px; }
+  .modal-row:last-child { border:none; }
+  .modal-row-key { color:var(--txt3); }
+  .modal-row-val { color:var(--txt); font-weight:500; }
+  .modal-actions { display:flex; gap:8px; margin-top:20px; flex-wrap:wrap; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--brd2); border-radius:3px; }
+  ::-webkit-scrollbar-thumb:hover { background:var(--x); }
+
+  /* Multiple regression variable chips */
+  .var-chip {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 10px; background:rgba(123,111,255,.12);
+    border:1px solid rgba(123,111,255,.3);
+    border-radius:20px; font-size:12px; color:var(--x);
+    cursor:default;
+  }
+  .var-chip-rm {
+    background:none; border:none; color:var(--txt3);
+    font-size:14px; cursor:pointer; padding:0; line-height:1;
+  }
+  .var-chip-rm:hover { color:var(--acc); }
+
+  /* VIF bar */
+  .vif-bar-wrap { background:var(--bg3); border-radius:4px; height:8px; overflow:hidden; margin-top:4px; flex:1; min-width:60px; }
+  .vif-bar { height:100%; border-radius:4px; transition: width .4s; }
+
+  /* Coef table sig highlight */
+  .sig-high { color:var(--y); font-weight:600; }
+  .sig-med { color:var(--acc2); }
+  .sig-none { color:var(--txt3); }
+
+  /* Forgot password link */
+  .auth-link { font-size:12px; color:var(--txt3); text-align:right; cursor:pointer; }
+  .auth-link:hover { color:var(--x); }
+
+  .form-forgot { display:none; flex-direction:column; gap:14px; }
+  .form-forgot.active { display:flex; }
+
+  /* Back link */
+  .back-link { font-size:12px; color:var(--txt3); cursor:pointer; display:flex; align-items:center; gap:4px; }
+  .back-link:hover { color:var(--x); }
+
+  /* Cloud sync banner */
+  .cloud-banner {
+    background:rgba(0,212,160,.06); border:1px solid rgba(0,212,160,.15);
+    border-radius:8px; padding:10px 14px;
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; color:var(--txt2);
+    margin-bottom:16px;
+  }
+  .cloud-banner-icon { font-size:16px; }
+
+  /* AI Insight */
+  .ai-insight {
+    background:linear-gradient(135deg,rgba(123,111,255,.06),rgba(0,212,160,.06));
+    border:1px solid rgba(123,111,255,.2);
+    border-radius:10px; padding:16px;
+    margin-top:12px; position:relative; overflow:hidden;
+  }
+  .ai-insight::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0;
+    height:2px;
+    background:linear-gradient(90deg,var(--x),var(--y));
+  }
+  .ai-insight-title { font-size:11px; color:var(--x); font-weight:600; letter-spacing:.5px; margin-bottom:8px; }
+  .ai-insight-text { font-size:13px; color:var(--txt2); line-height:1.6; }
+  .ai-thinking { display:flex; gap:6px; align-items:center; color:var(--txt3); font-size:13px; }
+  .ai-thinking-dot {
+    width:7px; height:7px; border-radius:50%; background:var(--x);
+    animation: dot-bounce .8s infinite;
+  }
+  .ai-thinking-dot:nth-child(2) { animation-delay:.15s; }
+  .ai-thinking-dot:nth-child(3) { animation-delay:.3s; background:var(--y); }
+/* ====== POLYNOMIAL ====== */
+.poly-degree-selector {
+  display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;
+}
+.degree-btn {
+  width:34px; height:34px; border-radius:8px;
+  background:var(--bg3); border:1px solid var(--brd);
+  color:var(--txt2); font-size:13px; font-weight:600;
+  cursor:pointer; transition:.15s;
+  display:flex; align-items:center; justify-content:center;
+}
+.degree-btn.active { background:var(--x); border-color:var(--x); color:#fff; box-shadow:0 2px 10px rgba(123,111,255,.4); }
+.degree-btn:hover:not(.active) { border-color:var(--brd2); color:var(--txt); }
+.degree-compare-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:8px; margin-top:10px; }
+.degree-compare-card {
+  background:var(--bg3); border:1px solid var(--brd);
+  border-radius:8px; padding:10px; text-align:center; cursor:pointer; transition:.15s;
+}
+.degree-compare-card.best { border-color:var(--y); background:rgba(0,212,160,.06); }
+.degree-compare-card:hover { border-color:var(--brd2); }
+.degree-compare-card .dc-degree { font-size:11px; color:var(--txt3); margin-bottom:4px; }
+.degree-compare-card .dc-r2 { font-size:16px; font-weight:700; color:var(--y); }
+.degree-compare-card .dc-r2adj { font-size:11px; color:var(--txt2); margin-top:2px; }
+.history-badge-polinomial { background:rgba(255,179,71,.12); color:var(--acc2); border:1px solid rgba(255,179,71,.3); }
+.history-badge-serie { background:rgba(0,200,255,.12); color:#00C8FF; border:1px solid rgba(0,200,255,.3); }
+.history-badge-quantilica { background:rgba(200,100,255,.12); color:#C864FF; border:1px solid rgba(200,100,255,.3); }
+.history-badge-regularizada { background:rgba(255,107,107,.10); color:#FF8C55; border:1px solid rgba(255,140,85,.3); }
+
+/* ====== QUANTILE ====== */
+.quantile-config { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px; }
+.quantile-chips { display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px; }
+.quantile-chip { padding:5px 12px;border-radius:20px;border:1px solid var(--brd2);background:var(--bg3);color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:.15s; }
+.quantile-chip.active { background:var(--x);border-color:var(--x);color:#fff; }
+.quantile-chip[data-q="0.5"].active { background:var(--y);border-color:var(--y);color:#000; }
+.quantile-legend { display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:12px; }
+.quantile-legend-item { display:flex;align-items:center;gap:5px; }
+.quantile-legend-dot { width:14px;height:3px;border-radius:2px; }
+.qmetric-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px; }
+.qmetric { background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:10px;text-align:center; }
+.qmetric-val { font-size:16px;font-weight:700; }
+.qmetric-lab { font-size:10px;color:var(--txt3);margin-top:2px; }
+</style>
+</head>
+</head>
+<body>
+
+<!-- ====== AUTH OVERLAY ====== -->
+<div id="auth-overlay">
+  <div class="auth-bg" id="auth-particles"></div>
+  <div class="auth-card" id="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">📈</div>
+      <span class="auth-logo-text">RegLinear</span>
+    </div>
+    <p class="auth-subtitle">Plataforma de análise estatística com sincronização em nuvem</p>
+
+    <div class="auth-tabs" id="auth-tabs">
+      <button class="auth-tab active" onclick="showAuthTab('login')">Entrar</button>
+      <button class="auth-tab" onclick="showAuthTab('signup')">Cadastrar</button>
+    </div>
+
+    <!-- Login -->
+    <form class="auth-form active" id="form-login" onsubmit="doLogin(event)">
+      <div id="login-error" class="auth-error"></div>
+      <div class="field-group">
+        <label class="field-label">E-mail</label>
+        <input class="field-input" type="email" id="login-email" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Senha</label>
+        <div class="pw-wrap">
+          <input class="field-input" type="password" id="login-pw" placeholder="Sua senha" required autocomplete="current-password">
+          <button type="button" class="pw-toggle" onclick="togglePw('login-pw',this)">👁</button>
+        </div>
+      </div>
+      <div class="auth-link" onclick="showAuthTab('forgot')">Esqueci minha senha</div>
+      <button class="btn-primary" type="submit" id="btn-login">Entrar na conta</button>
+      <div class="auth-divider">ou</div>
+      <button type="button" class="btn-demo" onclick="doDemo()">
+        ⚡ Entrar como Demo (sem cadastro)
+      </button>
+    </form>
+
+    <!-- Signup -->
+    <form class="auth-form" id="form-signup" onsubmit="doSignup(event)">
+      <div id="signup-error" class="auth-error"></div>
+      <div id="signup-success" class="auth-success"></div>
+      <div class="field-group">
+        <label class="field-label">Nome</label>
+        <input class="field-input" type="text" id="signup-name" placeholder="Seu nome" required minlength="2" autocomplete="name">
+      </div>
+      <div class="field-group">
+        <label class="field-label">E-mail</label>
+        <input class="field-input" type="email" id="signup-email" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Senha</label>
+        <div class="pw-wrap">
+          <input class="field-input" type="password" id="signup-pw" placeholder="Mínimo 8 caracteres" required minlength="8" autocomplete="new-password" oninput="updatePwStrength(this.value)">
+          <button type="button" class="pw-toggle" onclick="togglePw('signup-pw',this)">👁</button>
+        </div>
+        <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Confirmar senha</label>
+        <div class="pw-wrap">
+          <input class="field-input" type="password" id="signup-pw2" placeholder="Repita a senha" required autocomplete="new-password">
+          <button type="button" class="pw-toggle" onclick="togglePw('signup-pw2',this)">👁</button>
+        </div>
+      </div>
+      <button class="btn-primary" type="submit" id="btn-signup">Criar conta grátis</button>
+    </form>
+
+    <!-- Forgot password -->
+    <div class="form-forgot" id="form-forgot">
+      <div id="forgot-error" class="auth-error"></div>
+      <div id="forgot-success" class="auth-success"></div>
+      <div class="back-link" onclick="showAuthTab('login')">← Voltar ao login</div>
+      <p style="font-size:13px;color:var(--txt2)">Digite seu e-mail para redefinir sua senha.</p>
+      <div class="field-group">
+        <label class="field-label">E-mail</label>
+        <input class="field-input" type="email" id="forgot-email" placeholder="seu@email.com">
+      </div>
+      <button class="btn-primary" onclick="doForgot()">Enviar link de redefinição</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MAIN APP ====== -->
+<div id="app-container">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">📈</div>
+      RegLinear
+    </div>
+    <nav class="topbar-nav">
+      <button class="tab-btn" onclick="switchTab('nova',this)">Regressão Linear</button>
+      <button class="tab-btn" onclick="switchTab('multipla',this)">Regressão Múltipla</button>
+      <button class="tab-btn" onclick="switchTab('logistica',this)">Regressão Logística</button>
+      <button class="tab-btn" onclick="switchTab('polinomial',this)">Regressão Polinomial</button>
+      <button class="tab-btn" onclick="switchTab('serie',this)">Séries Temporais</button>
+      <button class="tab-btn" onclick="switchTab('quantilica',this)">Reg. Quantílica</button>
+      <button class="tab-btn" onclick="switchTab('regularizada',this)">Reg. Regularizada</button>
+    </nav>
+    <div class="user-area">
+      <div class="sync-status" id="sync-status" style="display:none">
+        <div class="sync-icon"></div>
+        <span>Sincronizado</span>
+      </div>
+      <div class="user-name" id="topbar-name" onclick="goProfile()" style="cursor:pointer"></div>
+      <div class="user-avatar" id="topbar-avatar" onclick="goProfile()" style="cursor:pointer"></div>
+    </div>
+  </div>
+
+  <!-- App body: sidebar + content -->
+  <div id="app-body">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <button class="sidebar-btn" onclick="switchTab('importar',this)" title="Importar">
+        📂
+        <span class="sidebar-tooltip">Importar</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-btn" id="btn-historico" onclick="switchTab('historico',this)" title="Histórico">
+        📚
+        <span class="sidebar-badge" id="hbadge">0</span>
+        <span class="sidebar-tooltip">Histórico</span>
+      </button>
+    </div>
+
+    <!-- Content area -->
+    <div id="content-area">
+  <!-- Main content -->
+  <div class="main-area">
+
+    <!-- PANEL: Análise Nova -->
+    <div class="panel" id="panel-nova">
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(123,111,255,.15)">📊</div>
+          Configuração da análise
+        </div>
+        <div class="data-grid">
+          <div class="field-group">
+            <label class="field-label">Nome da análise</label>
+            <input class="label-input" type="text" id="analysis-name" placeholder="Ex: Vendas vs Publicidade" value="Análise 1">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+          <div class="field-group">
+            <label class="field-label">Variável X (independente)</label>
+            <input class="label-input" type="text" id="label-x" placeholder="Ex: Gastos (R$)" value="X">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Variável Y (dependente)</label>
+            <input class="label-input" type="text" id="label-y" placeholder="Ex: Vendas (R$)" value="Y">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+          Dados
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="addRow()">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="clearRows()">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="loadExample()">Exemplo</button>
+          </div>
+        </div>
+        <div class="data-header">
+          <span></span>
+          <div class="data-header-label data-header-x" id="dh-x">X</div>
+          <div class="data-header-label data-header-y" id="dh-y">Y</div>
+        </div>
+        <div id="data-rows"></div>
+        <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="data-count">0 pares de dados</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(255,179,71,.15)">⚙️</div>
+          Modo de visualização
+        </div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="vt-padrao" onclick="setViewMode('padrao')">Padrão</button>
+          <button class="mode-btn" id="vt-avancado" onclick="setViewMode('avancado')">Avançado</button>
+        </div>
+        <p style="font-size:12px;color:var(--txt3)" id="mode-hint">Modo padrão: gráfico + métricas básicas</p>
+
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+          <button class="btn-primary" onclick="runRegression()">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="saveAnalysis()" id="btn-save" style="display:none">☁ Salvar na conta</button>
+          <div class="cloud-saving" id="cloud-saving">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Salvando...
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="view-padrao" style="display:none">
+        <div class="card">
+          <div class="card-title">📈 Resultado — Modo Padrão</div>
+          <div class="metrics-grid" id="metrics-padrao"></div>
+          <div class="chart-wrap"><canvas id="chart-padrao"></canvas></div>
+          <div id="interp-padrao"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 Tabela de resíduos</div>
+          <div class="tbl-wrap" id="resid-tbl-padrao"></div>
+        </div>
+      </div>
+
+      <div id="view-avancado" style="display:none">
+        <div class="card">
+          <div class="card-title">📊 Resultado — Modo Avançado</div>
+          <div class="metrics-grid" id="metrics-avancado"></div>
+          <div class="chart-wrap"><canvas id="chart-avancado"></canvas></div>
+          <div id="tests-avancado"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📐 Tabela ANOVA</div>
+          <div id="anova-tbl"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔭 Previsão de Y</div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div class="field-group" style="flex:1;min-width:140px">
+              <label class="field-label">Novo valor de X</label>
+              <input class="data-input" type="number" id="pred-x" placeholder="Ex: 50" style="width:100%">
+            </div>
+            <div class="field-group" style="min-width:120px">
+              <label class="field-label">Nível de confiança</label>
+              <select class="data-input" id="pred-conf">
+                <option value="0.90">90%</option>
+                <option value="0.95" selected>95%</option>
+                <option value="0.99">99%</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="runPrediction()">Prever</button>
+          </div>
+          <div id="pred-result" style="display:none"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🤖 Interpretação automática com IA</div>
+          <div id="ai-insight-box">
+            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação automática.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnostic inline -->
+      <div id="diag-inline-section" style="display:none">
+        <div class="card">
+          <div class="card-title">🔬 Diagnóstico do Modelo</div>
+          <div id="diag-tests" style="margin-bottom:16px"></div>
+          <div class="diag-grid">
+            <div class="diag-card">
+              <div class="diag-title">Resíduos vs Ajustados</div>
+              <div class="diag-chart-wrap"><canvas id="chart-resfit"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Histograma dos Resíduos</div>
+              <div class="diag-chart-wrap"><canvas id="chart-hist"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">QQ-Plot (Normalidade)</div>
+              <div class="diag-chart-wrap"><canvas id="chart-qq"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Distância de Cook</div>
+              <div class="diag-chart-wrap"><canvas id="chart-cook"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 Observações Influentes</div>
+          <div class="tbl-wrap" id="influential-tbl"></div>
+        </div>
+      </div>
+
+      <!-- Export — sempre ao final -->
+      <div id="export-section" style="display:none" class="card">
+        <div class="card-title">📥 Exportar resultados</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-ghost" onclick="exportExcel()">📊 Excel BI (.xlsx)</button>
+          <button class="btn-ghost" onclick="exportCSV()">📄 CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Regressão Múltipla -->
+    <div class="panel" id="panel-multipla">
+
+      <!-- Configuração -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(123,111,255,.15)">📊</div>
+          Configuração — Regressão Múltipla
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field-group">
+            <label class="field-label">Nome da análise</label>
+            <input class="label-input" type="text" id="m-analysis-name" placeholder="Ex: Preços vs Atributos" value="Regressão Múltipla 1">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Variável dependente (Y)</label>
+            <input class="label-input" type="text" id="m-label-y" placeholder="Ex: Preço (R$)" value="Y">
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="field-label" style="margin-bottom:8px">Variáveis independentes (X₁, X₂, ...)</div>
+          <div id="m-var-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
+          <div style="display:flex;gap:8px">
+            <input class="label-input" type="text" id="m-new-var-name" placeholder="Nome da variável (ex: Tamanho)" style="flex:1">
+            <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="mAddVar()">+ Variável</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+          Dados
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mAddRow()">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mClearRows()">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mLoadExample()">Exemplo</button>
+          </div>
+        </div>
+        <div id="m-table-wrap" style="overflow-x:auto">
+          <div id="m-table-header" style="margin-bottom:6px"></div>
+          <div id="m-data-rows"></div>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="m-data-count">0 observações</div>
+      </div>
+
+      <!-- Rodar -->
+      <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn-primary" onclick="runMultiple()">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="mSaveAnalysis()" id="m-btn-save" style="display:none">☁ Salvar</button>
+          <div class="cloud-saving" id="m-cloud-saving" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Salvando...
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div id="m-results" style="display:none">
+
+        <!-- Equação + métricas globais -->
+        <div class="card">
+          <div class="card-title">📈 Equação e Ajuste Global</div>
+          <div id="m-equation" class="interp-box" style="margin-bottom:16px;font-family:monospace;font-size:13px"></div>
+          <div class="metrics-grid" id="m-metrics"></div>
+          <div id="m-global-tests" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Coeficientes -->
+        <div class="card">
+          <div class="card-title">📐 Coeficientes, Testes t e IC 95%</div>
+          <div class="tbl-wrap" id="m-coef-tbl"></div>
+        </div>
+
+        <!-- VIF -->
+        <div class="card">
+          <div class="card-title">🔍 Diagnóstico de Multicolinearidade (VIF)</div>
+          <div id="m-vif-section"></div>
+        </div>
+
+        <!-- ANOVA -->
+        <div class="card">
+          <div class="card-title">📋 Tabela ANOVA</div>
+          <div id="m-anova-tbl"></div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="card">
+          <div class="card-title">📊 Gráficos Diagnósticos</div>
+          <div class="diag-grid">
+            <div class="diag-card">
+              <div class="diag-title">Y Observado vs Y Ajustado</div>
+              <div class="diag-chart-wrap"><canvas id="m-chart-obs-fit"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Resíduos vs Valores Ajustados</div>
+              <div class="diag-chart-wrap"><canvas id="m-chart-resfit"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Histograma dos Resíduos</div>
+              <div class="diag-chart-wrap"><canvas id="m-chart-hist"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">QQ-Plot (Normalidade)</div>
+              <div class="diag-chart-wrap"><canvas id="m-chart-qq"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráficos de efeito parcial por variável -->
+        <div class="card">
+          <div class="card-title">🎯 Efeitos Parciais (Y vs cada Xᵢ)</div>
+          <div id="m-partial-charts" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+        </div>
+
+        <!-- Previsão -->
+        <div class="card">
+          <div class="card-title">🔭 Previsão</div>
+          <div id="m-pred-inputs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px"></div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div>
+              <label class="field-label">Nível de confiança</label>
+              <select class="data-input" id="m-pred-conf">
+                <option value="0.90">90%</option>
+                <option value="0.95" selected>95%</option>
+                <option value="0.99">99%</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="runMultiplePrediction()">Prever</button>
+          </div>
+          <div id="m-pred-result" style="display:none"></div>
+        </div>
+
+        <!-- AI -->
+        <div class="card">
+          <div class="card-title">🤖 Interpretação com IA</div>
+          <div id="m-ai-box">
+            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="card">
+          <div class="card-title">📥 Exportar</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" onclick="mExportExcel()">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="mExportCSV()">📄 CSV</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- PANEL: Regressão Logística -->
+    <div class="panel" id="panel-logistica">
+
+      <!-- Configuração -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(255,107,107,.15)">🎯</div>
+          Configuração — Regressão Logística
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field-group">
+            <label class="field-label">Nome da análise</label>
+            <input class="label-input" type="text" id="lg-analysis-name" placeholder="Ex: Classificação Clientes" value="Regressão Logística 1">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Variável dependente Y (0 ou 1)</label>
+            <input class="label-input" type="text" id="lg-label-y" placeholder="Ex: Comprou (0/1)" value="Y (0/1)">
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="field-label" style="margin-bottom:8px">Variáveis independentes (X₁, X₂, ...)</div>
+          <div id="lg-var-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
+          <div style="display:flex;gap:8px">
+            <input class="label-input" type="text" id="lg-new-var-name" placeholder="Nome da variável (ex: Idade)" style="flex:1">
+            <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="lgAddVar()">+ Variável</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+          Dados
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgAddRow()">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgClearRows()">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgLoadExample()">Exemplo</button>
+          </div>
+        </div>
+        <div id="lg-table-wrap" style="overflow-x:auto">
+          <div id="lg-table-header" style="margin-bottom:6px"></div>
+          <div id="lg-data-rows"></div>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="lg-data-count">0 observações</div>
+      </div>
+
+      <!-- Rodar -->
+      <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn-primary" onclick="runLogistic()">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="lgSaveAnalysis()" id="lg-btn-save" style="display:none">☁ Salvar</button>
+          <div class="cloud-saving" id="lg-cloud-saving" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Salvando...
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div id="lg-results" style="display:none">
+
+        <!-- Métricas globais -->
+        <div class="card">
+          <div class="card-title">📈 Ajuste do Modelo</div>
+          <div class="metrics-grid" id="lg-metrics"></div>
+          <div id="lg-global-tests" style="margin-top:12px"></div>
+        </div>
+
+        <!-- Coeficientes -->
+        <div class="card">
+          <div class="card-title">📐 Coeficientes e Odds Ratios</div>
+          <div class="tbl-wrap" id="lg-coef-tbl"></div>
+        </div>
+
+        <!-- Matriz de confusão -->
+        <div class="card">
+          <div class="card-title">🎯 Matriz de Confusão e Métricas de Classificação</div>
+          <div id="lg-confusion" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+            <div id="lg-confusion-matrix"></div>
+            <div id="lg-class-metrics"></div>
+          </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="card">
+          <div class="card-title">📊 Gráficos Diagnósticos</div>
+          <div class="diag-grid">
+            <div class="diag-card">
+              <div class="diag-title">Curva ROC</div>
+              <div class="diag-chart-wrap"><canvas id="lg-chart-roc"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Probabilidades Preditas</div>
+              <div class="diag-chart-wrap"><canvas id="lg-chart-prob"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Resíduos de Deviance</div>
+              <div class="diag-chart-wrap"><canvas id="lg-chart-resid"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Calibração (Observed vs Predicted)</div>
+              <div class="diag-chart-wrap"><canvas id="lg-chart-calib"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Previsão -->
+        <div class="card">
+          <div class="card-title">🔭 Previsão de Probabilidade</div>
+          <div id="lg-pred-inputs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px"></div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div>
+              <label class="field-label">Limiar de classificação</label>
+              <select class="data-input" id="lg-threshold">
+                <option value="0.3">0.30</option>
+                <option value="0.4">0.40</option>
+                <option value="0.5" selected>0.50</option>
+                <option value="0.6">0.60</option>
+                <option value="0.7">0.70</option>
+              </select>
+            </div>
+            <button class="btn-primary" onclick="runLogisticPrediction()">Prever</button>
+          </div>
+          <div id="lg-pred-result" style="display:none"></div>
+        </div>
+
+        <!-- AI -->
+        <div class="card">
+          <div class="card-title">🤖 Interpretação com IA</div>
+          <div id="lg-ai-box">
+            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+          </div>
+        </div>
+
+        <!-- Export — sempre ao final -->
+        <div class="card">
+          <div class="card-title">📥 Exportar</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" onclick="lgExportExcel()">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="lgExportCSV()">📄 CSV</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Regressão Polinomial -->
+<div class="panel" id="panel-polinomial">
+
+  <!-- Configuração -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-title-icon" style="background:rgba(255,179,71,.15)">📐</div>
+      Configuração — Regressão Polinomial
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field-group">
+        <label class="field-label">Nome da análise</label>
+        <input class="label-input" type="text" id="po-analysis-name" placeholder="Ex: Curva de Crescimento" value="Regressão Polinomial 1">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Variável X (independente)</label>
+        <input class="label-input" type="text" id="po-label-x" placeholder="Ex: Tempo" value="X">
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="field-group">
+        <label class="field-label">Variável Y (dependente)</label>
+        <input class="label-input" type="text" id="po-label-y" placeholder="Ex: Produção" value="Y">
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="field-label" style="margin-bottom:8px">Grau do polinômio</div>
+      <div class="poly-degree-selector">
+        <div id="po-degree-btns" style="display:flex;gap:6px">
+          <button class="degree-btn active" onclick="poSetDegree(1,this)">1</button>
+          <button class="degree-btn" onclick="poSetDegree(2,this)">2</button>
+          <button class="degree-btn" onclick="poSetDegree(3,this)">3</button>
+          <button class="degree-btn" onclick="poSetDegree(4,this)">4</button>
+          <button class="degree-btn" onclick="poSetDegree(5,this)">5</button>
+          <button class="degree-btn" onclick="poSetDegree(6,this)">6</button>
+        </div>
+        <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="poAutoSelectDegree()">⚡ Selecionar melhor grau</button>
+      </div>
+      <div id="po-degree-hint" style="font-size:12px;color:var(--txt3)">Grau 1 = regressão linear simples</div>
+    </div>
+  </div>
+
+  <!-- Dados -->
+  <div class="card">
+    <div class="card-title">
+      <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+      Dados
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poAddRow()">+ Linha</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poClearRows()">Limpar</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poLoadExample()">Exemplo</button>
+      </div>
+    </div>
+    <div class="data-header">
+      <span></span>
+      <div class="data-header-label data-header-x" id="po-dh-x">X</div>
+      <div class="data-header-label data-header-y" id="po-dh-y">Y</div>
+    </div>
+    <div id="po-data-rows"></div>
+    <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="po-data-count">0 pares de dados</div>
+  </div>
+
+  <!-- Rodar -->
+  <div class="card">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="btn-primary" onclick="runPolynomial()">▶ Gerar análise</button>
+      <button class="btn-ghost" onclick="poSaveAnalysis()" id="po-btn-save" style="display:none">☁ Salvar</button>
+      <div class="cloud-saving" id="po-cloud-saving" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Salvando...
+      </div>
+    </div>
+  </div>
+
+  <!-- Resultados -->
+  <div id="po-results" style="display:none">
+
+    <!-- Comparação de graus -->
+    <div class="card">
+      <div class="card-title">📊 Comparação entre Graus</div>
+      <div class="degree-compare-grid" id="po-degree-compare"></div>
+      <div id="po-best-degree-alert" style="margin-top:12px"></div>
+    </div>
+
+    <!-- Equação + métricas -->
+    <div class="card">
+      <div class="card-title">📈 Equação e Ajuste</div>
+      <div id="po-equation" class="interp-box" style="margin-bottom:16px;font-family:monospace;font-size:13px"></div>
+      <div class="metrics-grid" id="po-metrics"></div>
+      <div id="po-global-tests" style="margin-top:12px"></div>
+    </div>
+
+    <!-- Coeficientes -->
+    <div class="card">
+      <div class="card-title">📐 Coeficientes</div>
+      <div class="tbl-wrap" id="po-coef-tbl"></div>
+    </div>
+
+    <!-- ANOVA -->
+    <div class="card">
+      <div class="card-title">📋 Tabela ANOVA</div>
+      <div id="po-anova-tbl"></div>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="card">
+      <div class="card-title">📊 Curva Ajustada</div>
+      <div class="chart-wrap"><canvas id="po-chart-main"></canvas></div>
+    </div>
+
+    <!-- Diagnóstico -->
+    <div class="card">
+      <div class="card-title">🔬 Diagnóstico Residual</div>
+      <div class="diag-grid">
+        <div class="diag-card">
+          <div class="diag-title">Resíduos vs Ajustados</div>
+          <div class="diag-chart-wrap"><canvas id="po-chart-resfit"></canvas></div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-title">Histograma dos Resíduos</div>
+          <div class="diag-chart-wrap"><canvas id="po-chart-hist"></canvas></div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-title">QQ-Plot (Normalidade)</div>
+          <div class="diag-chart-wrap"><canvas id="po-chart-qq"></canvas></div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-title">Tabela de Resíduos</div>
+          <div style="max-height:180px;overflow-y:auto" id="po-resid-mini"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Previsão -->
+    <div class="card">
+      <div class="card-title">🔭 Previsão</div>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+        <div class="field-group" style="flex:1;min-width:140px">
+          <label class="field-label">Novo valor de X</label>
+          <input class="data-input" type="number" id="po-pred-x" placeholder="Ex: 5.5" style="width:100%" step="any">
+        </div>
+        <button class="btn-primary" onclick="poRunPrediction()">Prever</button>
+      </div>
+      <div id="po-pred-result" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <!-- AI -->
+    <div class="card">
+      <div class="card-title">🤖 Interpretação com IA</div>
+      <div id="po-ai-box">
+        <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="card">
+      <div class="card-title">📥 Exportar</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-ghost" onclick="poExportExcel()">📊 Excel BI (.xlsx)</button>
+        <button class="btn-ghost" onclick="poExportCSV()">📄 CSV</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- PANEL: Séries Temporais -->
+    <div class="panel" id="panel-serie">
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,200,255,.15)">📉</div>
+          Configuração — Séries Temporais
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="field-group">
+            <label class="field-label">Nome da análise</label>
+            <input class="label-input" type="text" id="st-analysis-name" value="Série Temporal 1" placeholder="Ex: Vendas Mensais">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Rótulo da variável</label>
+            <input class="label-input" type="text" id="st-label-y" value="Valor" placeholder="Ex: Vendas (R$)">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px">
+          <div class="field-group">
+            <label class="field-label">Janela média móvel</label>
+            <input class="data-input" type="number" id="st-window" value="3" min="2" max="20" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Períodos futuros</label>
+            <input class="data-input" type="number" id="st-future" value="6" min="1" max="36" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Rótulo do período</label>
+            <input class="label-input" type="text" id="st-label-x" value="Período" placeholder="Ex: Mês">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+          Dados
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stAddRow()">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stClearRows()">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stLoadExample()">Exemplo</button>
+          </div>
+        </div>
+        <div class="data-header">
+          <span></span>
+          <div class="data-header-label data-header-x" id="st-dh-x">Período</div>
+          <div class="data-header-label data-header-y" id="st-dh-y">Valor</div>
+        </div>
+        <div id="st-data-rows"></div>
+        <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="st-data-count">0 períodos</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn-primary" onclick="runSerie()">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="stSaveAnalysis()" id="st-btn-save" style="display:none">☁ Salvar</button>
+          <div class="cloud-saving" id="st-cloud-saving" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Salvando...
+          </div>
+        </div>
+      </div>
+
+      <div id="st-results" style="display:none">
+
+        <div class="card">
+          <div class="card-title">📊 Estatísticas Resumo</div>
+          <div class="metrics-grid" id="st-metrics"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📈 Série + Tendência + Média Móvel + Projeção</div>
+          <div class="chart-wrap" style="height:360px"><canvas id="st-chart-main"></canvas></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔬 Decomposição Aditiva</div>
+          <div class="diag-grid">
+            <div class="diag-card">
+              <div class="diag-title">Tendência</div>
+              <div class="diag-chart-wrap"><canvas id="st-chart-trend"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Sazonalidade</div>
+              <div class="diag-chart-wrap"><canvas id="st-chart-season"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Resíduo</div>
+              <div class="diag-chart-wrap"><canvas id="st-chart-resid"></canvas></div>
+            </div>
+            <div class="diag-card">
+              <div class="diag-title">Volatilidade (desvio móvel)</div>
+              <div class="diag-chart-wrap"><canvas id="st-chart-vol"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔭 Projeções</div>
+          <div class="tbl-wrap" id="st-proj-tbl"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🤖 Interpretação com IA</div>
+          <div id="st-ai-box">
+            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📥 Exportar</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" onclick="stExportExcel()">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="stExportCSV()">📄 CSV</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PANEL: Regressão Quantílica -->
+    <div class="panel" id="panel-quantilica">
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(200,100,255,.15)">📊</div>
+          Configuração — Regressão Quantílica Avançada
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="field-group">
+            <label class="field-label">Nome da análise</label>
+            <input class="label-input" type="text" id="qr-analysis-name" value="Regressão Quantílica 1" placeholder="Ex: Quantis de Renda">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Variável X (independente)</label>
+            <input class="label-input" type="text" id="qr-label-x" value="X" placeholder="Ex: Idade">
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:16px">
+          <label class="field-label">Variável Y (dependente)</label>
+          <input class="label-input" type="text" id="qr-label-y" value="Y" placeholder="Ex: Salário">
+        </div>
+        <div class="field-label" style="margin-bottom:8px">Quantis ativos</div>
+        <div class="quantile-chips" id="qr-chips">
+          <span class="quantile-chip active" data-q="0.1" onclick="qrToggleChip(this)">τ = 0.10</span>
+          <span class="quantile-chip active" data-q="0.25" onclick="qrToggleChip(this)">τ = 0.25</span>
+          <span class="quantile-chip active" data-q="0.5" onclick="qrToggleChip(this)">τ = 0.50 (mediana)</span>
+          <span class="quantile-chip active" data-q="0.75" onclick="qrToggleChip(this)">τ = 0.75</span>
+          <span class="quantile-chip active" data-q="0.9" onclick="qrToggleChip(this)">τ = 0.90</span>
+        </div>
+        <div class="quantile-config">
+          <div class="field-group">
+            <label class="field-label">Learning rate</label>
+            <input class="data-input" type="number" id="qr-lr" value="0.001" step="0.0001" min="0.00001" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Iterações máx.</label>
+            <input class="data-input" type="number" id="qr-iters" value="5000" step="100" min="100" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Tolerância</label>
+            <input class="data-input" type="number" id="qr-tol" value="0.0000001" step="0.00000001" min="0.0000000001" style="width:100%">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+          Dados
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrAddRow()">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrClearRows()">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrLoadExample()">Exemplo</button>
+          </div>
+        </div>
+        <div class="data-header">
+          <span></span>
+          <div class="data-header-label data-header-x" id="qr-dh-x">X</div>
+          <div class="data-header-label data-header-y" id="qr-dh-y">Y</div>
+        </div>
+        <div id="qr-data-rows"></div>
+        <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="qr-data-count">0 pares de dados</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn-primary" id="qr-run-btn" onclick="runQuantile()">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="qrSaveAnalysis()" id="qr-btn-save" style="display:none">☁ Salvar</button>
+          <div class="cloud-saving" id="qr-cloud-saving" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Salvando...
+          </div>
+        </div>
+      </div>
+
+      <div id="qr-results" style="display:none">
+
+        <div class="card">
+          <div class="card-title">📈 Curvas Quantílicas</div>
+          <div class="chart-wrap" style="height:380px"><canvas id="qr-chart-main"></canvas></div>
+          <div class="quantile-legend" id="qr-legend"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📐 Coeficientes por Quantil</div>
+          <div class="tbl-wrap" id="qr-coef-tbl"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 Métricas por Quantil</div>
+          <div id="qr-metrics-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔭 Previsão por Quantil</div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <div class="field-group" style="flex:1;min-width:140px">
+              <label class="field-label">Novo valor de X</label>
+              <input class="data-input" type="number" id="qr-pred-x" placeholder="Ex: 50" style="width:100%" step="any">
+            </div>
+            <button class="btn-primary" onclick="qrRunPrediction()">Prever</button>
+          </div>
+          <div id="qr-pred-result" style="display:none;margin-top:12px"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🤖 Interpretação com IA</div>
+          <div id="qr-ai-box">
+            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📥 Exportar</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" onclick="qrExportExcel()">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="qrExportCSV()">📄 CSV</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- PANEL: Regressão Regularizada -->
+    <div class="panel" id="panel-regularizada">
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(255,140,85,.15)">🔧</div>
+          Configuração — Regressão Regularizada
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="field-group">
+            <label class="field-label">Nome da análise</label>
+            <input class="label-input" type="text" id="rr-analysis-name" value="Regressão Regularizada 1" placeholder="Ex: Ridge Preços">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Variável X (independente)</label>
+            <input class="label-input" type="text" id="rr-label-x" value="X" placeholder="Ex: Área">
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:16px">
+          <label class="field-label">Variável Y (dependente)</label>
+          <input class="label-input" type="text" id="rr-label-y" value="Y" placeholder="Ex: Preço">
+        </div>
+
+        <!-- Toggle Ridge / Lasso -->
+        <div class="field-label" style="margin-bottom:8px">Tipo de regularização</div>
+        <div class="mode-toggle" style="margin-bottom:16px">
+          <button class="mode-btn active" id="rr-btn-ridge" onclick="rrSetType('ridge')">Ridge (L2)</button>
+          <button class="mode-btn" id="rr-btn-lasso" onclick="rrSetType('lasso')">Lasso (L1)</button>
+          <button class="mode-btn" id="rr-btn-both" onclick="rrSetType('both')">Ambos</button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
+          <div class="field-group">
+            <label class="field-label">λ (lambda)</label>
+            <input class="data-input" type="number" id="rr-lambda" value="0.1" step="0.01" min="0" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Learning rate</label>
+            <input class="data-input" type="number" id="rr-lr" value="0.001" step="0.0001" min="0.000001" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Iterações máx.</label>
+            <input class="data-input" type="number" id="rr-iters" value="5000" step="100" min="100" style="width:100%">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Tolerância</label>
+            <input class="data-input" type="number" id="rr-tol" value="0.0000001" step="0.00000001" min="0.000000001" style="width:100%">
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
+          Dados
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrAddRow()">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrClearRows()">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrLoadExample()">Exemplo</button>
+          </div>
+        </div>
+        <div class="data-header">
+          <span></span>
+          <div class="data-header-label data-header-x" id="rr-dh-x">X</div>
+          <div class="data-header-label data-header-y" id="rr-dh-y">Y</div>
+        </div>
+        <div id="rr-data-rows"></div>
+        <div style="margin-top:8px;font-size:12px;color:var(--txt3)" id="rr-data-count">0 pares de dados</div>
+      </div>
+
+      <!-- Executar -->
+      <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn-primary" id="rr-run-btn" onclick="runRegularized()">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="rrSaveAnalysis()" id="rr-btn-save" style="display:none">☁ Salvar</button>
+          <div class="cloud-saving" id="rr-cloud-saving" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Salvando...
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div id="rr-results" style="display:none">
+
+        <!-- Métricas -->
+        <div class="card">
+          <div class="card-title">📈 Coeficientes e Ajuste</div>
+          <div id="rr-coef-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px"></div>
+          <div id="rr-global-tests" style="margin-top:8px"></div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="card">
+          <div class="card-title">📊 Dispersão + Linhas Ajustadas</div>
+          <div class="chart-wrap" style="height:360px"><canvas id="rr-chart-main"></canvas></div>
+          <div id="rr-legend" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px"></div>
+        </div>
+
+        <!-- Tabela de coeficientes -->
+        <div class="card">
+          <div class="card-title">📐 Tabela de Resultados</div>
+          <div class="tbl-wrap" id="rr-coef-tbl"></div>
+        </div>
+
+        <!-- Comparação λ -->
+        <div class="card">
+          <div class="card-title">🔬 Efeito do λ nos Coeficientes</div>
+          <div id="rr-lambda-hint" class="interp-box" style="margin-bottom:12px"></div>
+          <div class="chart-wrap" style="height:260px"><canvas id="rr-chart-lambda"></canvas></div>
+        </div>
+
+        <!-- Exportar -->
+        <div class="card">
+          <div class="card-title">📥 Exportar</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn-ghost" onclick="rrExportExcel()">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="rrExportCSV()">📄 CSV</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PANEL: Importar -->
+    <div class="panel" id="panel-importar">
+      <div class="card">
+        <div class="card-title">📂 Importar Dados</div>
+        <div class="drop-zone" id="drop-zone"
+          ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
+          onclick="document.getElementById('file-input').click()">
+          <div class="drop-icon">📎</div>
+          <div class="drop-text">Arraste seu arquivo aqui ou clique para selecionar</div>
+          <div class="drop-subtext">Suporta .xlsx, .xls, .csv</div>
+        </div>
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="onFileSelect(event)">
+
+        <div style="margin-top:20px">
+          <div class="field-label" style="margin-bottom:6px">Importar via URL (CSV público ou Google Sheets)</div>
+          <div class="url-row">
+            <input class="url-input" type="url" id="import-url" placeholder="https://docs.google.com/spreadsheets/... ou URL do CSV">
+            <button class="btn-primary" onclick="importURL()">Importar</button>
+          </div>
+        </div>
+
+        <div id="import-preview" style="display:none;margin-top:20px">
+          <div class="field-label" style="margin-bottom:8px">Pré-visualização — selecione as colunas X e Y:</div>
+          <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+            <div>
+              <label class="field-label">Coluna X</label>
+              <select class="data-input" id="col-x" style="min-width:140px"></select>
+            </div>
+            <div>
+              <label class="field-label">Coluna Y</label>
+              <select class="data-input" id="col-y" style="min-width:140px"></select>
+            </div>
+          </div>
+          <div class="preview-wrap" id="preview-tbl"></div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn-primary" onclick="confirmImport()">✓ Importar para análise</button>
+            <button class="btn-ghost" onclick="cancelImport()">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Histórico -->
+    <div class="panel" id="panel-historico">
+      <div class="cloud-banner" id="cloud-banner" style="display:none">
+        <span class="cloud-banner-icon">☁️</span>
+        <span>Análises sincronizadas com sua conta — acesse em qualquer dispositivo.</span>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          📚 Histórico de Análises
+          <span id="storage-status" style="margin-left:auto;font-size:12px;color:var(--txt3)"></span>
+        </div>
+        <div id="history-list">
+          <p style="color:var(--txt3);font-size:14px">Nenhuma análise salva ainda. Execute e salve uma análise!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Perfil -->
+    <div class="panel" id="panel-perfil">
+      <div class="card">
+        <div class="profile-header">
+          <div class="profile-avatar-big" id="profile-avatar-big">A</div>
+          <div>
+            <div class="profile-info-name" id="profile-name-display">Usuário</div>
+            <div class="profile-info-email" id="profile-email-display">email@exemplo.com</div>
+            <div class="sync-badge">
+              <div class="sync-dot"></div>
+              Conta sincronizada na nuvem
+            </div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-lab">Análises salvas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="stat-r2">—</div>
+            <div class="stat-lab">Melhor R²</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="stat-last">—</div>
+            <div class="stat-lab">Última análise</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-section-title">Editar Perfil</div>
+        <div class="form-row">
+          <label class="form-label">Nome</label>
+          <input class="form-input" type="text" id="edit-name">
+        </div>
+        <div class="form-row">
+          <label class="form-label">E-mail</label>
+          <input class="form-input" type="email" id="edit-email">
+        </div>
+        <button class="btn-primary" onclick="saveProfile()" style="margin-top:8px">Salvar alterações</button>
+      </div>
+
+      <div class="card">
+        <div class="form-section-title">Alterar Senha</div>
+        <div class="form-row">
+          <label class="form-label">Senha atual</label>
+          <input class="form-input" type="password" id="old-pw">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Nova senha</label>
+          <input class="form-input" type="password" id="new-pw" minlength="8">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Confirmar nova senha</label>
+          <input class="form-input" type="password" id="new-pw2">
+        </div>
+        <button class="btn-primary" onclick="changePw()" style="margin-top:8px">Alterar senha</button>
+      </div>
+
+      <div class="card" style="border-color:rgba(255,107,107,.2)">
+        <div class="form-section-title" style="color:var(--acc)">Zona de Perigo</div>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:12px">Estas ações são irreversíveis.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-ghost" onclick="doLogout()" style="border-color:rgba(255,107,107,.3);color:var(--acc)">Sair da conta</button>
+          <button class="btn-ghost" onclick="deleteAccount()" style="border-color:rgba(255,107,107,.3);color:var(--acc)">Excluir conta</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-area -->
+    </div><!-- /content-area -->
+  </div><!-- /app-body -->
+</div><!-- /app-container -->
+
+<!-- Modal de visualização -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-card" id="modal-card">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Salvo com sucesso</span>
+</div>
+
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
