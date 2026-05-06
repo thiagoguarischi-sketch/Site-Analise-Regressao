@@ -56,6 +56,14 @@ async function deleteAnalysis(id) {
   return deleteAnalysisModal(id, loadHistory, updateProfileStats);
 }
 
+// ── Theme toggle ──
+function toggleTheme() {
+  const isLight = document.documentElement.classList.toggle('light');
+  const btn = document.getElementById('theme-toggle');
+  if (btn) btn.textContent = isLight ? '☀' : '🌙';
+  localStorage.setItem('slope-theme', isLight ? 'light' : 'dark');
+}
+
 function confirmImportWrapper() {
   return confirmImport(switchTab);
 }
@@ -71,7 +79,7 @@ Object.assign(window, {
   doLogin, doSignup, doForgot, doDemo,
   doLogout, deleteAccount, saveProfile, changePw,
   switchTab, goProfile,
-  showToast,
+  showToast, toggleTheme,
 
   // Linear simples — formulário e import
   initRows, addRow, clearRows: clearRowsWrapper, setRows, getData, updateCount, loadExample,
@@ -117,6 +125,12 @@ window.addEventListener('storage', async () => {
 
 // ── Bootstrap ──
 document.addEventListener('DOMContentLoaded', () => {
+  // Restore saved theme
+  if (localStorage.getItem('slope-theme') === 'light') {
+    document.documentElement.classList.add('light');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = '☀';
+  }
   mInitState();
   lgInitState();
   poInitRows();
