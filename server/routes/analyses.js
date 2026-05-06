@@ -3,12 +3,12 @@ const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
 const { getAnalyses, saveAnalysis, deleteAnalysis } = require('../services/analysesService');
 
-const VALID_TIPOS = ['simples', 'multipla', 'logistica', 'polinomial', 'serie'];
+const VALID_TIPOS = ['simples', 'multipla', 'logistica', 'polinomial', 'serie','quantilica','regularizada'];
 
 // GET /api/analyses
 router.get('/analyses', requireAuth, async (req, res) => {
   try {
-    const data = await getAnalyses(req.userId);
+    const data = await getAnalyses(req.userId, req.accessToken);
     res.json({ analyses: data });
   } catch (err) {
     console.error('[GET analyses] ERRO COMPLETO:', err);
@@ -37,7 +37,7 @@ router.post('/save-analysis', requireAuth, async (req, res) => {
       label_x: label_x?.toString().slice(0, 60) || null,
       label_y: label_y?.toString().slice(0, 60) || null,
       dados,
-    });
+    }, req.accessToken);
     res.status(201).json({ id: result.id, message: 'Análise salva.' });
   } catch (err) {
     console.error('[POST save-analysis] ERRO COMPLETO:', err);
@@ -54,7 +54,7 @@ router.delete('/analysis/:id', requireAuth, async (req, res) => {
   }
 
   try {
-    await deleteAnalysis(req.userId, id);
+    await deleteAnalysis(req.userId, id, req.accessToken);
     res.json({ message: 'Análise excluída.' });
   } catch (err) {
     const status = err.status || 500;

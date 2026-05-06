@@ -1,7 +1,16 @@
-const { supabase } = require('../middleware/auth');
+const { createClient } = require('@supabase/supabase-js');
 
-async function getAnalyses(userId) {
-  const { data, error } = await supabase
+function _client(accessToken) {
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    { global: { headers: { Authorization: `Bearer ${accessToken}` } } }
+  );
+}
+
+async function getAnalyses(userId, accessToken) {
+  const sb = _client(accessToken);
+  const { data, error } = await sb
     .from('analises')
     .select('id, nome, tipo, created_at, dados')
     .eq('user_id', userId)
@@ -11,8 +20,10 @@ async function getAnalyses(userId) {
   return data;
 }
 
-async function saveAnalysis(userId, { nome, tipo, label_x, label_y, dados }) {
-  const { data, error } = await supabase
+async function saveAnalysis(userId, payload, accessToken) {
+  const sb = _client(accessToken);
+  const { nome, tipo, label_x, label_y, dados } = payload;
+  const { data, error } = await sb
     .from('analises')
     .insert([{ user_id: userId, nome, tipo, label_x, label_y, dados }])
     .select('id')
@@ -22,9 +33,10 @@ async function saveAnalysis(userId, { nome, tipo, label_x, label_y, dados }) {
   return data;
 }
 
-async function deleteAnalysis(userId, analysisId) {
-  // Confirma propriedade antes de deletar
-  const { data: existing, error: fetchErr } = await supabase
+async function deleteAnalysis(userId, analysisId, accessToken) {
+  const sb = _client(accessToken);
+
+  const { data: existing, error: fetchErr } = await sb
     .from('analises')
     .select('id')
     .eq('id', analysisId)
@@ -37,7 +49,7 @@ async function deleteAnalysis(userId, analysisId) {
     throw err;
   }
 
-  const { error } = await supabase
+  const { error } = await sb
     .from('analises')
     .delete()
     .eq('id', analysisId)

@@ -3,9 +3,12 @@
 import {
   signUp, signIn, signOut, getCurrentUser,
 } from '../services/authService.js';
+import { deleteAccountRequest } from '../services/analysisService.js';
 import { db, setSession, clearSession } from '../services/supabaseService.js';
 import { showToast } from './notifications.js';
 import { loadHistory, updateProfileStats } from './tables.js';
+import { loadShareList, checkSharedLink, checkPendingSharedAnalysis } from './share.js';
+import { loadFriendsPanel } from './friends.js';
 import { initRows } from './forms.js';
 
 let currentUser = null;
@@ -41,10 +44,13 @@ export function showAuthTab(tab) {
   document.getElementById('auth-tabs').style.display = tab === 'forgot' ? 'none' : 'flex';
 }
 
+const _svgEye     = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const _svgEyeOff  = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
 export function togglePw(id, btn) {
   const inp = document.getElementById(id);
   inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  btn.innerHTML = inp.type === 'password' ? _svgEye : _svgEyeOff;
 }
 
 export function updatePwStrength(pw) {
@@ -94,30 +100,134 @@ export async function doLogin(e) {
   setAuthLoading('form-login', false);
 }
 
+// Estado usado pelo fluxo OTP (reservado para uso futuro)
+let _pendingSignup = null;
+let _countdownTimer = null;
+
 export async function doSignup(e) {
   e.preventDefault();
-  const name = document.getElementById('signup-name').value.trim();
+  const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim().toLowerCase();
-  const pw = document.getElementById('signup-pw').value;
-  const pw2 = document.getElementById('signup-pw2').value;
+  const pw    = document.getElementById('signup-pw').value;
+  const pw2   = document.getElementById('signup-pw2').value;
   const errEl = document.getElementById('signup-error');
-  const okEl = document.getElementById('signup-success');
-  errEl.classList.remove('show'); okEl.classList.remove('show');
+  errEl.classList.remove('show');
 
-  if (pw !== pw2)   { errEl.textContent = 'As senhas não coincidem.'; errEl.classList.add('show'); return; }
-  if (pw.length < 8){ errEl.textContent = 'Senha deve ter mínimo 8 caracteres.'; errEl.classList.add('show'); return; }
+  if (!name || name.length < 2) { errEl.textContent = 'Nome deve ter pelo menos 2 caracteres.'; errEl.classList.add('show'); return; }
+  if (!email)                   { errEl.textContent = 'Digite seu e-mail.';                       errEl.classList.add('show'); return; }
+  if (pw.length < 8)            { errEl.textContent = 'Senha deve ter mínimo 8 caracteres.';      errEl.classList.add('show'); return; }
+  if (pw !== pw2)               { errEl.textContent = 'As senhas não coincidem.';                 errEl.classList.add('show'); return; }
+
   setAuthLoading('form-signup', true);
-
   try {
     const user = await signUp(email, pw, name);
-    okEl.textContent = 'Conta criada! Entrando...';
-    okEl.classList.add('show');
-    setTimeout(async () => { await loginUser(user); setAuthLoading('form-signup', false); }, 800);
+    await loginUser(user);
+    showToast(`Bem-vindo, ${name}! 🎉`, 'ok');
   } catch (error) {
-    errEl.textContent = error.message || 'Erro no cadastro.';
+    errEl.textContent = error.message || 'Erro ao criar conta.';
     errEl.classList.add('show');
-    setAuthLoading('form-signup', false);
   }
+  setAuthLoading('form-signup', false);
+
+  /* FLUXO OTP — desabilitado, reativar quando quiser confirmação por email:
+  try {
+    const { error } = await db.auth.signUp({
+      email,
+      password: pw,
+      options: { data: { full_name: name } },
+    });
+    if (error) throw error;
+    _pendingSignup = { name, email, pw };
+    _showVerifyStep(email);
+  } catch (error) {
+    errEl.textContent = error.message || 'Erro ao enviar código de verificação.';
+    errEl.classList.add('show');
+  }
+  */
+}
+
+function _showVerifyStep(email) {
+  document.getElementById('signup-fields').style.display = 'none';
+  document.getElementById('signup-verify').style.display = 'block';
+  document.getElementById('verify-email-hint').textContent = email;
+  document.getElementById('verify-error').classList.remove('show');
+  document.getElementById('verify-code-input').value = '';
+  document.getElementById('verify-btn').disabled = false;
+  document.getElementById('verify-btn').textContent = 'Verificar e criar conta';
+  document.getElementById('verify-code-input').focus();
+  _startResendCountdown();
+}
+
+function _startResendCountdown() {
+  let secs = 60;
+  const countEl  = document.getElementById('verify-resend-countdown');
+  const resendBtn = document.getElementById('verify-resend-btn');
+  resendBtn.disabled = true;
+  clearInterval(_countdownTimer);
+  _countdownTimer = setInterval(() => {
+    secs--;
+    countEl.textContent = secs > 0 ? ` (${secs}s)` : '';
+    if (secs <= 0) { clearInterval(_countdownTimer); resendBtn.disabled = false; }
+  }, 1000);
+}
+
+export async function verifySignupCode() {
+  if (!_pendingSignup) return;
+  const code  = document.getElementById('verify-code-input').value.replace(/\D/g, '');
+  const errEl = document.getElementById('verify-error');
+  errEl.classList.remove('show');
+
+  if (code.length !== 6) {
+    errEl.textContent = 'Digite os 6 dígitos do código.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('verify-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+
+  try {
+    const { data, error } = await db.auth.verifyOtp({
+      email: _pendingSignup.email,
+      token: code,
+      type: 'signup',
+    });
+    if (error) throw error;
+
+    clearInterval(_countdownTimer);
+    const saved = _pendingSignup;
+    _pendingSignup = null;
+    await loginUser(data.user || (await db.auth.getUser()).data.user);
+    showToast(`Bem-vindo, ${saved.name}! 🎉`, 'ok');
+  } catch (err) {
+    const msg = err.message || '';
+    errEl.textContent = msg.toLowerCase().includes('token') || msg.toLowerCase().includes('otp') || msg.toLowerCase().includes('invalid')
+      ? 'Código inválido ou expirado. Tente novamente.'
+      : (msg || 'Erro ao verificar código.');
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Verificar e criar conta';
+  }
+}
+
+export async function resendSignupCode() {
+  if (!_pendingSignup) return;
+  const { error } = await db.auth.resend({
+    type: 'signup',
+    email: _pendingSignup.email,
+  });
+  if (error) { showToast('Erro ao reenviar. Tente novamente.', 'err'); return; }
+  showToast('Novo código enviado! Verifique sua caixa de entrada.', 'ok');
+  _startResendCountdown();
+}
+
+export function backToSignupForm() {
+  clearInterval(_countdownTimer);
+  _pendingSignup = null;
+  document.getElementById('signup-verify').style.display = 'none';
+  document.getElementById('signup-fields').style.display = 'block';
+  document.getElementById('signup-error').classList.remove('show');
 }
 
 export async function doForgot() {
@@ -175,8 +285,8 @@ export async function loginUser(user) {
     try { await loadHistory(); } catch (e) { console.warn('loadHistory error:', e); }
     try { await updateProfileStats(); } catch (e) { console.warn('updateProfileStats error:', e); }
 
-    const allTabBtns = document.querySelectorAll('.tab-btn');
-    if (allTabBtns.length > 0) switchTab('nova', allTabBtns[0]);
+    const loadedShared = await checkPendingSharedAnalysis().catch(() => false);
+    if (!loadedShared) switchTab('guia', document.getElementById('btn-guia'));
   } catch (err) {
     console.error('loginUser error:', err);
     showToast('Erro ao iniciar sessão: ' + err.message, 'err');
@@ -198,15 +308,23 @@ export async function doLogout() {
 
 export async function deleteAccount() {
   if (!confirm('Tem certeza? Isso irá excluir sua conta e TODAS as análises permanentemente.')) return;
-  if (!confirm('Esta ação é IRREVERSÍVEL. Confirma?')) return;
+  if (!confirm('Esta ação é IRREVERSÍVEL. Confirma a exclusão definitiva?')) return;
+
+  showToast('Excluindo conta...', 'info');
+  try {
+    await deleteAccountRequest();
+  } catch (err) {
+    console.error('[deleteAccount]', err);
+    showToast('Erro ao excluir conta: ' + (err.message || 'tente novamente.'), 'err');
+    return;
+  }
+
   await signOut();
   await clearSession();
-  showToast('Conta "excluída" (simulado).', 'err');
-  setTimeout(() => {
-    currentUser = null;
-    document.getElementById('auth-overlay').classList.remove('hidden');
-    document.getElementById('app-container').classList.remove('visible');
-  }, 1000);
+  currentUser = null;
+  document.getElementById('auth-overlay').classList.remove('hidden');
+  document.getElementById('app-container').classList.remove('visible');
+  showToast('Conta excluída permanentemente.', 'info');
 }
 
 // ── Profile ──
@@ -256,6 +374,7 @@ export async function changePw() {
 
 export async function tryRestoreSession() {
   spawnParticles();
+  checkSharedLink();
   const user = await getCurrentUser();
   if (user) await loginUser(user);
 }
@@ -267,8 +386,10 @@ export function switchTab(panel, btn) {
   document.querySelectorAll('.tab-btn, .sidebar-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + panel).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (panel === 'historico') loadHistory();
-  if (panel === 'perfil')   updateProfileStats();
+  if (panel === 'historico')    loadHistory();
+  if (panel === 'perfil')       updateProfileStats();
+  if (panel === 'compartilhar') loadShareList();
+  if (panel === 'amigos') loadFriendsPanel();
 }
 
 export function goProfile() {

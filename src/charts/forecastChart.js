@@ -1,6 +1,6 @@
 // Gráficos da aba Séries Temporais — série + tendência + MM + projeção, e decomposição aditiva.
 
-import { C, axis, smallTicks, legendStyle } from './baseChart.js';
+import { C, axis, smallTicks, legendStyle, gridColor } from './baseChart.js';
 
 export function createTimeSeriesMain(canvasId, res, allLabels) {
   const { values, trend, ma, projValues, n, windowSize, labelY } = res;
@@ -22,7 +22,7 @@ export function createTimeSeriesMain(canvasId, res, allLabels) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: legendStyle(11) },
       scales: {
-        x: { type: 'linear', ticks: { color: C.txt2, font: { size: 9 }, callback: v => allLabels[v] || v }, grid: { color: C.grid } },
+        x: { type: 'linear', ticks: { color: C.txt2, font: { size: 9 }, callback: v => allLabels[v] || v }, grid: { color: gridColor() } },
         y: axis(labelY),
       },
     },
@@ -37,7 +37,7 @@ export function createTrendChart(canvasId, labels, trend) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: C.grid } },
+        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: gridColor() } },
         y: smallTicks(),
       },
     },
@@ -56,7 +56,7 @@ export function createSeasonChart(canvasId, labels, seasonal) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: C.grid } },
+        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: gridColor() } },
         y: smallTicks(),
       },
     },
@@ -75,7 +75,7 @@ export function createTSResidChart(canvasId, labels, residual) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: C.grid } },
+        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: gridColor() } },
         y: smallTicks(),
       },
     },
@@ -98,7 +98,7 @@ export function createVolatilityChart(canvasId, labels, volatility) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: C.grid } },
+        x: { ticks: { color: C.txt2, font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: gridColor() } },
         y: smallTicks(),
       },
     },

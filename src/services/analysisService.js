@@ -15,6 +15,10 @@ export async function deleteAnalysisRequest(id) {
   return apiRequest(`/analysis/${id}`, 'DELETE');
 }
 
+export async function deleteAccountRequest() {
+  return apiRequest('/account', 'DELETE');
+}
+
 export async function getAnalysesFromSupabase() {
   try {
     return await fetchAnalyses();

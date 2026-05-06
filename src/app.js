@@ -7,6 +7,7 @@ import {
   doLogin, doSignup, doForgot, doDemo,
   doLogout, deleteAccount, saveProfile, changePw,
   tryRestoreSession, switchTab, goProfile,
+  verifySignupCode, resendSignupCode, backToSignupForm,
 } from './ui/dashboard.js';
 
 import { showToast } from './ui/notifications.js';
@@ -14,9 +15,12 @@ import { showToast } from './ui/notifications.js';
 import {
   initRows, addRow, clearRows, setRows, getData, updateCount, loadExample,
   onDragOver, onDragLeave, onDrop, onFileSelect, importURL, confirmImport, cancelImport,
+  updateImportStats,
 } from './ui/forms.js';
 
 import { viewAnalysis, closeModal, editAnalysis, deleteAnalysis as deleteAnalysisModal } from './ui/modals.js';
+import { loadShareList, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
+import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
 
 import {
@@ -79,16 +83,28 @@ Object.assign(window, {
   doLogin, doSignup, doForgot, doDemo,
   doLogout, deleteAccount, saveProfile, changePw,
   switchTab, goProfile,
+  verifySignupCode, resendSignupCode, backToSignupForm,
   showToast, toggleTheme,
 
   // Linear simples — formulário e import
   initRows, addRow, clearRows: clearRowsWrapper, setRows, getData, updateCount, loadExample,
   onDragOver, onDragLeave, onDrop, onFileSelect, importURL,
-  confirmImport: confirmImportWrapper, cancelImport,
+  confirmImport: confirmImportWrapper, cancelImport, updateImportStats,
 
   // Modal/histórico
   viewAnalysis, closeModal, editAnalysis, deleteAnalysis,
   loadHistory, updateProfileStats,
+
+  // Compartilhar
+  loadShareList, copyShareLink, copyShareText, previewShareCard,
+  copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared,
+  openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare,
+
+  // Amigos
+  loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend,
+
+  // Chat
+  openChat, closeChat, sendMessage,
 
   // Linear simples + múltipla
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,

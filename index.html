@@ -60,6 +60,7 @@
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
   }
+
   /* ====== LIGHT THEME ====== */
   html.light {
     --bg:   #F4F4FB;
@@ -77,7 +78,13 @@
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--txt); font-family:var(--font-sans); min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+  body {
+    background:var(--bg); color:var(--txt);
+    font-family:var(--font-sans);
+    min-height:100vh; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
 
   /* ====== AUTH OVERLAY ====== */
   #auth-overlay {
@@ -137,8 +144,9 @@
     box-shadow:var(--shadow-pop);
     animation: slide-up .45s cubic-bezier(.16,1,.3,1);
   }
+  html.light .auth-card { box-shadow:0 8px 40px rgba(0,0,0,.12); }
   @keyframes slide-up {
-    from { transform:translateY(30px); opacity:0; }
+    from { transform:translateY(24px); opacity:0; }
     to { transform:translateY(0); opacity:1; }
   }
   .auth-logo {
@@ -217,7 +225,7 @@
   }
   .btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 18px rgba(124,131,253,.5); }
   .btn-primary:active { transform:translateY(0); box-shadow:none; }
-  .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  .btn-primary:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
 
   .btn-ghost {
     padding:10px 16px;
@@ -321,9 +329,9 @@
     white-space:nowrap; position:relative;
   }
   .tab-btn:hover { background:var(--bg3); color:var(--txt); }
-  .tab-btn.active { color:var(--x); background:rgba(124,131,253,.15); }
+  .tab-btn.active { color:var(--x); background:rgba(124,131,253,.15); font-weight:600; }
   .tab-badge {
-    position:absolute; top:3px; right:5px;
+    position:absolute; top:3px; right:4px;
     background:var(--x); color:#fff;
     font-size:9px; border-radius:10px;
     padding:1px 5px; line-height:1.4;
@@ -345,7 +353,7 @@
     background:linear-gradient(135deg,var(--x),var(--y));
     display:flex; align-items:center; justify-content:center;
     font-size:12px; font-weight:700; color:#fff;
-    cursor:pointer; transition:.15s;
+    cursor:pointer; transition:.15s; flex-shrink:0;
   }
   .user-avatar:hover { transform:scale(1.06); box-shadow:0 4px 14px rgba(124,131,253,.45); }
   .user-name { font-size:13px; color:var(--txt2); }
@@ -354,6 +362,19 @@
     font-size:11px; color:var(--y);
   }
   .sync-icon { width:6px; height:6px; border-radius:50%; background:var(--y); animation: sync-pulse 2s infinite; }
+
+  /* Theme toggle */
+  .theme-btn {
+    width:32px; height:32px;
+    background:var(--bg3); border:1px solid var(--brd2);
+    border-radius:8px; color:var(--txt2);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:.2s; flex-shrink:0;
+  }
+  .theme-btn:hover { background:var(--bg4); color:var(--txt); border-color:var(--x); }
+  .icon-sun { display:none; }
+  html.light .icon-moon { display:none; }
+  html.light .icon-sun { display:block; }
 
   .main-area { flex:1; padding:24px; max-width:1100px; margin:0 auto; width:100%; }
 
@@ -377,7 +398,7 @@
   .card-title-icon {
     width:26px; height:26px; border-radius:var(--r-sm);
     display:flex; align-items:center; justify-content:center;
-    font-size:13px;
+    font-size:12px;
   }
 
   /* Data input */
@@ -420,10 +441,11 @@
   .metrics-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
   .metric {
     background:var(--bg3); border:1px solid var(--brd);
-    border-radius:10px; padding:14px 12px; text-align:center;
+    border-radius:9px; padding:14px 12px; text-align:center; transition:.15s;
   }
-  .metric-val { font-size:22px; font-weight:700; }
-  .metric-lab { font-size:11px; color:var(--txt3); margin-top:3px; }
+  .metric:hover { border-color:var(--brd2); }
+  .metric-val { font-size:21px; font-weight:700; letter-spacing:-.5px; }
+  .metric-lab { font-size:11px; color:var(--txt3); margin-top:4px; font-weight:500; letter-spacing:.02em; text-transform:uppercase; }
   .metric-x { color:var(--x); }
   .metric-y { color:var(--y); }
   .metric-g { color:var(--acc2); }
@@ -531,9 +553,9 @@
     width:52px; background:var(--bg2);
     border-right:1px solid var(--brd);
     display:flex; flex-direction:column; align-items:center;
-    padding:12px 0; gap:4px;
+    padding:10px 0; gap:2px;
     position:fixed; top:56px; left:0; height:calc(100vh - 56px);
-    z-index:50; flex-shrink:0;
+    z-index:50; flex-shrink:0; box-shadow:var(--shadow-sm);
   }
   #content-area { flex:1; min-width:0; }
   .sidebar-btn {
@@ -563,6 +585,64 @@
   }
   .sidebar-btn:hover .sidebar-tooltip { opacity:1; }
   .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; }
+  .sidebar-spacer { flex:1; }
+
+  /* Modal Quem Somos */
+  #about-overlay {
+    position:fixed; inset:0; z-index:950;
+    background:rgba(0,0,0,.75); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden; transition:.25s;
+  }
+  #about-overlay.open { opacity:1; visibility:visible; }
+  .about-card {
+    background:var(--bg2); border:1px solid var(--brd2);
+    border-radius:16px; padding:32px; width:92%; max-width:560px;
+    max-height:88vh; overflow-y:auto;
+    box-shadow:var(--shadow-card);
+    animation: slide-up .3s cubic-bezier(.16,1,.3,1);
+    position:relative;
+  }
+  .about-close {
+    position:absolute; top:14px; right:14px;
+    background:transparent; border:none; color:var(--txt3);
+    font-size:18px; cursor:pointer; line-height:1;
+    padding:4px 8px; border-radius:7px; transition:.15s;
+  }
+  .about-close:hover { background:var(--bg3); color:var(--txt); }
+  .about-logo-row { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+  .about-logo-icon {
+    width:48px; height:48px;
+    background:linear-gradient(145deg,var(--x),var(--x2));
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex-shrink:0;
+    box-shadow:0 3px 12px rgba(124,131,253,.35);
+  }
+  .about-logo-name { font-size:20px; font-weight:700; color:var(--txt); letter-spacing:-.4px; }
+  .about-logo-tag { font-size:12px; color:var(--txt3); margin-top:2px; }
+  .about-divider { height:1px; background:var(--brd); margin:18px 0; }
+  .about-section-label {
+    font-size:10px; font-weight:700; color:var(--x);
+    text-transform:uppercase; letter-spacing:.8px; margin-bottom:9px;
+  }
+  .about-text { font-size:13px; color:var(--txt2); line-height:1.75; margin-bottom:14px; }
+  .about-text strong { color:var(--txt); font-weight:600; }
+  .about-pills { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:18px; }
+  .about-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 11px;
+    background:rgba(0,212,160,.1); border:1px solid rgba(0,212,160,.22);
+    border-radius:20px; font-size:12px; color:var(--y);
+  }
+  .about-contact {
+    display:flex; align-items:center; gap:10px;
+    background:var(--bg3); border:1px solid var(--brd);
+    border-radius:10px; padding:12px 14px;
+    font-size:13px; color:var(--txt2);
+  }
+  .about-contact .lbl { color:var(--txt3); font-size:11px; display:block; margin-bottom:2px; }
+  .about-version { text-align:center; font-size:11px; color:var(--txt3); margin-top:22px; }
 
   #content-area { flex:1; overflow-y:auto; }
 
@@ -802,8 +882,568 @@
 .qmetric { background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:10px;text-align:center; }
 .qmetric-val { font-size:16px;font-weight:700; }
 .qmetric-lab { font-size:10px;color:var(--txt3);margin-top:2px; }
+
+  /* ====== AMIGOS ====== */
+  .friend-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: .2s;
+  }
+  .friend-card:hover { border-color: var(--brd2); background: var(--bg4); }
+  .friend-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--x), var(--y));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: -.5px;
+  }
+  .friend-name { font-size: 13px; font-weight: 600; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .friend-email { font-size: 11px; color: var(--txt3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #friends-search-results, #friends-pending, #friends-list { margin-top: 12px; }
+  .friends-search-row { display: flex; gap: 8px; }
+  .friends-search-row input { flex: 1; }
+
+  /* ── Chat overlay ── */
+  #chat-overlay {
+    position: fixed; inset: 0; z-index: 930;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: .25s;
+  }
+  #chat-overlay.open { opacity: 1; visibility: visible; }
+  #chat-window {
+    background: var(--bg2);
+    border: 1px solid var(--brd2);
+    border-radius: 18px;
+    width: 90%; max-width: 520px;
+    height: 75vh; max-height: 640px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    animation: slide-up .3s cubic-bezier(.16,1,.3,1);
+  }
+  #chat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--brd);
+    background: var(--bg3);
+    flex-shrink: 0;
+  }
+  #chat-friend-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--x), var(--y));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  #chat-friend-name { font-size: 15px; font-weight: 700; color: var(--txt); flex: 1; }
+  #chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px;
+    display: flex; flex-direction: column; gap: 2px;
+    scroll-behavior: smooth;
+  }
+  #chat-messages::-webkit-scrollbar { width: 4px; }
+  #chat-messages::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 2px; }
+  .chat-day-sep {
+    text-align: center; font-size: 11px; color: var(--txt3);
+    margin: 12px 0 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chat-day-sep::before, .chat-day-sep::after {
+    content: ''; flex: 1; height: 1px; background: var(--brd);
+  }
+  .chat-row { display: flex; margin-bottom: 4px; }
+  .chat-row-mine  { justify-content: flex-end; }
+  .chat-row-theirs { justify-content: flex-start; }
+  .chat-bubble {
+    max-width: 72%; padding: 9px 13px 6px;
+    border-radius: 16px; font-size: 13px; line-height: 1.5;
+    word-break: break-word; position: relative;
+  }
+  .chat-bubble-mine {
+    background: var(--x); color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-bubble-theirs {
+    background: var(--bg4); color: var(--txt);
+    border: 1px solid var(--brd);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-text { display: block; white-space: pre-wrap; }
+  .chat-time {
+    display: block; font-size: 10px; margin-top: 3px; text-align: right;
+    opacity: .65;
+  }
+  #chat-footer {
+    display: flex; align-items: flex-end; gap: 10px;
+    padding: 12px 16px; border-top: 1px solid var(--brd);
+    background: var(--bg3); flex-shrink: 0;
+  }
+  #chat-input {
+    flex: 1; background: var(--bg2); border: 1px solid var(--brd2);
+    border-radius: 12px; padding: 10px 14px; color: var(--txt);
+    font-size: 13px; resize: none; outline: none;
+    max-height: 120px; overflow-y: auto; line-height: 1.5;
+    font-family: inherit;
+    transition: border-color .15s;
+  }
+  #chat-input:focus { border-color: var(--x); }
+  #chat-send-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--x); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0; transition: .15s;
+    color: #fff;
+  }
+  #chat-send-btn:hover { background: var(--x2); transform: scale(1.06); }
+
+  /* ====== GUIA DE MODELOS ====== */
+  .guide-hero {
+    background: linear-gradient(135deg, rgba(123,111,255,.12) 0%, rgba(0,212,160,.08) 100%);
+    border: 1px solid rgba(123,111,255,.2);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .guide-hero::before {
+    content:'';
+    position:absolute; top:-60px; right:-60px;
+    width:220px; height:220px;
+    background: radial-gradient(circle, rgba(123,111,255,.15) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .guide-hero-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--txt) 0%, var(--x) 60%, var(--y) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .guide-hero-sub {
+    font-size: 14px;
+    color: var(--txt2);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+  .guide-hero-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .guide-hero-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(123,111,255,.15);
+    color: var(--x);
+    border: 1px solid rgba(123,111,255,.25);
+  }
+
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .guide-card {
+    background: var(--bg2);
+    border: 1px solid var(--brd);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: .2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .guide-card:hover {
+    border-color: var(--brd2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  }
+  .guide-card-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--brd);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .guide-card-icon {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .guide-card-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--txt);
+    line-height: 1.2;
+  }
+  .guide-card-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .guide-card-body {
+    padding: 16px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .guide-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--txt3);
+    margin-bottom: 5px;
+  }
+  .guide-desc {
+    font-size: 13px;
+    color: var(--txt2);
+    line-height: 1.65;
+  }
+  .guide-uses {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .guide-use-item {
+    font-size: 12px;
+    color: var(--txt2);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .guide-use-item::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--x);
+    font-size: 10px;
+    top: 2px;
+  }
+  .guide-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .guide-metric-chip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--brd2);
+    color: var(--txt2);
+    font-family: monospace;
+  }
+  .guide-formula {
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--y);
+    background: rgba(0,212,160,.06);
+    border: 1px solid rgba(0,212,160,.15);
+    border-radius: 8px;
+    padding: 9px 12px;
+    line-height: 1.7;
+  }
+  .guide-card-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--brd);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .guide-diff {
+    font-size: 11px;
+    color: var(--txt3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .guide-diff-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .btn-guide-use {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(123,111,255,.4);
+    background: rgba(123,111,255,.1);
+    color: var(--x);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .15s;
+    white-space: nowrap;
+  }
+  .btn-guide-use:hover {
+    background: rgba(123,111,255,.2);
+    border-color: var(--x);
+  }
+  @media (max-width:768px) {
+    .guide-grid { grid-template-columns: 1fr; }
+    .guide-hero { padding: 20px; }
+    .guide-hero-title { font-size: 20px; }
+  }
+
+  /* ====== IMPORT STATS & SUGGESTIONS ====== */
+  .import-stat-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .import-stat-box {
+    flex: 1;
+    min-width: 90px;
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+    border-radius: 10px;
+    padding: 11px 12px;
+    text-align: center;
+  }
+  .import-stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--txt);
+    line-height: 1;
+  }
+  .import-stat-lab {
+    font-size: 10px;
+    color: var(--txt3);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .import-stat-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 10px;
+  }
+  .import-stat-tbl th {
+    background: rgba(123,111,255,.08);
+    padding: 6px 10px;
+    color: var(--x);
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 1px solid var(--brd);
+  }
+  .import-stat-tbl td {
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--brd);
+    color: var(--txt2);
+  }
+  .import-stat-tbl td:first-child {
+    color: var(--txt3);
+    font-size: 11px;
+  }
+  .import-stat-tbl tr:last-child td {
+    border-bottom: none;
+  }
+  .import-sug-card {
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+    border-left: 3px solid var(--x);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    transition: .15s;
+  }
+  .import-sug-card:hover {
+    background: var(--bg4);
+  }
+  .import-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--txt3);
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  /* ====== COMPARTILHAR ====== */
+  .share-card {
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: .2s;
+  }
+  .share-card:hover {
+    border-color: var(--brd2);
+    background: var(--bg4);
+  }
+  .share-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--brd);
+  }
+  .share-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--brd2);
+    background: var(--bg2);
+    color: var(--txt2);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: .15s;
+  }
+  .share-btn:hover {
+    border-color: var(--x);
+    color: var(--x);
+  }
+  .share-btn-preview {
+    margin-left: auto;
+    border-color: rgba(123,111,255,.3);
+    background: rgba(123,111,255,.08);
+    color: var(--x);
+  }
+  .share-btn-preview:hover {
+    background: rgba(123,111,255,.18);
+  }
+
+  /* Share overlay (pré-visualização) */
+  #share-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 910;
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: .25s;
+  }
+  #share-overlay.open { opacity: 1; visibility: visible; }
+  #friend-pick-overlay.open { opacity: 1 !important; visibility: visible !important; }
+  #share-overlay-content {
+    background: var(--bg2);
+    border: 1px solid var(--brd2);
+    border-radius: 16px;
+    padding: 28px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slide-up .3s cubic-bezier(.16,1,.3,1);
+  }
+  .share-metric-strip {
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .share-metric-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--y);
+    line-height: 1;
+  }
+  .share-metric-lab {
+    font-size: 10px;
+    color: var(--txt3);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-top: 4px;
+  }
+  .share-text-block {
+    background: var(--bg3);
+    border: 1px solid var(--brd);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--txt2);
+    white-space: pre-wrap;
+    max-height: 160px;
+    overflow-y: auto;
+    line-height: 1.7;
+  }
+
+  /* Read-only view para destinatário do link */
+  .shared-readonly-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .shared-readonly-card {
+    background: var(--bg2);
+    border: 1px solid var(--brd2);
+    border-radius: 20px;
+    padding: 36px;
+    max-width: 480px;
+    width: 100%;
+  }
+
+  /* ── Refinamentos gerais ── */
+  .diag-card { background:var(--bg3); border:1px solid var(--brd); border-radius:9px; padding:14px; box-shadow:var(--shadow-sm); }
+  .diag-title { font-size:11px; font-weight:600; color:var(--txt2); margin-bottom:10px; letter-spacing:.04em; text-transform:uppercase; }
+  .hcard { background:var(--bg2); border:1px solid var(--brd); border-radius:var(--card-r); overflow:hidden; margin-bottom:10px; transition:.15s; box-shadow:var(--shadow-sm); }
+  .hcard:hover { border-color:var(--brd2); box-shadow:var(--shadow-card); }
+  .history-item { background:var(--bg2); border:1px solid var(--brd); border-radius:9px; padding:14px 16px; margin-bottom:8px; transition:.15s; box-shadow:var(--shadow-sm); }
+  .history-item:hover { border-color:var(--brd2); transform:translateY(-1px); box-shadow:var(--shadow-card); }
+  .stat-card { background:var(--bg3); border:1px solid var(--brd); border-radius:9px; padding:14px; text-align:center; box-shadow:var(--shadow-sm); }
+  .interp-box { background:var(--bg3); border-left:2px solid var(--x); border-radius:0 8px 8px 0; padding:12px 16px; font-size:13px; line-height:1.65; color:var(--txt2); margin-top:12px; }
+  .interp-box.green { border-left-color:var(--y); }
+  .interp-box.amber { border-left-color:var(--acc2); }
+  #toast { box-shadow:var(--shadow-card); }
+  .data-table th { background:var(--bg3); padding:9px 12px; text-align:left; color:var(--txt2); font-weight:600; font-size:11px; letter-spacing:.04em; text-transform:uppercase; }
+  .data-table td { padding:8px 12px; border-bottom:1px solid var(--brd); color:var(--txt); font-size:13px; }
+  .form-section-title { font-size:11px; font-weight:600; color:var(--txt3); margin-bottom:12px; text-transform:uppercase; letter-spacing:.06em; }
+  .drop-zone { border:1.5px dashed var(--brd2); border-radius:10px; padding:32px; text-align:center; cursor:pointer; transition:.2s; }
+  .drop-zone:hover, .drop-zone.drag-over { border-color:var(--x); background:rgba(124,131,253,.04); }
+  html.light .auth-bg::before { background: radial-gradient(circle, rgba(124,131,253,.12) 0%, transparent 70%); }
+  html.light .auth-bg::after { background: radial-gradient(circle, rgba(0,212,160,.08) 0%, transparent 70%); }
+  html.light ::-webkit-scrollbar-track { background:var(--bg3); }
+  html.light ::-webkit-scrollbar-thumb { background:var(--brd2); }
+  @media (max-width:768px) { #app-body { padding-left:48px; } #sidebar { width:48px; } }
 </style>
-</head>
 </head>
 <body>
 
@@ -839,7 +1479,7 @@
         <label class="field-label">Senha</label>
         <div class="pw-wrap">
           <input class="field-input" type="password" id="login-pw" placeholder="Sua senha" required autocomplete="current-password">
-          <button type="button" class="pw-toggle" onclick="togglePw('login-pw',this)">👁</button>
+          <button type="button" class="pw-toggle" onclick="togglePw('login-pw',this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <div class="auth-link" onclick="showAuthTab('forgot')">Esqueci minha senha</div>
@@ -852,32 +1492,69 @@
 
     <!-- Signup -->
     <form class="auth-form" id="form-signup" onsubmit="doSignup(event)">
-      <div id="signup-error" class="auth-error"></div>
-      <div id="signup-success" class="auth-success"></div>
-      <div class="field-group">
-        <label class="field-label">Nome</label>
-        <input class="field-input" type="text" id="signup-name" placeholder="Seu nome" required minlength="2" autocomplete="name">
-      </div>
-      <div class="field-group">
-        <label class="field-label">E-mail</label>
-        <input class="field-input" type="email" id="signup-email" placeholder="seu@email.com" required autocomplete="email">
-      </div>
-      <div class="field-group">
-        <label class="field-label">Senha</label>
-        <div class="pw-wrap">
-          <input class="field-input" type="password" id="signup-pw" placeholder="Mínimo 8 caracteres" required minlength="8" autocomplete="new-password" oninput="updatePwStrength(this.value)">
-          <button type="button" class="pw-toggle" onclick="togglePw('signup-pw',this)">👁</button>
+
+      <!-- Etapa 1: dados do cadastro -->
+      <div id="signup-fields">
+        <div id="signup-error" class="auth-error"></div>
+        <div class="field-group">
+          <label class="field-label">Nome</label>
+          <input class="field-input" type="text" id="signup-name" placeholder="Seu nome" autocomplete="name">
         </div>
-        <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+        <div class="field-group">
+          <label class="field-label">E-mail</label>
+          <input class="field-input" type="email" id="signup-email" placeholder="seu@email.com" autocomplete="email">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Senha</label>
+          <div class="pw-wrap">
+            <input class="field-input" type="password" id="signup-pw" placeholder="Mínimo 8 caracteres" autocomplete="new-password" oninput="updatePwStrength(this.value)">
+            <button type="button" class="pw-toggle" onclick="togglePw('signup-pw',this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Confirmar senha</label>
+          <div class="pw-wrap">
+            <input class="field-input" type="password" id="signup-pw2" placeholder="Repita a senha" autocomplete="new-password">
+            <button type="button" class="pw-toggle" onclick="togglePw('signup-pw2',this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+        <button class="btn-primary" type="submit" id="btn-signup">Criar conta grátis</button>
       </div>
-      <div class="field-group">
-        <label class="field-label">Confirmar senha</label>
-        <div class="pw-wrap">
-          <input class="field-input" type="password" id="signup-pw2" placeholder="Repita a senha" required autocomplete="new-password">
-          <button type="button" class="pw-toggle" onclick="togglePw('signup-pw2',this)">👁</button>
+
+      <!-- Etapa 2: verificação do código -->
+      <div id="signup-verify" style="display:none">
+        <div style="text-align:center;margin-bottom:22px">
+          <div style="font-size:44px;margin-bottom:10px">📧</div>
+          <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:8px">Confirme seu e-mail</div>
+          <div style="font-size:13px;color:var(--txt2);line-height:1.7">
+            Enviamos um código de 6 dígitos para<br>
+            <strong id="verify-email-hint" style="color:var(--y)"></strong>
+          </div>
+        </div>
+        <div id="verify-error" class="auth-error"></div>
+        <div class="field-group" style="margin-bottom:16px">
+          <label class="field-label" style="text-align:center;display:block">Código de verificação</label>
+          <input class="field-input" id="verify-code-input" type="text"
+            maxlength="6" placeholder="000000" inputmode="numeric"
+            autocomplete="one-time-code"
+            style="text-align:center;font-size:26px;font-weight:700;letter-spacing:.45em;font-family:monospace;color:var(--y)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();verifySignupCode()}">
+        </div>
+        <button class="btn-primary" type="button" id="verify-btn" onclick="verifySignupCode()">
+          Verificar e criar conta
+        </button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px">
+          <span class="auth-link" style="font-size:12px" onclick="backToSignupForm()">← Voltar</span>
+          <span style="color:var(--txt3)">
+            <button type="button" id="verify-resend-btn" class="auth-link"
+              style="font-size:12px;background:none;border:none;cursor:pointer;padding:0"
+              onclick="resendSignupCode()">Reenviar código</button>
+            <span id="verify-resend-countdown"></span>
+          </span>
         </div>
       </div>
-      <button class="btn-primary" type="submit" id="btn-signup">Criar conta grátis</button>
+
     </form>
 
     <!-- Forgot password -->
@@ -934,6 +1611,11 @@
 
     <!-- Sidebar -->
     <div id="sidebar">
+      <button class="sidebar-btn" id="btn-guia" onclick="switchTab('guia',this)" title="Guia de Modelos">
+        🎓
+        <span class="sidebar-tooltip">Guia de Modelos</span>
+      </button>
+      <div class="sidebar-divider"></div>
       <button class="sidebar-btn" onclick="switchTab('importar',this)" title="Importar">
         📂
         <span class="sidebar-tooltip">Importar</span>
@@ -943,6 +1625,24 @@
         📚
         <span class="sidebar-badge" id="hbadge">0</span>
         <span class="sidebar-tooltip">Histórico</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-btn" id="btn-compartilhar" onclick="switchTab('compartilhar',this)" title="Compartilhar">
+        🔗
+        <span class="sidebar-tooltip">Compartilhar</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-btn" id="btn-amigos" onclick="switchTab('amigos',this)" title="Amigos">
+        👥
+        <span class="sidebar-badge" id="friends-badge" style="display:none">0</span>
+        <span class="sidebar-tooltip">Amigos</span>
+      </button>
+
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-btn" onclick="openAbout()" title="Quem Somos">
+        ℹ️
+        <span class="sidebar-tooltip">Quem Somos</span>
       </button>
     </div>
 
@@ -1991,16 +2691,28 @@
           <div class="field-label" style="margin-bottom:8px">Pré-visualização — selecione as colunas X e Y:</div>
           <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">
             <div>
-              <label class="field-label">Coluna X</label>
-              <select class="data-input" id="col-x" style="min-width:140px"></select>
+              <label class="field-label">Coluna X (independente)</label>
+              <select class="data-input" id="col-x" style="min-width:140px" onchange="updateImportStats()"></select>
             </div>
             <div>
-              <label class="field-label">Coluna Y</label>
-              <select class="data-input" id="col-y" style="min-width:140px"></select>
+              <label class="field-label">Coluna Y (dependente)</label>
+              <select class="data-input" id="col-y" style="min-width:140px" onchange="updateImportStats()"></select>
             </div>
           </div>
           <div class="preview-wrap" id="preview-tbl"></div>
-          <div style="margin-top:12px;display:flex;gap:8px">
+
+          <!-- Estatísticas descritivas -->
+          <div id="import-stats" style="display:none">
+            <div class="import-section-label">Estatísticas dos dados</div>
+            <div id="import-stat-strip" class="import-stat-strip"></div>
+            <div id="import-stat-table"></div>
+
+            <!-- Sugestões de modelos -->
+            <div class="import-section-label" style="margin-top:20px">Modelos sugeridos para seus dados</div>
+            <div id="import-suggestions"></div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;gap:8px">
             <button class="btn-primary" onclick="confirmImport()">✓ Importar para análise</button>
             <button class="btn-ghost" onclick="cancelImport()">Cancelar</button>
           </div>
@@ -2095,10 +2807,581 @@
       </div>
     </div>
 
+    <!-- PANEL: Compartilhar -->
+    <div class="panel" id="panel-compartilhar">
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.12)">🔗</div>
+          Compartilhar Análises
+        </div>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:6px;line-height:1.6">
+          Gere um <strong>link único</strong> com os resultados da análise — qualquer pessoa pode visualizar sem precisar de conta. Ou copie um <strong>resumo em texto</strong> para colar em e-mail, relatório ou apresentação.
+        </p>
+        <div class="interp-box" style="margin-bottom:16px">
+          🔒 Os seus dados brutos <strong>nunca são enviados</strong> para terceiros. O link contém apenas os resultados estatísticos já calculados.
+        </div>
+        <div id="share-list">
+          <p style="color:var(--txt3);font-size:13px">Carregando...</p>
+        </div>
+      </div>
+
+      <!-- Recebido de amigos -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.12)">📬</div>
+          Recebido de amigos
+        </div>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:12px;line-height:1.6">
+          Análises que seus amigos enviaram para você. Carregue para ver os dados e resultados completos.
+        </p>
+        <div id="share-received-list">
+          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Carregando...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Amigos -->
+    <div class="panel" id="panel-amigos">
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.12)">👥</div>
+          Amigos na Plataforma
+        </div>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.6">
+          Encontre outros usuários da plataforma pelo nome ou e-mail e construa sua rede de contatos.
+        </p>
+
+        <!-- Busca -->
+        <div class="import-section-label">Buscar usuários</div>
+        <div class="friends-search-row" style="margin-bottom:4px">
+          <input class="label-input" type="text" id="friends-search-input" placeholder="Nome ou e-mail..."
+            onkeydown="if(event.key==='Enter')searchFriends()">
+          <button class="btn-primary" id="friends-search-btn" onclick="searchFriends()" style="padding:0 18px;white-space:nowrap">Buscar</button>
+        </div>
+        <div id="friends-search-results"></div>
+      </div>
+
+      <!-- Pedidos pendentes -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-title" style="font-size:14px">
+          <div class="card-title-icon" style="background:rgba(255,179,71,.12);font-size:14px">⏳</div>
+          Pedidos de amizade
+        </div>
+        <div id="friends-pending">
+          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Carregando...</p>
+        </div>
+      </div>
+
+      <!-- Lista de amigos -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-title" style="font-size:14px">
+          <div class="card-title-icon" style="background:rgba(123,111,255,.15);font-size:14px">✓</div>
+          Meus amigos
+          <span id="friends-count" style="font-size:11px;color:var(--txt3);font-weight:400;margin-left:auto"></span>
+        </div>
+        <div id="friends-list">
+          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Carregando...</p>
+        </div>
+      </div>
+
+      <!-- Mensagem de setup (aparece se tabelas não existirem) -->
+      <div class="card" id="friends-setup-msg" style="display:none;margin-top:16px;border-color:rgba(255,179,71,.3)">
+        <div class="card-title" style="font-size:14px;color:var(--acc2)">
+          <div class="card-title-icon" style="background:rgba(255,179,71,.12);font-size:14px">⚙️</div>
+          Configuração necessária
+        </div>
+        <p style="font-size:13px;color:var(--txt2);line-height:1.7;margin-bottom:12px">
+          O recurso de amigos requer duas tabelas no Supabase. Execute o SQL abaixo no <strong>SQL Editor</strong> do seu projeto Supabase:
+        </p>
+        <pre style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:14px;font-size:11px;color:var(--y);overflow-x:auto;line-height:1.6">-- Tabela de perfis (sincronizada com auth.users)
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name TEXT,
+  email TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Perfis visíveis a todos" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Usuário edita próprio perfil" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Trigger para criar perfil automaticamente no signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, email)
+  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', NEW.email)
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Tabela de amizades
+CREATE TABLE IF NOT EXISTS public.friendships (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  requester_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  addressee_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','accepted')),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(requester_id, addressee_id)
+);
+ALTER TABLE public.friendships ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Usuários veem próprias amizades" ON public.friendships FOR SELECT
+  USING (auth.uid() = requester_id OR auth.uid() = addressee_id);
+CREATE POLICY "Usuário cria pedido" ON public.friendships FOR INSERT
+  WITH CHECK (auth.uid() = requester_id);
+CREATE POLICY "Destinatário aceita pedido" ON public.friendships FOR UPDATE
+  USING (auth.uid() = addressee_id OR auth.uid() = requester_id);
+CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
+  USING (auth.uid() = requester_id OR auth.uid() = addressee_id);</pre>
+      </div>
+    </div>
+
+    <!-- PANEL: Guia de Modelos -->
+    <div class="panel" id="panel-guia">
+
+      <div class="guide-hero">
+        <div class="guide-hero-title">Guia de Modelos de Regressão</div>
+        <div class="guide-hero-sub">
+          Entenda quando e como usar cada modelo disponível na plataforma. Escolha o modelo certo para o seu problema e obtenha análises mais precisas e interpretáveis.
+        </div>
+        <div class="guide-hero-badges">
+          <span class="guide-hero-badge">7 modelos disponíveis</span>
+          <span class="guide-hero-badge" style="background:rgba(0,212,160,.12);color:var(--y);border-color:rgba(0,212,160,.25)">Regressão Contínua</span>
+          <span class="guide-hero-badge" style="background:rgba(255,107,107,.1);color:var(--acc);border-color:rgba(255,107,107,.25)">Classificação</span>
+          <span class="guide-hero-badge" style="background:rgba(255,179,71,.1);color:var(--acc2);border-color:rgba(255,179,71,.25)">Séries Temporais</span>
+        </div>
+      </div>
+
+      <div class="guide-grid">
+
+        <!-- 1. Regressão Linear -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(123,111,255,.15)">📈</div>
+            <div>
+              <div class="guide-card-name">Regressão Linear Simples</div>
+              <span class="guide-card-tag" style="background:rgba(123,111,255,.12);color:var(--x);border:1px solid rgba(123,111,255,.25)">Regressão contínua · 1 variável</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                O modelo mais fundamental da estatística. Estima a relação linear entre uma variável independente (X) e uma variável resposta contínua (Y) usando o método dos <strong style="color:var(--txt)">Mínimos Quadrados Ordinários (OLS)</strong>, minimizando a soma dos quadrados dos resíduos.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">Ŷ = β₀ + β₁·X + ε<br>β₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Prever o salário de um profissional com base em anos de experiência</div>
+                <div class="guide-use-item">Estimar o consumo de energia a partir da temperatura</div>
+                <div class="guide-use-item">Analisar a relação entre preço e demanda de um produto</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">R²</span>
+                <span class="guide-metric-chip">R² Ajustado</span>
+                <span class="guide-metric-chip">p-valor</span>
+                <span class="guide-metric-chip">IC 95%</span>
+                <span class="guide-metric-chip">F-estatístico</span>
+                <span class="guide-metric-chip">Cook's Distance</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#4CAF50"></div>
+              Nível: Iniciante
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('nova', document.querySelector('[onclick*=\'nova\']'))">Usar agora →</button>
+          </div>
+        </div>
+
+        <!-- 2. Regressão Múltipla -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(0,212,160,.12)">📊</div>
+            <div>
+              <div class="guide-card-name">Regressão Múltipla</div>
+              <span class="guide-card-tag" style="background:rgba(0,212,160,.1);color:var(--y);border:1px solid rgba(0,212,160,.25)">Regressão contínua · N variáveis</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                Extensão da regressão linear para múltiplos preditores. Usa <strong style="color:var(--txt)">álgebra matricial (OLS)</strong> para estimar o efeito individual de cada variável controlando as demais. Inclui diagnóstico de multicolinearidade via <strong style="color:var(--txt)">VIF</strong>.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ<br>β = (XᵀX)⁻¹Xᵀy</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Prever o preço de imóveis usando área, quartos e localização</div>
+                <div class="guide-use-item">Modelar a produtividade com fatores climáticos, solo e insumos</div>
+                <div class="guide-use-item">Analisar vendas considerando preço, publicidade e sazonalidade</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">VIF</span>
+                <span class="guide-metric-chip">R² Ajustado</span>
+                <span class="guide-metric-chip">t-teste por β</span>
+                <span class="guide-metric-chip">F-global</span>
+                <span class="guide-metric-chip">ANOVA</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#8BC34A"></div>
+              Nível: Básico
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('multipla', document.querySelector('[onclick*=\'multipla\']'))">Usar agora →</button>
+          </div>
+        </div>
+
+        <!-- 3. Regressão Logística -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(255,107,107,.12)">🎯</div>
+            <div>
+              <div class="guide-card-name">Regressão Logística</div>
+              <span class="guide-card-tag" style="background:rgba(255,107,107,.1);color:var(--acc);border:1px solid rgba(255,107,107,.25)">Classificação binária · 0 ou 1</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                Modela a <strong style="color:var(--txt)">probabilidade</strong> de um evento binário ocorrer. Usa a <strong style="color:var(--txt)">função sigmoide</strong> para restringir a saída entre 0 e 1. Os parâmetros são estimados por <strong style="color:var(--txt)">descida do gradiente</strong> maximizando a verossimilhança.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">P(Y=1) = 1 / (1 + e^−(β₀ + β₁X₁ + … + βₙXₙ))<br>Limiar: P ≥ 0.5 → Classe 1</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Prever se um cliente vai comprar ou não (Y = 0 ou 1)</div>
+                <div class="guide-use-item">Diagnóstico médico: paciente tem ou não tem a doença</div>
+                <div class="guide-use-item">Detecção de fraudes em transações financeiras</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">AUC-ROC</span>
+                <span class="guide-metric-chip">McFadden R²</span>
+                <span class="guide-metric-chip">Deviance</span>
+                <span class="guide-metric-chip">Log-likelihood</span>
+                <span class="guide-metric-chip">Calibração</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#FF9800"></div>
+              Nível: Intermediário
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('logistica', document.querySelector('[onclick*=\'logistica\']'))" style="border-color:rgba(255,107,107,.4);background:rgba(255,107,107,.1);color:var(--acc)">Usar agora →</button>
+          </div>
+        </div>
+
+        <!-- 4. Regressão Polinomial -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(255,179,71,.12)">〰️</div>
+            <div>
+              <div class="guide-card-name">Regressão Polinomial</div>
+              <span class="guide-card-tag" style="background:rgba(255,179,71,.1);color:var(--acc2);border:1px solid rgba(255,179,71,.25)">Relações não-lineares · Grau 1–6</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                Generaliza a regressão linear para capturar relações curvilíneas. Transforma X em potências (X², X³…) via <strong style="color:var(--txt)">matriz de Vandermonde</strong> e aplica OLS. O grau ideal é selecionado automaticamente pelo maior <strong style="color:var(--txt)">R² ajustado</strong>.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">Ŷ = β₀ + β₁X + β₂X² + … + βₙXⁿ<br>Grau ótimo: max(R²_adj) sobre graus 1..6</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Crescimento de plantas ao longo do tempo (curva sigmoide)</div>
+                <div class="guide-use-item">Consumo de combustível vs. velocidade (curva em U)</div>
+                <div class="guide-use-item">Relações biológicas ou físicas com pontos de inflexão</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">R² por grau</span>
+                <span class="guide-metric-chip">R² Ajustado</span>
+                <span class="guide-metric-chip">Resíduos</span>
+                <span class="guide-metric-chip">QQ-plot</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#8BC34A"></div>
+              Nível: Básico
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('polinomial', document.querySelector('[onclick*=\'polinomial\']'))" style="border-color:rgba(255,179,71,.4);background:rgba(255,179,71,.08);color:var(--acc2)">Usar agora →</button>
+          </div>
+        </div>
+
+        <!-- 5. Séries Temporais -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(79,195,247,.12)">📅</div>
+            <div>
+              <div class="guide-card-name">Séries Temporais</div>
+              <span class="guide-card-tag" style="background:rgba(79,195,247,.1);color:#4FC3F7;border:1px solid rgba(79,195,247,.25)">Dados ordenados no tempo · Previsão</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                Decompõe uma série temporal em três componentes aditivos: <strong style="color:var(--txt)">Tendência</strong> (direção de longo prazo), <strong style="color:var(--txt)">Sazonalidade</strong> (padrão periódico) e <strong style="color:var(--txt)">Resíduo</strong> (ruído). Permite projetar valores futuros com média móvel e componentes detectados.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">Yₜ = Tendência + Sazonalidade + Resíduo<br>Projeção: Ŷₜ₊ₖ = Trend(t+k) + Sazonal(t+k)</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Projetar vendas mensais para o próximo trimestre</div>
+                <div class="guide-use-item">Analisar temperatura ou precipitação ao longo do ano</div>
+                <div class="guide-use-item">Monitorar métricas de negócio com padrões sazonais</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">Tendência</span>
+                <span class="guide-metric-chip">Amplitude sazonal</span>
+                <span class="guide-metric-chip">CV (%)</span>
+                <span class="guide-metric-chip">Média móvel</span>
+                <span class="guide-metric-chip">Crescimento médio</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#FF9800"></div>
+              Nível: Intermediário
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('serie', document.querySelector('[onclick*=\'serie\']'))" style="border-color:rgba(79,195,247,.4);background:rgba(79,195,247,.08);color:#4FC3F7">Usar agora →</button>
+          </div>
+        </div>
+
+        <!-- 6. Regressão Quantílica -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(186,104,200,.15)">🎻</div>
+            <div>
+              <div class="guide-card-name">Regressão Quantílica</div>
+              <span class="guide-card-tag" style="background:rgba(186,104,200,.12);color:#CE93D8;border:1px solid rgba(186,104,200,.3)">Distribuição completa · Robusta a outliers</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                Em vez de estimar apenas a média condicional, modela <strong style="color:var(--txt)">quantis específicos</strong> da distribuição de Y. Usa a <strong style="color:var(--txt)">função de perda pinball</strong> com descida do gradiente adaptativa. Ideal quando outliers distorcem a média ou quando o interesse é nos extremos da distribuição.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">L(u,τ) = u·(τ − 𝟙[u &lt; 0])<br>τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Analisar salários no percentil 90 (profissionais de alta renda)</div>
+                <div class="guide-use-item">Modelar riscos extremos em finanças ou seguros (VaR)</div>
+                <div class="guide-use-item">Dados com outliers severos onde a média é enganosa</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">Cobertura (%)</span>
+                <span class="guide-metric-chip">Perda pinball</span>
+                <span class="guide-metric-chip">β por quantil</span>
+                <span class="guide-metric-chip">Intervalo quantílico</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#F44336"></div>
+              Nível: Avançado
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('quantilica', document.querySelector('[onclick*=\'quantilica\']'))" style="border-color:rgba(186,104,200,.4);background:rgba(186,104,200,.1);color:#CE93D8">Usar agora →</button>
+          </div>
+        </div>
+
+        <!-- 7. Regressão Regularizada -->
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-card-icon" style="background:rgba(38,198,218,.12)">⚖️</div>
+            <div>
+              <div class="guide-card-name">Regressão Regularizada</div>
+              <span class="guide-card-tag" style="background:rgba(38,198,218,.1);color:#4DD0E1;border:1px solid rgba(38,198,218,.25)">Ridge (L2) · Lasso (L1) · Anti-overfitting</span>
+            </div>
+          </div>
+          <div class="guide-card-body">
+            <div>
+              <div class="guide-section-label">O que é</div>
+              <div class="guide-desc">
+                Adiciona uma <strong style="color:var(--txt)">penalidade</strong> à função de custo do OLS para controlar overfitting com muitas variáveis. <strong style="color:var(--txt)">Ridge (L2)</strong> encolhe coeficientes uniformemente. <strong style="color:var(--txt)">Lasso (L1)</strong> pode zerar coeficientes irrelevantes, fazendo seleção automática de variáveis.
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-formula">Ridge: β = (XᵀX + λI)⁻¹Xᵀy<br>Lasso: min ‖Xβ−y‖² + λ‖β‖₁</div>
+            </div>
+            <div>
+              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-uses">
+                <div class="guide-use-item">Muitas variáveis correlacionadas entre si (multicolinearidade)</div>
+                <div class="guide-use-item">Lasso para descobrir quais variáveis realmente importam</div>
+                <div class="guide-use-item">Dados com mais variáveis do que observações (p &gt; n)</div>
+              </div>
+            </div>
+            <div>
+              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-metrics">
+                <span class="guide-metric-chip">λ ótimo</span>
+                <span class="guide-metric-chip">RMSE por λ</span>
+                <span class="guide-metric-chip">β encolhidos</span>
+                <span class="guide-metric-chip">Vars zeradas</span>
+                <span class="guide-metric-chip">R²</span>
+              </div>
+            </div>
+          </div>
+          <div class="guide-card-footer">
+            <div class="guide-diff">
+              <div class="guide-diff-dot" style="background:#F44336"></div>
+              Nível: Avançado
+            </div>
+            <button class="btn-guide-use" onclick="switchTab('regularizada', document.querySelector('[onclick*=\'regularizada\']'))" style="border-color:rgba(38,198,218,.4);background:rgba(38,198,218,.08);color:#4DD0E1">Usar agora →</button>
+          </div>
+        </div>
+
+      </div><!-- /guide-grid -->
+
+      <!-- Dica de escolha -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-title">
+          <div class="card-title-icon" style="background:rgba(0,212,160,.12)">💡</div>
+          Como escolher o modelo certo?
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:4px">
+          <div class="interp-box">
+            <strong>Y é um número contínuo?</strong><br>
+            Use <em>Regressão Linear</em> (1 variável) ou <em>Múltipla</em> (várias). Se a relação parecer curva, experimente <em>Polinomial</em>.
+          </div>
+          <div class="interp-box green">
+            <strong>Y é 0 ou 1 (sim/não)?</strong><br>
+            Use <em>Regressão Logística</em>. Ela estima a probabilidade do evento ocorrer e avalia discriminação via AUC-ROC.
+          </div>
+          <div class="interp-box amber">
+            <strong>Dados ordenados no tempo?</strong><br>
+            Use <em>Séries Temporais</em> para detectar tendência, sazonalidade e projetar valores futuros.
+          </div>
+          <div class="interp-box" style="border-left-color:var(--acc)">
+            <strong>Muitos outliers ou quer percentis?</strong><br>
+            Use <em>Regressão Quantílica</em>. Ela é robusta a valores extremos e modela a distribuição completa de Y.
+          </div>
+          <div class="interp-box" style="border-left-color:#4DD0E1">
+            <strong>Muitas variáveis ou multicolinearidade?</strong><br>
+            Use <em>Ridge</em> para estabilizar os coeficientes, ou <em>Lasso</em> para selecionar automaticamente as variáveis relevantes.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-guia -->
+
   </div><!-- /main-area -->
     </div><!-- /content-area -->
   </div><!-- /app-body -->
 </div><!-- /app-container -->
+
+<!-- Modal Quem Somos -->
+<div id="about-overlay" onclick="if(event.target===this)closeAbout()">
+  <div class="about-card">
+    <button class="about-close" onclick="closeAbout()">✕</button>
+
+    <div class="about-logo-row">
+      <div class="about-logo-icon">📈</div>
+      <div>
+        <div class="about-logo-name">Slope</div>
+        <div class="about-logo-tag">Análise estatística de regressão</div>
+      </div>
+    </div>
+
+    <div class="about-section-label">Sobre a plataforma</div>
+    <p class="about-text">
+      A <strong>Slope</strong> é uma plataforma de análise estatística focada em regressão, projetada para transformar dados brutos em insights acionáveis. Realize desde regressões lineares simples até modelos avançados — tudo no navegador, sem instalações.
+    </p>
+    <div class="about-pills">
+      <span class="about-pill">📊 Linear Simples</span>
+      <span class="about-pill">🔢 Múltipla</span>
+      <span class="about-pill">📐 Polinomial</span>
+      <span class="about-pill">📦 Logística</span>
+      <span class="about-pill">🎯 Quantílica</span>
+      <span class="about-pill">⏱️ Série Temporal</span>
+      <span class="about-pill">🔒 Regularizada</span>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <div class="about-section-label">Quem somos</div>
+    <p class="about-text">
+      A <strong>Slope</strong> nasceu da vontade de democratizar a análise de dados. Somos uma equipe apaixonada por estatística e tecnologia, acreditando que decisões baseadas em dados devem estar ao alcance de qualquer pessoa — analistas, pesquisadores, gestores e estudantes.
+    </p>
+    <p class="about-text">
+      Nossa missão é oferecer ferramentas estatísticas robustas com uma interface intuitiva, eliminando a barreira entre o usuário e a análise quantitativa.
+    </p>
+
+    <div class="about-divider"></div>
+
+    <div class="about-section-label">Contato</div>
+    <div class="about-contact">
+      <span style="font-size:20px">✉️</span>
+      <div>
+        <span class="lbl">E-mail</span>
+        contato@slope.com.br
+      </div>
+    </div>
+
+    <div class="about-version">Slope v1.0 &nbsp;·&nbsp; Feito com ♥ no Brasil</div>
+  </div>
+</div>
 
 <!-- Modal de visualização -->
 <div id="modal-overlay" onclick="closeModal(event)">
@@ -2113,6 +3396,57 @@
   <span id="toast-msg">Salvo com sucesso</span>
 </div>
 
+<!-- Share overlay (pré-visualização antes de compartilhar) -->
+<div id="share-overlay" onclick="if(event.target===this)closeShareOverlay()">
+  <div id="share-overlay-content"></div>
+</div>
+
+<!-- Chat overlay -->
+<div id="chat-overlay" onclick="if(event.target===this)closeChat()">
+  <div id="chat-window">
+    <div id="chat-header">
+      <div id="chat-friend-avatar"></div>
+      <span id="chat-friend-name"></span>
+      <button class="btn-ghost" style="padding:4px 10px;font-size:18px;line-height:1;margin-left:auto" onclick="closeChat()">×</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-footer">
+      <textarea id="chat-input" rows="1" placeholder="Digite uma mensagem..."
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+      <button id="chat-send-btn" onclick="sendMessage()" title="Enviar (Enter)">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- Friend-pick overlay (escolher amigo para enviar análise) -->
+<div id="friend-pick-overlay" onclick="if(event.target===this)closeFriendPickOverlay()" style="position:fixed;inset:0;z-index:920;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:.25s">
+  <div id="friend-pick-content" style="background:var(--bg2);border:1px solid var(--brd2);border-radius:16px;padding:24px;width:90%;max-width:440px;max-height:80vh;overflow-y:auto;animation:slide-up .3s cubic-bezier(.16,1,.3,1)"></div>
+</div>
+
+<script>
+  (function() {
+    if (localStorage.getItem('slope-theme') === 'light')
+      document.documentElement.classList.add('light');
+  })();
+  function toggleTheme() {
+    const isLight = document.documentElement.classList.toggle('light');
+    localStorage.setItem('slope-theme', isLight ? 'light' : 'dark');
+  }
+  window.toggleTheme = toggleTheme;
+
+  function openAbout() {
+    document.getElementById('about-overlay').classList.add('open');
+  }
+  function closeAbout() {
+    document.getElementById('about-overlay').classList.remove('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeAbout();
+  });
+  window.openAbout = openAbout;
+  window.closeAbout = closeAbout;
+</script>
 <script type="module" src="src/app.js"></script>
 </body>
 </html>

@@ -25,7 +25,10 @@ export async function apiRequest(path, method = 'GET', body = null) {
 
   const res = await fetch(`${API_BASE}${path}`, opts);
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+  if (!res.ok) {
+    const msg = [json.error, json.detail, json.code].filter(Boolean).join(' — ') || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
   return json;
 }
 

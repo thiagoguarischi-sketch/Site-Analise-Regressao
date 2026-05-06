@@ -13,16 +13,29 @@ export function destroyChartMap(map, key) {
   Object.keys(map).forEach(k => { if (map[k]) { map[k].destroy(); delete map[k]; } });
 }
 
-export function axis(title, color = C.txt2) {
+export function gridColor() {
+  return document.documentElement.classList.contains('light')
+    ? 'rgba(0,0,0,.13)'
+    : 'rgba(255,255,255,.1)';
+}
+
+function tickColor() {
+  return document.documentElement.classList.contains('light')
+    ? 'rgba(0,0,0,.35)'
+    : C.txt2;
+}
+
+export function axis(title, color) {
+  const tc = tickColor();
   return {
-    title: { display: true, text: title, color, font: { size: 10 } },
-    ticks: { color: C.txt2 },
-    grid: { color: C.grid },
+    title: { display: true, text: title, color: color ?? tc, font: { size: 10 } },
+    ticks: { color: tc },
+    grid: { color: gridColor() },
   };
 }
 
 export function smallTicks() {
-  return { ticks: { color: C.txt2, font: { size: 9 } }, grid: { color: C.grid } };
+  return { ticks: { color: tickColor(), font: { size: 9 } }, grid: { color: gridColor() } };
 }
 
 export function legendStyle(size = 11) {
