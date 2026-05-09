@@ -137,6 +137,57 @@ Object.assign(window, {
   runRegularized, rrSaveAnalysis, rrExportExcel, rrExportCSV,
 });
 
+// ── Navegação por teclado em todas as tabelas de dados ──────────────────────
+// Cobre todos os módulos via delegação: inputs com classe .data-input.
+// ↑/↓/Enter → linha anterior/próxima (mesma coluna)
+// ←/→       → coluna anterior/próxima (em texto, só na borda do cursor)
+document.addEventListener('keydown', e => {
+  const inp = e.target;
+  if (inp.tagName !== 'INPUT' || !inp.classList.contains('data-input')) return;
+  if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) return;
+
+  // ← / → em inputs de texto: navega só quando cursor está na borda
+  if (inp.type === 'text') {
+    if (e.key === 'ArrowLeft'  && (inp.selectionStart ?? 0) !== 0) return;
+    if (e.key === 'ArrowRight' && (inp.selectionStart ?? 0) !== inp.value.length) return;
+  }
+
+  const row       = inp.parentElement;
+  const container = row?.parentElement;
+  if (!row || !container) return;
+
+  const rows    = Array.from(container.children);
+  const rowIdx  = rows.indexOf(row);
+  const inputs  = Array.from(row.querySelectorAll('input.data-input'));
+  const colIdx  = inputs.indexOf(inp);
+
+  let target = null;
+
+  if (e.key === 'ArrowUp') {
+    const prev = rows[rowIdx - 1];
+    if (prev) {
+      const pi = prev.querySelectorAll('input.data-input');
+      target = pi[Math.min(colIdx, pi.length - 1)] ?? null;
+    }
+  } else if (e.key === 'ArrowDown' || e.key === 'Enter') {
+    const next = rows[rowIdx + 1];
+    if (next) {
+      const ni = next.querySelectorAll('input.data-input');
+      target = ni[Math.min(colIdx, ni.length - 1)] ?? null;
+    }
+  } else if (e.key === 'ArrowLeft') {
+    target = inputs[colIdx - 1] ?? null;
+  } else if (e.key === 'ArrowRight') {
+    target = inputs[colIdx + 1] ?? null;
+  }
+
+  if (target) {
+    e.preventDefault();
+    target.focus();
+    target.select();
+  }
+});
+
 // ── Storage sync entre abas (mantém histórico atualizado quando outra aba grava) ──
 window.addEventListener('storage', async () => {
   try { await loadHistory(); } catch (e) { /* ignore */ }
