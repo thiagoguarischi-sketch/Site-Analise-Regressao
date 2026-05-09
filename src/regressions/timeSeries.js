@@ -129,10 +129,25 @@ export function varUpdateName(idx, val) {
   });
 }
 
-export function varUpdateVarCount() {
-  const sel = document.getElementById('var-k-select');
-  varK = parseInt(sel.value) || 2;
-  varRebuildTable(true);
+function varSyncKDisplay() {
+  const el = document.getElementById('var-k-display');
+  if (el) el.textContent = String(varK);
+  const btnMinus = document.getElementById('var-btn-minus');
+  if (btnMinus) btnMinus.disabled = varK <= 2;
+}
+
+export function varAddVariable() {
+  if (varK >= 8) { showToast('Máximo de 8 variáveis no VAR.', 'err'); return; }
+  varK++;
+  varRebuildTable();
+  varSyncKDisplay();
+}
+
+export function varRemoveVariable() {
+  if (varK <= 2) { showToast('VAR requer pelo menos 2 variáveis.', 'err'); return; }
+  varK--;
+  varRebuildTable();
+  varSyncKDisplay();
 }
 
 function varRebuildTable(clear = false) {
@@ -198,6 +213,7 @@ function varAddRowInternal(gtc, rowNum, lbl = '', vals = []) {
 
 export function varInitRows() {
   varRebuildTable(true);
+  varSyncKDisplay();
 }
 
 export function varAddRow() {
@@ -264,9 +280,6 @@ export function varLoadExample() {
   const ex = examples.find(e => e.names.length === varK) || examples[0];
   varK = ex.names.length;
   ex.names.forEach((n, i) => { varNames[i] = n; });
-  const sel = document.getElementById('var-k-select');
-  if (sel) sel.value = String(varK);
-
   varRebuildTable(true);
   const rowsEl = document.getElementById('var-data-rows');
   rowsEl.innerHTML = '';
@@ -286,6 +299,7 @@ export function varLoadExample() {
     ).join('');
 
   varUpdateVarCountDisplay();
+  varSyncKDisplay();
 }
 
 // ─── MATH HELPERS ────────────────────────────────────────────────────────────

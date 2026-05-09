@@ -2746,15 +2746,7 @@
         </div>
 
         <!-- Parâmetros: VAR(p) -->
-        <div id="st-var-params" style="display:none;gap:12px;margin-top:10px;grid-template-columns:1fr 1fr 2fr">
-          <div class="field-group">
-            <label class="field-label">k — variáveis</label>
-            <select class="data-input" id="var-k-select" onchange="varUpdateVarCount()" style="width:100%">
-              <option value="2" selected>2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </div>
+        <div id="st-var-params" style="display:none;gap:12px;margin-top:10px;grid-template-columns:auto 1fr 2fr">
           <div class="field-group">
             <label class="field-label">p — defasagens VAR</label>
             <input class="data-input" type="number" id="st-var-p" value="1" min="1" max="6" style="width:100%">
@@ -2790,14 +2782,23 @@
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(123,111,255,.15)">🔗</div>
           Dados — VAR Multivariado
-          <div style="margin-left:auto;display:flex;gap:8px">
+          <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:4px;border:1px solid var(--border);border-radius:6px;padding:2px 6px">
+              <button class="btn-ghost" id="var-btn-minus" onclick="varRemoveVariable()"
+                style="font-size:14px;padding:1px 6px;border:none;line-height:1" disabled>−</button>
+              <span style="font-size:12px;color:var(--txt2);min-width:60px;text-align:center">
+                <span id="var-k-display">2</span> variáveis
+              </span>
+              <button class="btn-ghost" onclick="varAddVariable()"
+                style="font-size:14px;padding:1px 6px;border:none;line-height:1">+</button>
+            </div>
             <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varAddRow()">+ Linha</button>
             <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varClearRows()">Limpar</button>
             <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varLoadExample()">Exemplo</button>
           </div>
         </div>
         <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">
-          Clique nos cabeçalhos das colunas para renomear as variáveis.
+          Use <b>+</b> / <b>−</b> para adicionar ou remover variáveis. Clique nos cabeçalhos para renomear.
         </div>
         <div id="var-data-header"></div>
         <div id="var-data-rows"></div>
