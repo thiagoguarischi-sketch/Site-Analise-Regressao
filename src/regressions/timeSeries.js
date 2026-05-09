@@ -1143,20 +1143,6 @@ Volatilidade prevista (próx. 3 per.): ${res.sigmaForecast.slice(0, 3).map(v => 
 
 Inclua: 1) clustering de volatilidade e o que a persistência implica 2) interpretação de α (impacto de choques) e β (memória da variância) 3) perspectiva de volatilidade futura 4) quando usar GARCH vs ARIMA.`;
     fallback = `GARCH(1,1): α=${res.alpha.toFixed(3)}, β=${res.beta.toFixed(3)}, persistência=${res.persistence.toFixed(3)}, meia-vida=${hl} períodos.`;
-  } else {
-    prompt = `Você é especialista em séries temporais. Analise em português (3-4 parágrafos curtos):
-
-Série: ${esc(res.labelY)} | Período: ${esc(res.labelX)}
-n = ${res.n} períodos
-Tendência: b₀=${res.b0.toFixed(4)}, b₁=${res.b1.toFixed(4)} por período
-Média=${res.ym.toFixed(4)}, DP=${res.stdev.toFixed(4)}, CV=${res.cv.toFixed(1)}%
-Crescimento médio=${res.avgGrowth.toFixed(2)}% por período
-Melhor: ${esc(res.labels[res.maxIdx] || String(res.maxIdx + 1))} (${res.maxVal.toFixed(2)})
-Pior: ${esc(res.labels[res.minIdx] || String(res.minIdx + 1))} (${res.minVal.toFixed(2)})
-Projeção próximos ${res.futureN} períodos: ${res.projValues.map(v => v.toFixed(2)).join(', ')}
-
-Inclua: 1) direção e força da tendência 2) padrão sazonal 3) perspectivas futuras 4) limitações do modelo.`;
-    fallback = `Tendência: ${res.b1 >= 0 ? 'crescente' : 'decrescente'} (${res.b1.toFixed(3)}/período). Cresc. médio: ${res.avgGrowth.toFixed(1)}%. Próx. projeção: ${res.projValues[0]?.toFixed(2) ?? '—'}.`;
   } else if (res.model === 'var') {
     const grangerSig = res.granger.filter(g => g.sig).map(g =>
       `${res.varNames[g.from]} → ${res.varNames[g.to]} (F=${g.fStat.toFixed(2)}, ${g.sig})`
@@ -1172,6 +1158,20 @@ Previsão próx. ${res.futureN} períodos (última): ${res.forecast[res.futureN 
 
 Inclua: 1) dinâmica das relações entre variáveis e Granger-causalidade 2) IRF esperado e persistência dos choques 3) qualidade do ajuste e limitações do VAR 4) quando usar VAR vs modelos univariados.`;
     fallback = `VAR(${res.p}), ${res.k} variáveis. AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}. Causalidade: ${grangerSig}.`;
+  } else {
+    prompt = `Você é especialista em séries temporais. Analise em português (3-4 parágrafos curtos):
+
+Série: ${esc(res.labelY)} | Período: ${esc(res.labelX)}
+n = ${res.n} períodos
+Tendência: b₀=${res.b0.toFixed(4)}, b₁=${res.b1.toFixed(4)} por período
+Média=${res.ym.toFixed(4)}, DP=${res.stdev.toFixed(4)}, CV=${res.cv.toFixed(1)}%
+Crescimento médio=${res.avgGrowth.toFixed(2)}% por período
+Melhor: ${esc(res.labels[res.maxIdx] || String(res.maxIdx + 1))} (${res.maxVal.toFixed(2)})
+Pior: ${esc(res.labels[res.minIdx] || String(res.minIdx + 1))} (${res.minVal.toFixed(2)})
+Projeção próximos ${res.futureN} períodos: ${res.projValues.map(v => v.toFixed(2)).join(', ')}
+
+Inclua: 1) direção e força da tendência 2) padrão sazonal 3) perspectivas futuras 4) limitações do modelo.`;
+    fallback = `Tendência: ${res.b1 >= 0 ? 'crescente' : 'decrescente'} (${res.b1.toFixed(3)}/período). Cresc. médio: ${res.avgGrowth.toFixed(1)}%. Próx. projeção: ${res.projValues[0]?.toFixed(2) ?? '—'}.`;
   }
 
   try {
