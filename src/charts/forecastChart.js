@@ -13,7 +13,7 @@ export function createTimeSeriesMain(canvasId, res, allLabels) {
         { type: 'line', label: 'Série original', data: values.map((v, i) => ({ x: i, y: v })),
           borderColor: 'rgba(123,111,255,.9)', borderWidth: 2, pointRadius: 3, fill: false },
         { type: 'line', label: 'Tendência', data: trend.map((v, i) => ({ x: i, y: v })),
-          borderColor: C.acc2, borderWidth: 1.5, borderDash: [6, 3], pointRadius: 0, fill: false },
+          borderColor: C.y, borderWidth: 1.5, borderDash: [6, 3], pointRadius: 0, fill: false },
         { type: 'line', label: `MM(${windowSize})`, data: maPoints,
           borderColor: C.y, borderWidth: 2, pointRadius: 0, fill: false },
         { type: 'line', label: 'Projeção', data: projValues.map((v, i) => ({ x: n + i, y: v })),
@@ -34,7 +34,7 @@ export function createTimeSeriesMain(canvasId, res, allLabels) {
 export function createTrendChart(canvasId, labels, trend) {
   return new Chart(document.getElementById(canvasId), {
     type: 'line',
-    data: { labels, datasets: [{ data: trend, borderColor: C.acc2, borderWidth: 2, pointRadius: 0, fill: false }] },
+    data: { labels, datasets: [{ data: trend, borderColor: C.y, borderWidth: 2, pointRadius: 0, fill: false }] },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
@@ -140,7 +140,7 @@ export function createARIMAMainChart(canvasId, res, allLabels) {
         // Ajustado (in-sample)
         { type: 'line', label: 'Ajustado',
           data: fittedPts,
-          borderColor: C.acc2, borderWidth: 1.5, borderDash: [4, 2], pointRadius: 0, fill: false },
+          borderColor: C.y, borderWidth: 1.5, borderDash: [4, 2], pointRadius: 0, fill: false },
         // Previsão
         { type: 'line', label: 'Previsão',
           data: fcX.map((x, i) => ({ x, y: forecastY[i] })),

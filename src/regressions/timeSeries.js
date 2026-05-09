@@ -76,9 +76,9 @@ export function stSetModel(model) {
   stCurrentModel = model;
   document.querySelectorAll('.st-model-btn').forEach(b => {
     const active = b.dataset.model === model;
-    b.style.background = active ? 'var(--acc2)' : '';
+    b.style.background = active ? 'var(--y)' : '';
     b.style.color = active ? '#fff' : '';
-    b.style.borderColor = active ? 'var(--acc2)' : '';
+    b.style.borderColor = active ? 'var(--y)' : '';
   });
   document.getElementById('st-classic-params').style.display = model === 'classic' ? 'grid' : 'none';
   document.getElementById('st-arima-params').style.display = model === 'arima' ? 'grid' : 'none';
@@ -578,7 +578,7 @@ function stRenderResults(res) {
   document.getElementById('st-metrics').innerHTML = `
     <div class="metric"><div class="metric-val metric-y">${ym.toFixed(2)}</div><div class="metric-lab">Média</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--x)">${stdev.toFixed(2)}</div><div class="metric-lab">Desvio padrão</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--acc2)">${cv.toFixed(1)}%</div><div class="metric-lab">CV (%)</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--y)">${cv.toFixed(1)}%</div><div class="metric-lab">CV (%)</div></div>
     <div class="metric"><div class="metric-val" style="color:${b1 >= 0 ? 'var(--y)' : 'var(--acc)'}">${b1 >= 0 ? '↑' : '↓'} ${Math.abs(b1).toFixed(3)}</div><div class="metric-lab">Tendência/período</div></div>
     <div class="metric"><div class="metric-val" style="color:${avgGrowth >= 0 ? 'var(--y)' : 'var(--acc)'}">${avgGrowth >= 0 ? '+' : ''}${avgGrowth.toFixed(1)}%</div><div class="metric-lab">Crescimento médio</div></div>
     <div class="metric"><div class="metric-val metric-y">${maxVal.toFixed(2)}</div><div class="metric-lab">Melhor: ${esc(labels[maxIdx] || String(maxIdx + 1))}</div></div>
@@ -602,7 +602,7 @@ function stRenderResults(res) {
 
   const projRows = projValues.map((v, i) => `<tr>
     <td>${projLabels[i]}</td>
-    <td style="color:var(--acc2);font-weight:600">${v.toFixed(4)}</td>
+    <td style="color:var(--y);font-weight:600">${v.toFixed(4)}</td>
     <td style="color:var(--txt3)">${projTrend[i].toFixed(4)}</td>
     <td style="color:${v >= ym ? 'var(--y)' : 'var(--acc)'}">${v >= ym ? '↑' : '↓'} ${((v - ym) / Math.abs(ym) * 100).toFixed(1)}%</td>
   </tr>`).join('');
@@ -623,7 +623,7 @@ function arimaRenderResults(res) {
   document.getElementById('st-main-chart-title').textContent =
     `📈 ARIMA(${p},${d},${q}) — Série, Valores Ajustados e Previsão com IC 95%`;
 
-  const badge = (v, lbl, col = 'var(--acc2)') =>
+  const badge = (v, lbl, col = 'var(--y)') =>
     `<div class="metric"><div class="metric-val" style="color:${col}">${v}</div><div class="metric-lab">${lbl}</div></div>`;
   const phiStr = phi.map((v, i) => `φ${i + 1}=${v.toFixed(3)}`).join(', ') || '—';
   const thetaStr = theta.map((v, i) => `θ${i + 1}=${v.toFixed(3)}`).join(', ') || '—';
@@ -634,8 +634,8 @@ function arimaRenderResults(res) {
     ${badge(sigma.toFixed(4), 'σ (erro padrão)')}
     ${badge(aic.toFixed(2), 'AIC')}
     ${badge(bic.toFixed(2), 'BIC')}
-    ${badge(cv.toFixed(1) + '%', 'CV (série)', cv >= 30 ? 'var(--acc)' : cv >= 15 ? 'var(--y)' : 'var(--acc2)')}
-    ${badge(ljungBoxQ.toFixed(2), `Q(${lbLags}) Ljung-Box`, ljungBoxQ > 18.3 ? 'var(--acc)' : 'var(--acc2)')}
+    ${badge(cv.toFixed(1) + '%', 'CV (série)', cv >= 30 ? 'var(--acc)' : cv >= 15 ? 'var(--y)' : 'var(--y)')}
+    ${badge(ljungBoxQ.toFixed(2), `Q(${lbLags}) Ljung-Box`, ljungBoxQ > 18.3 ? 'var(--acc)' : 'var(--y)')}
     <div class="metric" style="grid-column:1/-1">
       <span style="font-size:11px;color:var(--txt3)">AR: ${esc(phiStr)} &nbsp;|&nbsp; MA: ${esc(thetaStr)} &nbsp;|&nbsp; ${qTest}</span>
     </div>
@@ -653,7 +653,7 @@ function arimaRenderResults(res) {
 
   const projRows = forecastY.map((v, i) => `<tr>
     <td>${projLabels[i]}</td>
-    <td style="color:var(--acc2);font-weight:600">${v.toFixed(4)}</td>
+    <td style="color:var(--y);font-weight:600">${v.toFixed(4)}</td>
     <td style="color:var(--txt3)">${ciLower[i].toFixed(4)}</td>
     <td style="color:var(--txt3)">${ciUpper[i].toFixed(4)}</td>
     <td style="color:var(--y)">${(ciUpper[i] - ciLower[i]).toFixed(4)}</td>
@@ -676,15 +676,15 @@ function garchRenderResults(res) {
     '📈 GARCH(1,1) — Série com Bandas de Volatilidade Condicional e Previsão';
 
   const fmt = (v, dp = 4) => isFinite(v) ? Number(v).toFixed(dp) : '∞';
-  const badge = (v, lbl, col = 'var(--acc2)') =>
+  const badge = (v, lbl, col = 'var(--y)') =>
     `<div class="metric"><div class="metric-val" style="color:${col}">${v}</div><div class="metric-lab">${lbl}</div></div>`;
-  const persColor = persistence > 0.95 ? 'var(--acc)' : persistence > 0.85 ? 'var(--y)' : 'var(--acc2)';
+  const persColor = persistence > 0.95 ? 'var(--acc)' : persistence > 0.85 ? 'var(--y)' : 'var(--y)';
 
   document.getElementById('st-metrics').innerHTML = `
     ${badge('GARCH(1,1)', 'Modelo')}
     ${badge(fmt(omega, 6), 'ω (constante)')}
-    ${badge(fmt(alpha), 'α (efeito ARCH)', alpha > 0.3 ? 'var(--acc)' : 'var(--acc2)')}
-    ${badge(fmt(beta), 'β (efeito GARCH)', beta > 0.9 ? 'var(--y)' : 'var(--acc2)')}
+    ${badge(fmt(alpha), 'α (efeito ARCH)', alpha > 0.3 ? 'var(--acc)' : 'var(--y)')}
+    ${badge(fmt(beta), 'β (efeito GARCH)', beta > 0.9 ? 'var(--y)' : 'var(--y)')}
     ${badge(fmt(persistence), 'α+β (persistência)', persColor)}
     ${badge(fmt(halfLife, 1) + ' per.', 'Meia-vida do choque')}
     ${badge(fmt(Math.sqrt(uncondVar)), 'σ incondicional')}
@@ -704,7 +704,7 @@ function garchRenderResults(res) {
 
   const projRows = sigmaForecast.map((s, i) => `<tr>
     <td>${projLabels[i]}</td>
-    <td style="color:var(--acc2);font-weight:600">${mu.toFixed(4)}</td>
+    <td style="color:var(--y);font-weight:600">${mu.toFixed(4)}</td>
     <td style="color:var(--txt3)">${ciLower[i].toFixed(4)}</td>
     <td style="color:var(--txt3)">${ciUpper[i].toFixed(4)}</td>
     <td style="color:var(--y)">${s.toFixed(4)}</td>
