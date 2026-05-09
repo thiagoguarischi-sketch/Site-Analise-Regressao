@@ -41,7 +41,7 @@ import {
 } from './regressions/polynomialRegression.js';
 
 import {
-  stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample,
+  stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
 } from './regressions/timeSeries.js';
 
@@ -121,7 +121,7 @@ Object.assign(window, {
   runPolynomial, poRunPrediction, poSaveAnalysis, poExportExcel, poExportCSV,
 
   // Séries temporais
-  stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample,
+  stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
 
   // Quantílica
