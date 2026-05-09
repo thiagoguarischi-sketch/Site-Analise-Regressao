@@ -32,12 +32,16 @@ export async function loadHistory() {
       const isQuantilica = a.tipo === 'quantilica';
       const isRegularizada = a.tipo === 'regularizada';
 
+      const serieModelo = isSerie ? (a.dados?.modelo ?? 'classic') : null;
+
       const r2Val = isSimples
         ? (a.dados?.r2?.toFixed(3) ?? '—')
         : isLogistica
           ? (a.dados?.mcFaddenR2?.toFixed(3) ?? '—')
           : isSerie
-            ? ((a.dados?.cv?.toFixed(1) ?? '—') + '%')
+            ? (serieModelo === 'var' || serieModelo === 'arima' || serieModelo === 'garch'
+                ? (a.dados?.aic?.toFixed(2) ?? '—')
+                : ((a.dados?.cv?.toFixed(1) ?? '—') + '%'))
             : isQuantilica
               ? (a.dados?.pinballLosses?.['0.5'] ?? a.dados?.pinballLosses?.[0.5])?.toFixed(4) ?? '—'
               : isRegularizada
@@ -46,7 +50,8 @@ export async function loadHistory() {
 
       const r2Label = isSimples ? 'R²'
                     : isLogistica ? 'R²McF'
-                    : isSerie ? 'CV'
+                    : isSerie
+                      ? (serieModelo === 'var' || serieModelo === 'arima' || serieModelo === 'garch' ? 'AIC' : 'CV')
                     : isQuantilica ? 'PB(0.5)'
                     : isRegularizada ? 'R²(Ridge)'
                     : 'R² adj';
@@ -62,7 +67,14 @@ export async function loadHistory() {
       const tipoLabel = isSimples ? 'Regressão Linear'
                       : isLogistica ? 'Regressão Logística'
                       : isPolinomial ? `Reg. Polinomial Grau ${a.dados?.degree ?? '?'}`
-                      : isSerie ? 'Série Temporal'
+                      : isSerie
+                        ? (serieModelo === 'var'
+                            ? `VAR(${a.dados?.p ?? '?'}) – ${a.dados?.k ?? '?'} var.`
+                            : serieModelo === 'arima'
+                              ? `ARIMA(${a.dados?.p ?? '?'},${a.dados?.d ?? '?'},${a.dados?.q ?? '?'})`
+                              : serieModelo === 'garch'
+                                ? 'GARCH(1,1)'
+                                : 'Série Temporal')
                       : isQuantilica ? 'Reg. Quantílica'
                       : isRegularizada ? `Reg. Regularizada (λ=${a.dados?.lambda ?? '?'})`
                       : 'Regressão Múltipla';

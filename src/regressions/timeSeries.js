@@ -1218,29 +1218,36 @@ export async function stSaveAnalysis() {
   document.getElementById('st-cloud-saving').style.display = 'flex';
   try {
     const res = stLastResult;
-    const base = {
-      modelo: res.model, labelX: res.labelX, labelY: res.labelY,
-      n: res.n, ym: res.ym, stdev: res.stdev, cv: res.cv,
-      labels: res.labels, values: res.values, futureN: res.futureN,
-    };
-    if (res.model === 'classic') {
-      Object.assign(base, { b0: res.b0, b1: res.b1, avgGrowth: res.avgGrowth,
-        maxVal: res.maxVal, minVal: res.minVal, maxIdx: res.maxIdx, minIdx: res.minIdx,
-        windowSize: res.windowSize, projValues: res.projValues });
-    } else if (res.model === 'arima') {
-      Object.assign(base, { p: res.p, d: res.d, q: res.q,
-        phi: res.phi, theta: res.theta, sigma: res.sigma,
+    let base;
+    if (res.model === 'var') {
+      base = {
+        modelo: res.model, labelX: res.labelX, labelY: res.labelY, futureN: res.futureN,
+        n: res.T, k: res.k, p: res.p, varNames: res.varNames,
         aic: res.aic, bic: res.bic,
-        forecastY: res.forecastY, ciLower: res.ciLower, ciUpper: res.ciUpper });
-    } else if (res.model === 'garch') {
-      Object.assign(base, { omega: res.omega, alpha: res.alpha, beta: res.beta,
-        persistence: res.persistence, halfLife: res.halfLife,
-        aic: res.aic, bic: res.bic,
-        ciLower: res.ciLower, ciUpper: res.ciUpper });
-    } else if (res.model === 'var') {
-      Object.assign(base, { k: res.k, p: res.p, varNames: res.varNames,
-        aic: res.aic, bic: res.bic,
-        matrix: res.matrix, labelsList: res.labelsList, forecast: res.forecast });
+        ymArr: res.ymArr, sdArr: res.sdArr,
+        matrix: res.matrix, labelsList: res.labelsList, forecast: res.forecast,
+      };
+    } else {
+      base = {
+        modelo: res.model, labelX: res.labelX, labelY: res.labelY,
+        n: res.n, ym: res.ym, stdev: res.stdev, cv: res.cv,
+        labels: res.labels, values: res.values, futureN: res.futureN,
+      };
+      if (res.model === 'classic') {
+        Object.assign(base, { b0: res.b0, b1: res.b1, avgGrowth: res.avgGrowth,
+          maxVal: res.maxVal, minVal: res.minVal, maxIdx: res.maxIdx, minIdx: res.minIdx,
+          windowSize: res.windowSize, projValues: res.projValues });
+      } else if (res.model === 'arima') {
+        Object.assign(base, { p: res.p, d: res.d, q: res.q,
+          phi: res.phi, theta: res.theta, sigma: res.sigma,
+          aic: res.aic, bic: res.bic,
+          forecastY: res.forecastY, ciLower: res.ciLower, ciUpper: res.ciUpper });
+      } else if (res.model === 'garch') {
+        Object.assign(base, { omega: res.omega, alpha: res.alpha, beta: res.beta,
+          persistence: res.persistence, halfLife: res.halfLife,
+          aic: res.aic, bic: res.bic,
+          ciLower: res.ciLower, ciUpper: res.ciUpper });
+      }
     }
     await saveAnalysisRequest({
       nome: document.getElementById('st-analysis-name').value || 'Série Temporal',
@@ -1264,23 +1271,75 @@ export async function loadSerieAnalysis(a) {
   document.getElementById('st-analysis-name').value = a.nome || '';
   document.getElementById('st-label-y').value = d.labelY || 'Valor';
   document.getElementById('st-label-x').value = d.labelX || 'Período';
-  if (d.modelo) stSetModel(d.modelo);
-  if (d.windowSize) document.getElementById('st-window').value = d.windowSize;
   if (d.futureN) document.getElementById('st-future').value = d.futureN;
-  if (d.p !== undefined) document.getElementById('st-arima-p').value = d.p;
-  if (d.d !== undefined) document.getElementById('st-arima-d').value = d.d;
-  if (d.q !== undefined) document.getElementById('st-arima-q').value = d.q;
-  if (d.labels?.length) {
-    document.getElementById('st-data-rows').innerHTML = '';
-    d.labels.forEach((lbl, i) => {
-      stAddRow();
-      const rows = document.getElementById('st-data-rows').children;
-      const last = rows[rows.length - 1];
-      last.querySelectorAll('input')[0].value = lbl;
-      last.querySelectorAll('input')[1].value = d.values[i];
-    });
-    for (let i = d.labels.length; i < 12; i++) stAddRow();
-    stUpdateCount();
+
+  if (d.modelo === 'var') {
+    stSetModel('var');
+    await new Promise(r => setTimeout(r, 50));
+    if (d.k && d.k >= 2) {
+      varK = d.k;
+      if (d.varNames?.length) {
+        d.varNames.forEach((n, i) => { varNames[i] = n; });
+      }
+    }
+    if (d.p !== undefined) document.getElementById('st-var-p').value = d.p;
+    if (d.labelsList?.length && d.matrix?.length) {
+      const gtc = varGTC();
+      const rowsEl = document.getElementById('var-data-rows');
+      rowsEl.innerHTML = '';
+      d.labelsList.forEach((lbl, i) => {
+        varAddRowInternal(gtc, i + 1, lbl, d.matrix[i]);
+      });
+      for (let i = d.labelsList.length; i < 12; i++) varAddRowInternal(gtc, i + 1);
+    }
+    varRebuildTable();
+    varUpdateVarCountDisplay();
+  } else if (d.modelo === 'arima') {
+    stSetModel('arima');
+    if (d.p !== undefined) document.getElementById('st-arima-p').value = d.p;
+    if (d.d !== undefined) document.getElementById('st-arima-d').value = d.d;
+    if (d.q !== undefined) document.getElementById('st-arima-q').value = d.q;
+    if (d.labels?.length) {
+      document.getElementById('st-data-rows').innerHTML = '';
+      d.labels.forEach((lbl, i) => {
+        stAddRow();
+        const rows = document.getElementById('st-data-rows').children;
+        const last = rows[rows.length - 1];
+        last.querySelectorAll('input')[0].value = lbl;
+        last.querySelectorAll('input')[1].value = d.values[i];
+      });
+      for (let i = d.labels.length; i < 12; i++) stAddRow();
+      stUpdateCount();
+    }
+  } else if (d.modelo === 'garch') {
+    stSetModel('garch');
+    if (d.labels?.length) {
+      document.getElementById('st-data-rows').innerHTML = '';
+      d.labels.forEach((lbl, i) => {
+        stAddRow();
+        const rows = document.getElementById('st-data-rows').children;
+        const last = rows[rows.length - 1];
+        last.querySelectorAll('input')[0].value = lbl;
+        last.querySelectorAll('input')[1].value = d.values[i];
+      });
+      for (let i = d.labels.length; i < 12; i++) stAddRow();
+      stUpdateCount();
+    }
+  } else {
+    stSetModel('classic');
+    if (d.windowSize) document.getElementById('st-window').value = d.windowSize;
+    if (d.labels?.length) {
+      document.getElementById('st-data-rows').innerHTML = '';
+      d.labels.forEach((lbl, i) => {
+        stAddRow();
+        const rows = document.getElementById('st-data-rows').children;
+        const last = rows[rows.length - 1];
+        last.querySelectorAll('input')[0].value = lbl;
+        last.querySelectorAll('input')[1].value = d.values[i];
+      });
+      for (let i = d.labels.length; i < 12; i++) stAddRow();
+      stUpdateCount();
+    }
   }
   showToast('Série temporal carregada ✏️', 'info');
 }

@@ -51,17 +51,54 @@ export async function viewAnalysis(id) {
         ${(d.beta || []).map((b, j) => `<div class="modal-row"><span class="modal-row-key">${j === 0 ? 'β₀' : `β${j} (${esc((d.varNames || [])[j - 1] || 'X' + j)})`}</span><span class="modal-row-val">${fmt(b)}</span></div>`).join('')}
       `;
     } else if (a.tipo === 'serie') {
-      rows = `
-        <div class="modal-row"><span class="modal-row-key">Variável</span><span class="modal-row-val">${esc(d.labelY || '—')}</span></div>
-        <div class="modal-row"><span class="modal-row-key">n</span><span class="modal-row-val">${d.n}</span></div>
-        <div class="modal-row"><span class="modal-row-key">Média</span><span class="modal-row-val" style="color:var(--y)">${d.ym?.toFixed(4) ?? '—'}</span></div>
-        <div class="modal-row"><span class="modal-row-key">Desvio padrão</span><span class="modal-row-val">${d.stdev?.toFixed(4) ?? '—'}</span></div>
-        <div class="modal-row"><span class="modal-row-key">CV</span><span class="modal-row-val">${d.cv?.toFixed(1) ?? '—'}%</span></div>
-        <div class="modal-row"><span class="modal-row-key">Tendência/período</span><span class="modal-row-val" style="color:${(d.b1 || 0) >= 0 ? 'var(--y)' : 'var(--acc)'}">${d.b1?.toFixed(4) ?? '—'}</span></div>
-        <div class="modal-row"><span class="modal-row-key">Cresc. médio</span><span class="modal-row-val">${d.avgGrowth?.toFixed(2) ?? '—'}%</span></div>
-        <div class="modal-row"><span class="modal-row-key">Melhor período</span><span class="modal-row-val">${esc((d.labels || [])[d.maxIdx] || '—')} (${d.maxVal?.toFixed(2) ?? '—'})</span></div>
-        <div class="modal-row"><span class="modal-row-key">Pior período</span><span class="modal-row-val">${esc((d.labels || [])[d.minIdx] || '—')} (${d.minVal?.toFixed(2) ?? '—'})</span></div>
-      `;
+      const sm = d.modelo ?? 'classic';
+      if (sm === 'var') {
+        const varMeans = (d.ymArr || []).map((m, i) =>
+          `${esc(d.varNames?.[i] ?? `Var ${i + 1}`)}: ${m.toFixed(4)}`).join(' · ') || '—';
+        rows = `
+          <div class="modal-row"><span class="modal-row-key">Modelo</span><span class="modal-row-val" style="color:var(--y)">VAR(${d.p ?? '?'})</span></div>
+          <div class="modal-row"><span class="modal-row-key">Variáveis (k)</span><span class="modal-row-val">${d.k ?? '—'} — ${(d.varNames || []).map(n => esc(n)).join(', ') || '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">n períodos</span><span class="modal-row-val">${d.n ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">AIC</span><span class="modal-row-val" style="color:var(--x)">${d.aic?.toFixed(2) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">BIC</span><span class="modal-row-val">${d.bic?.toFixed(2) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Médias</span><span class="modal-row-val" style="font-size:11px">${varMeans}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Períodos previstos</span><span class="modal-row-val">${d.futureN ?? '—'}</span></div>
+        `;
+      } else if (sm === 'arima') {
+        rows = `
+          <div class="modal-row"><span class="modal-row-key">Modelo</span><span class="modal-row-val" style="color:var(--y)">ARIMA(${d.p ?? '?'},${d.d ?? '?'},${d.q ?? '?'})</span></div>
+          <div class="modal-row"><span class="modal-row-key">Variável</span><span class="modal-row-val">${esc(d.labelY || '—')}</span></div>
+          <div class="modal-row"><span class="modal-row-key">n</span><span class="modal-row-val">${d.n ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Média</span><span class="modal-row-val">${d.ym?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">AIC</span><span class="modal-row-val" style="color:var(--x)">${d.aic?.toFixed(2) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">BIC</span><span class="modal-row-val">${d.bic?.toFixed(2) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">CV</span><span class="modal-row-val">${d.cv?.toFixed(1) ?? '—'}%</span></div>
+        `;
+      } else if (sm === 'garch') {
+        rows = `
+          <div class="modal-row"><span class="modal-row-key">Modelo</span><span class="modal-row-val" style="color:var(--y)">GARCH(1,1)</span></div>
+          <div class="modal-row"><span class="modal-row-key">Variável</span><span class="modal-row-val">${esc(d.labelY || '—')}</span></div>
+          <div class="modal-row"><span class="modal-row-key">n</span><span class="modal-row-val">${d.n ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">ω (omega)</span><span class="modal-row-val">${d.omega?.toFixed(6) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">α (alpha)</span><span class="modal-row-val">${d.alpha?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">β (beta)</span><span class="modal-row-val">${d.beta?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Persistência</span><span class="modal-row-val">${d.persistence?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">AIC</span><span class="modal-row-val" style="color:var(--x)">${d.aic?.toFixed(2) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">BIC</span><span class="modal-row-val">${d.bic?.toFixed(2) ?? '—'}</span></div>
+        `;
+      } else {
+        rows = `
+          <div class="modal-row"><span class="modal-row-key">Variável</span><span class="modal-row-val">${esc(d.labelY || '—')}</span></div>
+          <div class="modal-row"><span class="modal-row-key">n</span><span class="modal-row-val">${d.n}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Média</span><span class="modal-row-val" style="color:var(--y)">${d.ym?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Desvio padrão</span><span class="modal-row-val">${d.stdev?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">CV</span><span class="modal-row-val">${d.cv?.toFixed(1) ?? '—'}%</span></div>
+          <div class="modal-row"><span class="modal-row-key">Tendência/período</span><span class="modal-row-val" style="color:${(d.b1 || 0) >= 0 ? 'var(--y)' : 'var(--acc)'}">${d.b1?.toFixed(4) ?? '—'}</span></div>
+          <div class="modal-row"><span class="modal-row-key">Cresc. médio</span><span class="modal-row-val">${d.avgGrowth?.toFixed(2) ?? '—'}%</span></div>
+          <div class="modal-row"><span class="modal-row-key">Melhor período</span><span class="modal-row-val">${esc((d.labels || [])[d.maxIdx] || '—')} (${d.maxVal?.toFixed(2) ?? '—'})</span></div>
+          <div class="modal-row"><span class="modal-row-key">Pior período</span><span class="modal-row-val">${esc((d.labels || [])[d.minIdx] || '—')} (${d.minVal?.toFixed(2) ?? '—'})</span></div>
+        `;
+      }
     } else {
       const coefs = (d.beta || []).map((b, j) => {
         const name = j === 0 ? 'β₀ (Intercepto)' : `β${j} (${esc((d.varNames || [])[j - 1] || 'X' + j)})`;
@@ -82,7 +119,11 @@ export async function viewAnalysis(id) {
     const tipoLabel = isSimples ? 'Regressão Linear'
                     : isLogistica ? 'Regressão Logística'
                     : isPolinomial ? `Reg. Polinomial Grau ${d.degree ?? '?'}`
-                    : a.tipo === 'serie' ? 'Série Temporal'
+                    : a.tipo === 'serie'
+                      ? (d.modelo === 'var' ? `VAR(${d.p ?? '?'}) – ${d.k ?? '?'} variáveis`
+                        : d.modelo === 'arima' ? `ARIMA(${d.p ?? '?'},${d.d ?? '?'},${d.q ?? '?'})`
+                        : d.modelo === 'garch' ? 'GARCH(1,1)'
+                        : 'Série Temporal')
                     : 'Regressão Múltipla';
 
     document.getElementById('modal-content').innerHTML = `
