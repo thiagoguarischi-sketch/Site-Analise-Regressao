@@ -35,3 +35,24 @@ export function matInv(M) {
   }
   return I;
 }
+
+// Log-determinant via Cholesky decomposition: log|M| = 2·Σ log(L_ii)
+export function matLogDet(M) {
+  const n = M.length;
+  const L = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j <= i; j++) {
+      let s = M[i][j];
+      for (let r = 0; r < j; r++) s -= L[i][r] * L[j][r];
+      if (i === j) {
+        if (s <= 0) return Infinity;
+        L[i][j] = Math.sqrt(s);
+      } else {
+        L[i][j] = s / L[j][j];
+      }
+    }
+  }
+  let logDet = 0;
+  for (let i = 0; i < n; i++) logDet += Math.log(L[i][i]);
+  return 2 * logDet;
+}

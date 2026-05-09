@@ -43,6 +43,8 @@ import {
 import {
   stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
+  varInitRows, varAddRow, varClearRows, varUpdateVarCount, varUpdateName,
+  varUpdateVarCountDisplay, varLoadExample,
 } from './regressions/timeSeries.js';
 
 import {
@@ -123,6 +125,8 @@ Object.assign(window, {
   // Séries temporais
   stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
+  varInitRows, varAddRow, varClearRows, varUpdateVarCount, varUpdateName,
+  varUpdateVarCountDisplay, varLoadExample,
 
   // Quantílica
   qrInitRows, qrAddRow, qrClearRows, qrUpdateCount, qrToggleChip, qrLoadExample,
@@ -152,5 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
   poInitRows();
   qrInitRows();
   rrInitRows();
+  varInitRows();
   tryRestoreSession();
 });

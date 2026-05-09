@@ -194,6 +194,75 @@ export function createACFChart(canvasId, acfVals, confBand) {
   });
 }
 
+// ─── VAR ─────────────────────────────────────────────────────────────────────
+
+const VAR_COLORS = [
+  'rgba(123,111,255,.9)',
+  'rgba(0,212,160,.9)',
+  'rgba(255,179,71,.9)',
+  'rgba(255,107,107,.9)',
+];
+
+// All k historical series + dashed forecast continuation
+export function createVARMainChart(canvasId, matrix, labels, forecast, futureN, varNames) {
+  const k = matrix[0].length;
+  const n = matrix.length;
+  const allLabels = [...labels, ...Array.from({ length: futureN }, (_, i) => `+${i + 1}`)];
+  const datasets = [];
+  for (let j = 0; j < k; j++) {
+    const col = VAR_COLORS[j % VAR_COLORS.length];
+    datasets.push({
+      type: 'line', label: varNames[j],
+      data: matrix.map((row, i) => ({ x: i, y: row[j] })),
+      borderColor: col, borderWidth: 2, pointRadius: 2, fill: false,
+    });
+    datasets.push({
+      type: 'line', label: varNames[j] + ' (prev.)',
+      data: forecast.map((row, i) => ({ x: n + i, y: row[j] })),
+      borderColor: col, borderWidth: 2, borderDash: [5, 3], pointRadius: 3, fill: false,
+    });
+  }
+  return new Chart(document.getElementById(canvasId), {
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: legendStyle(10) },
+      scales: {
+        x: { type: 'linear',
+          ticks: { color: C.txt2, font: { size: 9 }, callback: v => allLabels[Math.round(v)] || v },
+          grid: { color: gridColor() } },
+        y: smallTicks(),
+      },
+    },
+  });
+}
+
+// Single impulse-response function displayed as line chart
+export function createIRFChart(canvasId, irf) {
+  const labels = Array.from({ length: irf.length }, (_, i) => String(i));
+  return new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'zero', data: new Array(irf.length).fill(0),
+          borderColor: 'rgba(255,255,255,.18)', borderWidth: 1, borderDash: [3, 2],
+          pointRadius: 0, fill: false },
+        { data: irf, borderColor: 'rgba(123,111,255,.85)', borderWidth: 1.5, pointRadius: 0,
+          fill: true, backgroundColor: 'rgba(123,111,255,.08)' },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: C.txt2, font: { size: 9 } }, grid: { color: gridColor() } },
+        y: smallTicks(),
+      },
+    },
+  });
+}
+
 // ─── GARCH ────────────────────────────────────────────────────────────────────
 
 // Série observada com bandas de volatilidade condicional (μ ± 1.96σ_t) e previsão

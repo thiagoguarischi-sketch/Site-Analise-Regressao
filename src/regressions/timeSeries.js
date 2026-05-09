@@ -1,7 +1,7 @@
 // Séries temporais — Decomposição Clássica, ARIMA(p,d,q) e GARCH(1,1)
 
 import { mean, sum, esc } from '../core/utils.js';
-import { matMul, matT, matInv } from '../core/matrix.js';
+import { matMul, matT, matInv, matLogDet } from '../core/matrix.js';
 import { showToast } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
 import { callAI, aiLoadingHTML, aiResultHTML, aiFallbackHTML } from '../services/authService.js';
@@ -15,11 +15,16 @@ import {
   createTimeSeriesMain, createTrendChart, createSeasonChart,
   createTSResidChart, createVolatilityChart,
   createACFChart, createARIMAMainChart, createGARCHMainChart, createGARCHVarChart,
+  createVARMainChart, createIRFChart,
 } from '../charts/forecastChart.js';
 
 let stLastResult = null;
 let stCurrentModel = 'classic';
 const STC = {};
+
+// ─── VAR STATE ───────────────────────────────────────────────────────────────
+let varK = 2;
+let varNames = ['Var 1', 'Var 2', 'Var 3', 'Var 4'];
 
 function stDestroyChart(id) { if (STC[id]) { STC[id].destroy(); delete STC[id]; } }
 
@@ -82,6 +87,9 @@ export function stSetModel(model) {
   });
   document.getElementById('st-classic-params').style.display = model === 'classic' ? 'grid' : 'none';
   document.getElementById('st-arima-params').style.display = model === 'arima' ? 'grid' : 'none';
+  document.getElementById('st-var-params').style.display = model === 'var' ? 'grid' : 'none';
+  document.getElementById('st-scalar-data-card').style.display = model === 'var' ? 'none' : 'block';
+  document.getElementById('st-var-data-card').style.display = model === 'var' ? 'block' : 'none';
 }
 
 export function stLoadExample() {
@@ -110,6 +118,174 @@ export function stLoadExample() {
   });
   for (let i = ex.labels.length; i < 12; i++) stAddRow();
   stUpdateCount();
+}
+
+// ─── VAR UI ──────────────────────────────────────────────────────────────────
+
+export function varUpdateName(idx, val) {
+  varNames[idx] = val || `Var ${idx + 1}`;
+  document.querySelectorAll('.var-dh-label').forEach((el, i) => {
+    if (i === idx) el.value = varNames[idx];
+  });
+}
+
+export function varUpdateVarCount() {
+  const sel = document.getElementById('var-k-select');
+  varK = parseInt(sel.value) || 2;
+  varRebuildTable(true);
+}
+
+function varRebuildTable(clear = false) {
+  const headerEl = document.getElementById('var-data-header');
+  const rowsEl = document.getElementById('var-data-rows');
+
+  const gtc = `24px 1.2fr ${Array(varK).fill('1fr').join(' ')}`;
+
+  // Header
+  headerEl.style.display = 'grid';
+  headerEl.style.gridTemplateColumns = gtc;
+  headerEl.style.gap = '6px';
+  headerEl.style.alignItems = 'center';
+  headerEl.style.padding = '4px 0 2px';
+  headerEl.innerHTML = `<span></span>
+    <div class="data-header-label">Período</div>` +
+    Array.from({ length: varK }, (_, i) =>
+      `<div class="data-header-label" style="padding:0">
+        <input type="text" class="var-dh-label" value="${varNames[i]}"
+          style="width:100%;background:transparent;border:none;color:inherit;font:600 11px/1 var(--font);text-align:center;padding:2px 0"
+          oninput="varUpdateName(${i}, this.value)">
+      </div>`
+    ).join('');
+
+  if (clear) {
+    rowsEl.innerHTML = '';
+    for (let i = 0; i < 12; i++) varAddRowInternal(gtc, i + 1);
+    varUpdateVarCountDisplay();
+    return;
+  }
+
+  // Preserve existing row data
+  const existing = [];
+  for (const row of rowsEl.children) {
+    const inputs = row.querySelectorAll('input');
+    const lbl = inputs[0]?.value ?? '';
+    const vals = Array.from({ length: inputs.length - 1 }, (_, i) => inputs[i + 1]?.value ?? '');
+    existing.push({ lbl, vals });
+  }
+
+  rowsEl.innerHTML = '';
+  const n = Math.max(existing.length, 12);
+  for (let i = 0; i < n; i++) {
+    const d = existing[i] || { lbl: '', vals: [] };
+    varAddRowInternal(gtc, i + 1, d.lbl, d.vals);
+  }
+  varUpdateVarCountDisplay();
+}
+
+function varAddRowInternal(gtc, rowNum, lbl = '', vals = []) {
+  const rowsEl = document.getElementById('var-data-rows');
+  const row = document.createElement('div');
+  row.style.cssText = `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:2px 0`;
+  row.innerHTML = `<span class="data-row-n">${rowNum}</span>
+    <input class="data-input" type="text" placeholder="Ex: Jan/24" value="${esc(lbl)}"
+      oninput="varUpdateVarCountDisplay()" style="font-size:12px">` +
+    Array.from({ length: varK }, (_, i) =>
+      `<input class="data-input" type="number" placeholder="v${i + 1}" step="any"
+        value="${vals[i] ?? ''}" oninput="varUpdateVarCountDisplay()">`
+    ).join('');
+  rowsEl.appendChild(row);
+}
+
+export function varInitRows() {
+  varRebuildTable(true);
+}
+
+export function varAddRow() {
+  const rowsEl = document.getElementById('var-data-rows');
+  const gtc = `24px 1.2fr ${Array(varK).fill('1fr').join(' ')}`;
+  varAddRowInternal(gtc, rowsEl.children.length + 1);
+  varUpdateVarCountDisplay();
+}
+
+export function varClearRows() {
+  varRebuildTable(true);
+  document.getElementById('st-results').style.display = 'none';
+  document.getElementById('st-btn-save').style.display = 'none';
+  stLastResult = null;
+}
+
+export function varUpdateVarCountDisplay() {
+  const { labelsList } = varGetData();
+  const n = labelsList.length;
+  const el = document.getElementById('var-data-count');
+  if (el) el.textContent = `${n} período${n !== 1 ? 's' : ''}`;
+}
+
+function varGetData() {
+  const rowsEl = document.getElementById('var-data-rows');
+  const labelsList = [], matrix = [];
+  for (const row of rowsEl.children) {
+    const inputs = row.querySelectorAll('input');
+    const lbl = inputs[0]?.value.trim() ?? '';
+    const vals = Array.from({ length: varK }, (_, i) => parseFloat(inputs[i + 1]?.value));
+    if (lbl && vals.every(v => !isNaN(v))) {
+      labelsList.push(lbl);
+      matrix.push(vals);
+    }
+  }
+  return { labelsList, matrix };
+}
+
+export function varLoadExample() {
+  const examples = [
+    {
+      names: ['PIB (R$bi)', 'Investimento (R$bi)'],
+      labels: ['T1/21','T2/21','T3/21','T4/21','T1/22','T2/22','T3/22','T4/22','T1/23','T2/23','T3/23','T4/23','T1/24','T2/24','T3/24','T4/24'],
+      matrix: [
+        [2200,320],[2260,335],[2310,350],[2380,370],
+        [2350,360],[2420,380],[2480,395],[2550,415],
+        [2510,405],[2580,425],[2640,440],[2720,465],
+        [2680,450],[2750,472],[2820,490],[2900,510],
+      ],
+    },
+    {
+      names: ['Exportações', 'Taxa de Câmbio', 'Preço Commodities'],
+      labels: Array.from({ length: 20 }, (_, i) => `M${i + 1}`),
+      matrix: [
+        [100,5.2,80],[105,5.4,82],[98,5.6,79],[108,5.3,85],
+        [112,5.1,88],[115,4.9,91],[110,5.0,87],[118,4.8,94],
+        [122,4.7,97],[120,4.9,95],[125,4.6,100],[130,4.4,104],
+        [128,4.5,102],[135,4.3,108],[140,4.2,112],[138,4.4,110],
+        [145,4.1,116],[150,4.0,120],[148,4.2,118],[155,3.9,124],
+      ],
+    },
+  ];
+
+  const ex = examples.find(e => e.names.length === varK) || examples[0];
+  varK = ex.names.length;
+  ex.names.forEach((n, i) => { varNames[i] = n; });
+  const sel = document.getElementById('var-k-select');
+  if (sel) sel.value = String(varK);
+
+  varRebuildTable(true);
+  const rowsEl = document.getElementById('var-data-rows');
+  rowsEl.innerHTML = '';
+  const gtc = `24px 1.2fr ${Array(varK).fill('1fr').join(' ')}`;
+  ex.labels.forEach((lbl, i) => varAddRowInternal(gtc, i + 1, lbl, ex.matrix[i].map(String)));
+
+  // Rebuild header with correct names
+  const headerEl = document.getElementById('var-data-header');
+  headerEl.style.cssText = `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:4px 0 2px`;
+  headerEl.innerHTML = `<span></span><div class="data-header-label">Período</div>` +
+    Array.from({ length: varK }, (_, i) =>
+      `<div class="data-header-label" style="padding:0">
+        <input type="text" class="var-dh-label" value="${varNames[i]}"
+          style="width:100%;background:transparent;border:none;color:inherit;font:600 11px/1 var(--font);text-align:center;padding:2px 0"
+          oninput="varUpdateName(${i}, this.value)">
+      </div>`
+    ).join('');
+
+  varUpdateVarCountDisplay();
 }
 
 // ─── MATH HELPERS ────────────────────────────────────────────────────────────
@@ -523,32 +699,42 @@ function garchCompute(values, futureN) {
 // ─── RUN ─────────────────────────────────────────────────────────────────────
 
 export function runSerie() {
-  const { labels, values } = stGetData();
   const futureN = parseInt(document.getElementById('st-future').value) || 6;
-  if (values.length < 6) { showToast('Insira pelo menos 6 períodos.', 'err'); return; }
-
   const labelY = document.getElementById('st-label-y').value || 'Valor';
   const labelX = document.getElementById('st-label-x').value || 'Período';
 
   let res;
-  if (stCurrentModel === 'arima') {
-    const p = Math.max(0, parseInt(document.getElementById('st-arima-p').value) || 1);
-    const d = Math.max(0, Math.min(2, parseInt(document.getElementById('st-arima-d').value) || 1));
-    const q = Math.max(0, parseInt(document.getElementById('st-arima-q').value) || 1);
-    if (values.length < p + d + q + 5) {
-      showToast(`Dados insuficientes para ARIMA(${p},${d},${q}). Necessário: ${p+d+q+5} períodos.`, 'err'); return;
+
+  if (stCurrentModel === 'var') {
+    const { labelsList, matrix } = varGetData();
+    const p = Math.max(1, parseInt(document.getElementById('st-var-p').value) || 1);
+    if (matrix.length < p * varK + p + 2) {
+      showToast(`VAR(${p}) com ${varK} variáveis requer pelo menos ${p * varK + p + 2} períodos.`, 'err'); return;
     }
-    res = arimaCompute(values, p, d, q, futureN);
-  } else if (stCurrentModel === 'garch') {
-    if (values.length < 10) { showToast('GARCH requer pelo menos 10 períodos.', 'err'); return; }
-    res = garchCompute(values, futureN);
+    res = varCompute(matrix, labelsList, p, futureN);
+    if (!res) { showToast('Matriz singular — reduza p ou adicione mais dados.', 'err'); return; }
   } else {
-    const windowSize = parseInt(document.getElementById('st-window').value) || 3;
-    res = stCompute(values, windowSize, futureN);
+    const { labels, values } = stGetData();
+    if (values.length < 6) { showToast('Insira pelo menos 6 períodos.', 'err'); return; }
+    if (stCurrentModel === 'arima') {
+      const p = Math.max(0, parseInt(document.getElementById('st-arima-p').value) || 1);
+      const d = Math.max(0, Math.min(2, parseInt(document.getElementById('st-arima-d').value) || 1));
+      const q = Math.max(0, parseInt(document.getElementById('st-arima-q').value) || 1);
+      if (values.length < p + d + q + 5) {
+        showToast(`Dados insuficientes para ARIMA(${p},${d},${q}). Necessário: ${p+d+q+5} períodos.`, 'err'); return;
+      }
+      res = arimaCompute(values, p, d, q, futureN);
+    } else if (stCurrentModel === 'garch') {
+      if (values.length < 10) { showToast('GARCH requer pelo menos 10 períodos.', 'err'); return; }
+      res = garchCompute(values, futureN);
+    } else {
+      const windowSize = parseInt(document.getElementById('st-window').value) || 3;
+      res = stCompute(values, windowSize, futureN);
+    }
+    res.labels = labels;
+    res.values = values;
   }
 
-  res.labels = labels;
-  res.values = values;
   res.labelY = labelY;
   res.labelX = labelX;
   stLastResult = res;
@@ -557,10 +743,12 @@ export function runSerie() {
   document.getElementById('st-classic-section').style.display = res.model === 'classic' ? 'block' : 'none';
   document.getElementById('st-arima-section').style.display = res.model === 'arima' ? 'block' : 'none';
   document.getElementById('st-garch-section').style.display = res.model === 'garch' ? 'block' : 'none';
+  document.getElementById('st-var-section').style.display = res.model === 'var' ? 'block' : 'none';
 
   if (res.model === 'classic') stRenderResults(res);
   else if (res.model === 'arima') arimaRenderResults(res);
-  else garchRenderResults(res);
+  else if (res.model === 'garch') garchRenderResults(res);
+  else varRenderResults(res);
 
   document.getElementById('st-results').style.display = 'block';
   document.getElementById('st-btn-save').style.display = 'inline-flex';
@@ -716,6 +904,208 @@ function garchRenderResults(res) {
     </table>`;
 }
 
+// ─── VAR MATH ────────────────────────────────────────────────────────────────
+
+function chi2pval(x, df) {
+  if (x <= 0 || df <= 0) return 1;
+  const mu = 1 - 2 / (9 * df);
+  const sigma = Math.sqrt(2 / (9 * df));
+  const z = (Math.cbrt(x / df) - mu) / sigma;
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const p = 0.3989422820 * Math.exp(-0.5 * z * z) *
+    t * (0.3193815 + t * (-0.3565638 + t * (1.7814779 + t * (-1.8212560 + t * 1.3302744))));
+  return z >= 0 ? p : 1 - p;
+}
+
+function varCompute(matrix, labelsList, p, futureN) {
+  const T = matrix.length;
+  const k = matrix[0].length;
+  const m = k * p + 1;
+  const nObs = T - p;
+
+  if (nObs < m + 1) return null;
+
+  // Build regressor matrix Z (nObs × m) and response Y (nObs × k)
+  const Z = [], Y_mat = [];
+  for (let t = p; t < T; t++) {
+    const zt = [];
+    for (let l = 1; l <= p; l++) for (let j = 0; j < k; j++) zt.push(matrix[t - l][j]);
+    zt.push(1);
+    Z.push(zt);
+    Y_mat.push([...matrix[t]]);
+  }
+
+  // OLS: B (m × k) = (Z'Z)^{-1} Z'Y
+  const ZT = matT(Z);
+  const ZTZ_inv = matInv(matMul(ZT, Z));
+  if (!ZTZ_inv) return null;
+  const B = matMul(ZTZ_inv, matMul(ZT, Y_mat));
+
+  // Extract A_l (k × k): A_l[i][j] = coefficient of Y[t-l,j] in equation i
+  const A = Array.from({ length: p }, (_, l) =>
+    Array.from({ length: k }, (_, i) =>
+      Array.from({ length: k }, (_, j) => B[l * k + j][i])
+    )
+  );
+  const cVec = Array.from({ length: k }, (_, i) => B[m - 1][i]);
+
+  // Residuals
+  const Yhat = matMul(Z, B);
+  const E = Y_mat.map((row, t) => row.map((v, j) => v - Yhat[t][j]));
+
+  // Sigma_hat = E'E / (nObs - m)
+  const dof = nObs - m;
+  const ETE = matMul(matT(E), E);
+  const Sigma = ETE.map(row => row.map(v => v / dof));
+
+  const logDetSigma = matLogDet(Sigma);
+  const nParams = k * k * p + k;
+  const aic = logDetSigma + 2 * nParams / nObs;
+  const bic = logDetSigma + Math.log(nObs) * nParams / nObs;
+
+  // IRF: Phi[0] = I_k, Phi[h] = sum_{l=1}^{min(h,p)} A_l * Phi[h-l]
+  const H = futureN + 10;
+  const Ik = Array.from({ length: k }, (_, i) => Array.from({ length: k }, (_, j) => +(i === j)));
+  const Phi = [Ik];
+  for (let h = 1; h <= H; h++) {
+    const Ph = Array.from({ length: k }, () => new Array(k).fill(0));
+    for (let l = 1; l <= Math.min(h, p); l++) {
+      const Al = A[l - 1], Phhl = Phi[h - l];
+      for (let i = 0; i < k; i++)
+        for (let j = 0; j < k; j++)
+          for (let r = 0; r < k; r++) Ph[i][j] += Al[i][r] * Phhl[r][j];
+    }
+    Phi.push(Ph);
+  }
+
+  // Forecast from last p observations
+  const history = matrix.slice(T - p).map(r => [...r]);
+  const forecast = [];
+  for (let h = 0; h < futureN; h++) {
+    const yhat = [...cVec];
+    for (let l = 0; l < p; l++) {
+      const Yl = history[history.length - 1 - l];
+      for (let i = 0; i < k; i++)
+        for (let j = 0; j < k; j++) yhat[i] += A[l][i][j] * Yl[j];
+    }
+    forecast.push(yhat);
+    history.push([...yhat]);
+  }
+
+  // Granger causality: does variable j Granger-cause variable i?
+  const granger = [];
+  for (let i = 0; i < k; i++) {
+    const RSS_U = E.reduce((s, row) => s + row[i] ** 2, 0);
+    for (let j = 0; j < k; j++) {
+      if (i === j) continue;
+      const keepCols = [];
+      for (let c = 0; c < m - 1; c++) if (c % k !== j) keepCols.push(c);
+      keepCols.push(m - 1);
+      const ZR = Z.map(row => keepCols.map(c => row[c]));
+      const ZRT = matT(ZR);
+      const ZRTZRinv = matInv(matMul(ZRT, ZR));
+      let fStat = NaN, pval = NaN, sig = '';
+      if (ZRTZRinv) {
+        const yi = Y_mat.map(row => [row[i]]);
+        const BR = matMul(ZRTZRinv, matMul(ZRT, yi));
+        const YRhat = matMul(ZR, BR);
+        const RSS_R = yi.reduce((s, [v], t) => s + (v - YRhat[t][0]) ** 2, 0);
+        fStat = ((RSS_R - RSS_U) / p) / (RSS_U / dof);
+        const W = p * fStat;
+        pval = chi2pval(W, p);
+        sig = pval < 0.01 ? '***' : pval < 0.05 ? '**' : pval < 0.10 ? '*' : '';
+      }
+      granger.push({ from: j, to: i, fStat, pval, sig });
+    }
+  }
+
+  const ymArr = Array.from({ length: k }, (_, j) => mean(matrix.map(r => r[j])));
+  const sdArr = Array.from({ length: k }, (_, j) => {
+    const mj = ymArr[j];
+    return Math.sqrt(sum(matrix.map(r => (r[j] - mj) ** 2)) / T);
+  });
+
+  return {
+    model: 'var', k, p, T, nObs, dof, labelsList, futureN,
+    matrix, forecast, Phi, A, cVec, Sigma,
+    aic, bic, granger, E, Yhat,
+    ymArr, sdArr, varNames: varNames.slice(0, k),
+  };
+}
+
+// ─── RENDER: VAR ─────────────────────────────────────────────────────────────
+
+function varRenderResults(res) {
+  const { k, p, T, nObs, labelsList, futureN, matrix, forecast, Phi,
+    aic, bic, granger, ymArr, sdArr, varNames: vn } = res;
+
+  document.getElementById('st-main-chart-title').textContent =
+    `📈 VAR(${p}) — Séries Multivariadas + Previsão`;
+
+  const fmt = (v, dp = 4) => isFinite(v) ? Number(v).toFixed(dp) : '—';
+  const badge = (v, lbl, col = 'var(--y)') =>
+    `<div class="metric"><div class="metric-val" style="color:${col}">${v}</div><div class="metric-lab">${lbl}</div></div>`;
+
+  document.getElementById('st-metrics').innerHTML =
+    `${badge(`VAR(${p})`, 'Modelo')}
+     ${badge(k, 'Variáveis')}
+     ${badge(T, 'Observações')}
+     ${badge(nObs, 'Obs. efetivas')}
+     ${badge(fmt(aic, 2), 'AIC')}
+     ${badge(fmt(bic, 2), 'BIC')}` +
+    vn.map((n, j) => badge(fmt(ymArr[j], 2), `Média — ${n}`)).join('') +
+    vn.map((n, j) => badge(fmt(sdArr[j], 2), `DP — ${n}`)).join('');
+
+  stDestroyChart('main');
+  STC.main = createVARMainChart('st-chart-main', matrix, labelsList, forecast, futureN, vn);
+
+  // IRF grid: k×k charts — destroy old, build new canvases
+  const irfContainer = document.getElementById('st-var-irf-grid');
+  Object.keys(STC).filter(id => id.startsWith('var-irf-')).forEach(id => {
+    stDestroyChart(id); delete STC[id];
+  });
+  irfContainer.innerHTML = '';
+  const H = Phi.length - 1;
+  for (let imp = 0; imp < k; imp++) {
+    for (let resp = 0; resp < k; resp++) {
+      const id = `var-irf-${imp}-${resp}`;
+      const irf = Array.from({ length: H + 1 }, (_, h) => Phi[h][resp][imp]);
+      const card = document.createElement('div');
+      card.className = 'diag-card';
+      card.innerHTML = `<div class="diag-title" style="font-size:10px">Impulso: <b>${vn[imp]}</b> → Resposta: <b>${vn[resp]}</b></div>
+        <div class="diag-chart-wrap"><canvas id="${id}"></canvas></div>`;
+      irfContainer.appendChild(card);
+      requestAnimationFrame(() => {
+        STC[id] = createIRFChart(id, irf);
+      });
+    }
+  }
+
+  // Granger causality table
+  const gRows = granger.map(g => `<tr>
+    <td><b>${vn[g.from]}</b></td>
+    <td>${vn[g.to]}</td>
+    <td style="font-family:monospace">${isNaN(g.fStat) ? '—' : g.fStat.toFixed(3)}</td>
+    <td style="font-family:monospace">${isNaN(g.pval) ? '—' : g.pval.toFixed(4)}</td>
+    <td style="color:var(--y);font-weight:700">${g.sig || '—'}</td>
+  </tr>`).join('');
+  document.getElementById('st-var-granger-tbl').innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Causa (j)</th><th>Efeito (i)</th><th>F-stat</th><th>p-valor*</th><th>Sig.</th></tr></thead>
+      <tbody>${gRows}</tbody>
+    </table>
+    <p style="font-size:10px;color:var(--txt3);margin-top:6px">* aprox. via chi²(p). Sig: *** p&lt;0.01, ** p&lt;0.05, * p&lt;0.10</p>`;
+
+  // Projection table
+  const projHeaders = ['Período', ...vn.map(n => n + ' (prev.)')].map(h => `<th>${h}</th>`).join('');
+  const projRows = Array.from({ length: futureN }, (_, i) => {
+    const cells = forecast[i].map(v => `<td style="color:var(--y);font-weight:600">${fmt(v, 3)}</td>`).join('');
+    return `<tr><td>+${i + 1}</td>${cells}</tr>`;
+  }).join('');
+  document.getElementById('st-proj-tbl').innerHTML = `
+    <table class="data-table"><thead><tr>${projHeaders}</tr></thead><tbody>${projRows}</tbody></table>`;
+}
+
 // ─── AI ──────────────────────────────────────────────────────────────────────
 
 async function stGenerateAI(res) {
@@ -767,6 +1157,21 @@ Projeção próximos ${res.futureN} períodos: ${res.projValues.map(v => v.toFix
 
 Inclua: 1) direção e força da tendência 2) padrão sazonal 3) perspectivas futuras 4) limitações do modelo.`;
     fallback = `Tendência: ${res.b1 >= 0 ? 'crescente' : 'decrescente'} (${res.b1.toFixed(3)}/período). Cresc. médio: ${res.avgGrowth.toFixed(1)}%. Próx. projeção: ${res.projValues[0]?.toFixed(2) ?? '—'}.`;
+  } else if (res.model === 'var') {
+    const grangerSig = res.granger.filter(g => g.sig).map(g =>
+      `${res.varNames[g.from]} → ${res.varNames[g.to]} (F=${g.fStat.toFixed(2)}, ${g.sig})`
+    ).join('; ') || 'nenhuma relação significativa';
+    prompt = `Você é especialista em econometria e modelos VAR. Analise em português (3-4 parágrafos curtos):
+
+Modelo: VAR(${res.p}) com ${res.k} variáveis | T = ${res.T} | Obs. efetivas = ${res.nObs}
+Variáveis: ${res.varNames.join(', ')}
+Médias: ${res.ymArr.map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}
+AIC = ${res.aic.toFixed(3)} | BIC = ${res.bic.toFixed(3)}
+Causalidade de Granger significativa: ${esc(grangerSig)}
+Previsão próx. ${res.futureN} períodos (última): ${res.forecast[res.futureN - 1].map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}
+
+Inclua: 1) dinâmica das relações entre variáveis e Granger-causalidade 2) IRF esperado e persistência dos choques 3) qualidade do ajuste e limitações do VAR 4) quando usar VAR vs modelos univariados.`;
+    fallback = `VAR(${res.p}), ${res.k} variáveis. AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}. Causalidade: ${grangerSig}.`;
   }
 
   try {
@@ -803,6 +1208,10 @@ export async function stSaveAnalysis() {
         persistence: res.persistence, halfLife: res.halfLife,
         aic: res.aic, bic: res.bic,
         ciLower: res.ciLower, ciUpper: res.ciUpper });
+    } else if (res.model === 'var') {
+      Object.assign(base, { k: res.k, p: res.p, varNames: res.varNames,
+        aic: res.aic, bic: res.bic,
+        matrix: res.matrix, labelsList: res.labelsList, forecast: res.forecast });
     }
     await saveAnalysisRequest({
       nome: document.getElementById('st-analysis-name').value || 'Série Temporal',
@@ -876,6 +1285,23 @@ export function stExportExcel() {
         cell(v, z ? S.num4 : S.num4Odd), cell(res.sigma[i], z ? S.num4 : S.num4Odd),
         cell(res.eps2[i], z ? S.num4 : S.num4Odd), cell(res.zStd[i], z ? S.num4 : S.num4Odd)];
     });
+  } else if (res.model === 'var') {
+    const vn = res.varNames;
+    rawHeaders = [cell('ID', S.hDark), cell('Período', S.hBlue),
+      ...vn.map(n => cell(n, S.hGreen)),
+      ...vn.map(n => cell(n + ' Prev.', S.hTeal))];
+    rawRows = res.labelsList.map((lbl, i) => {
+      const z = zebra(i);
+      return [cell(i + 1, z ? S.even : S.odd), cell(lbl, z ? S.evenL : S.oddL),
+        ...res.matrix[i].map(v => cell(v, z ? S.num4 : S.num4Odd)),
+        ...vn.map(() => cell('', z ? S.even : S.odd))];
+    });
+    res.forecast.forEach((row, i) => {
+      const z = zebra(res.labelsList.length + i);
+      rawRows.push([cell('', z ? S.even : S.odd), cell(`+${i + 1}`, z ? S.evenL : S.oddL),
+        ...vn.map(() => cell('', z ? S.even : S.odd)),
+        ...row.map(v => cell(v, z ? S.num4 : S.num4Odd))]);
+    });
   } else {
     rawHeaders = [cell('ID', S.hDark), cell('Período', S.hBlue), cell('Real', S.hGreen),
       cell('Tendência', S.hTeal), cell('Sazonalidade', S.hOrange), cell('Resíduo', S.hGray)];
@@ -887,42 +1313,56 @@ export function stExportExcel() {
         cell(res.residual[i], Math.abs(res.residual[i]) > 2 * res.stdev ? S.warn : (z ? S.num4 : S.num4Odd))];
     });
   }
+  const rawColCount = rawHeaders.length - 1;
+  const rawColWidths = res.model === 'var'
+    ? [6, 16, ...Array(rawHeaders.length - 2).fill(12)]
+    : [6, 16, 12, 12, 14, 12];
   const rawWS = buildWS([
     [cell(`📊 RAW DATA — ${name} [${res.model.toUpperCase()}]`, S.title)],
     rawHeaders,
     ...rawRows,
-  ], [6, 16, 12, 12, 14, 12]);
-  mergeRange(rawWS, 0, 0, 0, 5);
-  autoFilter(rawWS, 5, res.values.length + 1);
+  ], rawColWidths);
+  mergeRange(rawWS, 0, 0, 0, rawColCount);
+  if (res.model !== 'var') autoFilter(rawWS, 5, res.values.length + 1);
   XLSX.utils.book_append_sheet(wb, rawWS, 'RAW_DATA');
 
   // ── FORECAST sheet ──
-  const isForecast = res.model !== 'classic';
-  const fcValues = res.model === 'classic' ? res.projValues : res.model === 'arima' ? res.forecastY : Array.from({ length: res.futureN }, () => res.mu);
-  const ciL = res.ciLower;
-  const ciU = res.ciUpper;
   const projLabels = Array.from({ length: res.futureN }, (_, i) => `+${i + 1}`);
-  const hasCI = isForecast;
-
-  const fcHeaders = hasCI
-    ? [cell('Período', S.hBlue), cell('Previsão', S.hGreen), cell('IC 95% Inf', S.hTeal), cell('IC 95% Sup', S.hOrange), cell('Amplitude IC', S.hGray)]
-    : [cell('Período', S.hBlue), cell('Projeção', S.hGreen), cell('Só tendência', S.hTeal), cell('vs Média %', S.hOrange)];
-
-  const fcRows = fcValues.map((v, i) => {
-    const z = zebra(i);
-    if (hasCI) {
-      return [cell(projLabels[i], z ? S.even : S.odd), cell(v, z ? S.num4 : S.num4Odd),
-        cell(ciL[i], z ? S.num4 : S.num4Odd), cell(ciU[i], z ? S.num4 : S.num4Odd),
-        cell(ciU[i] - ciL[i], z ? S.num4 : S.num4Odd)];
-    } else {
-      const varPct = res.ym !== 0 ? (v - res.ym) / Math.abs(res.ym) * 100 : '';
-      return [cell(projLabels[i], z ? S.even : S.odd), cell(v, z ? S.num4 : S.num4Odd),
-        cell(res.projTrend[i], z ? S.num4 : S.num4Odd),
-        cell(varPct, { ...(varPct >= 0 ? S.good : S.warn), numFmt: '0.00' })];
-    }
-  });
-  const fcWS = buildWS([[cell(`🔮 FORECAST — ${name}`, S.title)], fcHeaders, ...fcRows], [16, 14, 14, 14, 14]);
-  mergeRange(fcWS, 0, 0, 0, 4);
+  let fcWS;
+  if (res.model === 'var') {
+    const vn = res.varNames;
+    const fcH = [cell('Período', S.hBlue), ...vn.map(n => cell(n, S.hGreen))];
+    const fcR = res.forecast.map((row, i) => {
+      const z = zebra(i);
+      return [cell(projLabels[i], z ? S.even : S.odd), ...row.map(v => cell(v, z ? S.num4 : S.num4Odd))];
+    });
+    const colW = [16, ...vn.map(() => 14)];
+    fcWS = buildWS([[cell(`🔮 FORECAST — ${name}`, S.title)], fcH, ...fcR], colW);
+    mergeRange(fcWS, 0, 0, 0, vn.length);
+  } else {
+    const isForecast = res.model !== 'classic';
+    const fcValues = res.model === 'classic' ? res.projValues : res.model === 'arima' ? res.forecastY : Array.from({ length: res.futureN }, () => res.mu);
+    const ciL = res.ciLower;
+    const ciU = res.ciUpper;
+    const fcHeaders = isForecast
+      ? [cell('Período', S.hBlue), cell('Previsão', S.hGreen), cell('IC 95% Inf', S.hTeal), cell('IC 95% Sup', S.hOrange), cell('Amplitude IC', S.hGray)]
+      : [cell('Período', S.hBlue), cell('Projeção', S.hGreen), cell('Só tendência', S.hTeal), cell('vs Média %', S.hOrange)];
+    const fcRows = fcValues.map((v, i) => {
+      const z = zebra(i);
+      if (isForecast) {
+        return [cell(projLabels[i], z ? S.even : S.odd), cell(v, z ? S.num4 : S.num4Odd),
+          cell(ciL[i], z ? S.num4 : S.num4Odd), cell(ciU[i], z ? S.num4 : S.num4Odd),
+          cell(ciU[i] - ciL[i], z ? S.num4 : S.num4Odd)];
+      } else {
+        const varPct = res.ym !== 0 ? (v - res.ym) / Math.abs(res.ym) * 100 : '';
+        return [cell(projLabels[i], z ? S.even : S.odd), cell(v, z ? S.num4 : S.num4Odd),
+          cell(res.projTrend[i], z ? S.num4 : S.num4Odd),
+          cell(varPct, { ...(varPct >= 0 ? S.good : S.warn), numFmt: '0.00' })];
+      }
+    });
+    fcWS = buildWS([[cell(`🔮 FORECAST — ${name}`, S.title)], fcHeaders, ...fcRows], [16, 14, 14, 14, 14]);
+    mergeRange(fcWS, 0, 0, 0, 4);
+  }
   XLSX.utils.book_append_sheet(wb, fcWS, 'FORECAST');
 
   // ── KPI sheet ──
@@ -952,6 +1392,19 @@ export function stExportExcel() {
       { label: 'σ incondicional', value: Math.sqrt(res.uncondVar).toFixed(4) },
       { label: 'AIC', value: res.aic.toFixed(2) },
     );
+  } else if (res.model === 'var') {
+    kpiRows.push(
+      { label: '🔗 Ordem VAR', value: `VAR(${res.p})` },
+      { label: '🔢 Variáveis (k)', value: res.k },
+      { label: '🔢 Observações', value: res.T },
+      { label: '🔢 Obs. efetivas', value: res.nObs },
+      { section: '📊 CRITÉRIOS DE INFORMAÇÃO' },
+      { label: 'AIC', value: res.aic.toFixed(4) },
+      { label: 'BIC', value: res.bic.toFixed(4) },
+      { section: '📈 VARIÁVEIS' },
+      ...res.varNames.map((n, j) => ({ label: `Média — ${n}`, value: res.ymArr[j].toFixed(4) })),
+      ...res.varNames.map((n, j) => ({ label: `DP — ${n}`, value: res.sdArr[j].toFixed(4) })),
+    );
   } else {
     kpiRows.push(
       { label: '🔢 n', value: res.n }, { label: '🔮 Períodos projetados', value: res.futureN },
@@ -978,6 +1431,12 @@ export function stExportCSV() {
   } else if (res.model === 'garch') {
     header = [res.labelX, res.labelY, 'sigma_t', 'eps2_t', 'z_t'];
     rows = res.values.map((v, i) => [res.labels[i], v, res.sigma[i], res.eps2[i], res.zStd[i]]);
+  } else if (res.model === 'var') {
+    header = ['Periodo', ...res.varNames, ...res.varNames.map(n => n + '_prev')];
+    rows = [
+      ...res.labelsList.map((lbl, i) => [lbl, ...res.matrix[i], ...new Array(res.k).fill('')]),
+      ...res.forecast.map((row, i) => [`+${i + 1}`, ...new Array(res.k).fill(''), ...row]),
+    ];
   } else {
     header = [res.labelX, res.labelY, 'Tendencia', 'Sazonalidade', 'Residuo'];
     rows = res.values.map((v, i) => [res.labels[i], v, res.trend[i], res.seasonal[i], res.residual[i]]);
