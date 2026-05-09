@@ -1450,6 +1450,369 @@
   html.light ::-webkit-scrollbar-track { background:var(--bg3); }
   html.light ::-webkit-scrollbar-thumb { background:var(--brd2); }
   @media (max-width:768px) { #app-body { padding-left:48px; } #sidebar { width:48px; } }
+
+  /* =====================================================================
+     SLOPE ANIMATION SYSTEM
+     Transitions, entrances, micro-interactions and motion design.
+  ===================================================================== */
+
+  /* ── Reduced motion fallback ── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+    .guide-card { opacity:1 !important; transform:none !important; }
+  }
+
+  /* ── Smooth theme-switch transitions ── */
+  body, .topbar, #sidebar, .auth-card, .card, .modal-card, .about-card,
+  .metric, .hcard, .history-item, .stat-card, .diag-card,
+  .friend-card, .share-card, .guide-card,
+  .field-input, .data-input, .form-input, .label-input {
+    transition:
+      background-color .3s ease,
+      border-color .3s ease,
+      color .2s ease,
+      box-shadow .3s ease !important;
+  }
+  /* Keep fast transitions on interactive elements */
+  .btn-primary, .btn-ghost, .btn-demo, .tab-btn, .sidebar-btn, .auth-tab,
+  .share-btn, .degree-btn, .quantile-chip, .btn-guide-use {
+    transition:
+      background-color .15s ease,
+      border-color .15s ease,
+      color .15s ease,
+      transform .15s ease,
+      box-shadow .15s ease !important;
+  }
+
+  /* ── 1. AUTH → APP cinematic entrance ── */
+  #auth-overlay {
+    transition:
+      opacity .5s cubic-bezier(.4,0,.2,1),
+      visibility .5s,
+      transform .5s cubic-bezier(.4,0,.2,1) !important;
+  }
+  #auth-overlay.hidden {
+    transform: scale(1.05) !important;
+  }
+  #app-container.app-enter {
+    animation: app-reveal .65s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes app-reveal {
+    from { opacity:0; transform:scale(.97) translateY(14px); }
+    to   { opacity:1; transform:scale(1)   translateY(0);    }
+  }
+
+  /* ── 2. Auth form switch animation ── */
+  .auth-form.active {
+    animation: auth-form-in .3s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes auth-form-in {
+    from { opacity:0; transform:translateY(8px); }
+    to   { opacity:1; transform:translateY(0);   }
+  }
+
+  /* ── 3. Direction-aware panel transitions ── */
+  .panel.active {
+    animation: panel-enter .38s cubic-bezier(.16,1,.3,1) both !important;
+  }
+  @keyframes panel-enter {
+    from { opacity:0; transform:translateX(calc(var(--pan-dir,1) * 28px)); }
+    to   { opacity:1; transform:translateX(0);                              }
+  }
+
+  /* ── 4. Staggered card fly-in ── */
+  .card-stagger {
+    animation: card-fly-in .42s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: calc(var(--card-i,0) * 65ms);
+  }
+  @keyframes card-fly-in {
+    from { opacity:0; transform:translateY(20px) scale(.98); }
+    to   { opacity:1; transform:translateY(0)    scale(1);   }
+  }
+
+  /* ── 5. Metric value pop ── */
+  .metric-pop {
+    animation: metric-pop .45s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: calc(var(--card-i,0) * 40ms);
+  }
+  @keyframes metric-pop {
+    0%   { transform:scale(.55); opacity:0; }
+    65%  { transform:scale(1.09); opacity:1; }
+    100% { transform:scale(1);   opacity:1; }
+  }
+
+  /* ── 6. Metric card hover glow ── */
+  .metric {
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease !important;
+  }
+  .metric:hover {
+    transform: translateY(-3px) scale(1.03);
+    border-color: var(--brd2);
+    box-shadow: var(--shadow-card);
+  }
+  .metric:hover .metric-val.metric-x { text-shadow: 0 0 14px rgba(124,131,253,.5); }
+  .metric:hover .metric-val.metric-y { text-shadow: 0 0 14px rgba(0,212,160,.5); }
+
+  /* ── 7. Result section entrance ── */
+  .results-reveal {
+    animation: results-reveal .45s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes results-reveal {
+    from { opacity:0; transform:translateY(10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── 8. Button ripple ── */
+  .btn-primary, .btn-ghost, .btn-demo,
+  .share-btn, .btn-guide-use {
+    position: relative;
+    overflow: hidden;
+  }
+  .ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,.22);
+    pointer-events: none;
+    width: 6px; height: 6px;
+    margin: -3px 0 0 -3px;
+    animation: ripple-expand .6s cubic-bezier(0,.5,.5,1) forwards;
+  }
+  @keyframes ripple-expand {
+    from { transform:scale(0); opacity:.45; }
+    to   { transform:scale(32); opacity:0; }
+  }
+
+  /* ── 9. Toast progress bar ── */
+  #toast { overflow:hidden; }
+  #toast.show::after {
+    content:'';
+    position:absolute; bottom:0; left:0;
+    height:2px; width:100%;
+    border-radius:0 0 10px 10px;
+    background:var(--y);
+    transform-origin:left;
+    animation: toast-progress var(--toast-dur,3s) linear forwards;
+  }
+  #toast.show.err::after  { background:var(--acc); }
+  #toast.show.info::after { background:var(--x); }
+  @keyframes toast-progress {
+    from { transform:scaleX(1); }
+    to   { transform:scaleX(0); }
+  }
+
+  /* ── 10. Topbar scroll shadow ── */
+  .topbar { transition: box-shadow .3s ease !important; }
+  .topbar.scrolled {
+    box-shadow:
+      0 1px 0 var(--brd),
+      0 4px 24px rgba(0,0,0,.35);
+  }
+
+  /* ── 11. Tab active underline ── */
+  .tab-btn { position:relative; }
+  .tab-btn.active::after {
+    content:'';
+    position:absolute; bottom:-1px; left:50%;
+    transform:translateX(-50%);
+    width:20px; height:2px;
+    background:var(--x); border-radius:2px 2px 0 0;
+    animation: tab-underline .25s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes tab-underline {
+    from { width:0; opacity:0; }
+    to   { width:20px; opacity:1; }
+  }
+
+  /* ── 12. Sidebar tooltip slide ── */
+  .sidebar-tooltip {
+    transition: opacity .15s ease, transform .15s ease !important;
+    transform: translateX(-6px) translateY(-50%);
+  }
+  .sidebar-btn:hover .sidebar-tooltip {
+    opacity:1;
+    transform: translateX(0) translateY(-50%);
+  }
+
+  /* ── 13. Logo icon breathe ── */
+  @keyframes logo-breathe {
+    0%,100% { box-shadow: var(--shadow-x); }
+    50%     { box-shadow: 0 2px 18px rgba(124,131,253,.65); }
+  }
+  .topbar-logo-icon {
+    animation: logo-breathe 4s ease-in-out infinite;
+  }
+
+  /* ── 14. Chat bubble entrances ── */
+  .chat-bubble-mine {
+    animation: bubble-right .28s cubic-bezier(.16,1,.3,1) both;
+  }
+  .chat-bubble-theirs {
+    animation: bubble-left .28s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes bubble-right {
+    from { opacity:0; transform:translateX(18px) scale(.88); }
+    to   { opacity:1; transform:translateX(0)    scale(1); }
+  }
+  @keyframes bubble-left {
+    from { opacity:0; transform:translateX(-18px) scale(.88); }
+    to   { opacity:1; transform:translateX(0)     scale(1); }
+  }
+
+  /* ── 15. Friend card stagger ── */
+  .friend-card.fc-enter {
+    animation: fc-enter .32s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: calc(var(--fc-i,0) * 55ms);
+  }
+  @keyframes fc-enter {
+    from { opacity:0; transform:translateX(-14px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+
+  /* ── 16. Share card stagger ── */
+  .share-card.sc-enter {
+    animation: card-fly-in .38s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: calc(var(--sc-i,0) * 60ms);
+  }
+
+  /* ── 17. AI insight entrance ── */
+  .ai-insight.ai-new {
+    animation: ai-reveal .5s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes ai-reveal {
+    from { opacity:0; transform:translateY(10px) scaleY(.92); }
+    to   { opacity:1; transform:translateY(0)    scaleY(1); }
+  }
+
+  /* ── 18. Interp box entrance ── */
+  .interp-box.interp-new {
+    animation: interp-in .38s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes interp-in {
+    from { opacity:0; transform:translateX(-10px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+
+  /* ── 19. Prediction result pop ── */
+  .pred-pop {
+    animation: pred-pop .5s cubic-bezier(.34,1.56,.64,1) both !important;
+  }
+  @keyframes pred-pop {
+    from { opacity:0; transform:scale(.88) translateY(10px); }
+    to   { opacity:1; transform:scale(1)   translateY(0); }
+  }
+
+  /* ── 20. Guide cards scroll reveal ── */
+  .guide-card {
+    opacity:0;
+    transform:translateY(22px);
+    transition:
+      opacity .5s ease,
+      transform .5s ease,
+      border-color .2s,
+      box-shadow .2s !important;
+  }
+  .guide-card.revealed {
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* ── 21. History items reveal ── */
+  .history-item.revealed, .hcard.revealed {
+    animation: card-fly-in .38s cubic-bezier(.16,1,.3,1) both;
+    animation-delay: calc(var(--card-i,0) * 45ms);
+  }
+
+  /* ── 22. Drop zone pulse on drag ── */
+  .drop-zone.drag-over {
+    animation: drop-pulse .8s ease-in-out infinite;
+  }
+  @keyframes drop-pulse {
+    0%,100% { box-shadow:0 0 0 0   rgba(124,131,253,.15); }
+    50%     { box-shadow:0 0 0 10px rgba(124,131,253,.0); }
+  }
+
+  /* ── 23. About modal pills entrance ── */
+  @keyframes pill-pop {
+    from { opacity:0; transform:scale(.7) translateY(4px); }
+    to   { opacity:1; transform:scale(1)  translateY(0); }
+  }
+  #about-overlay.open .about-pill {
+    animation: pill-pop .35s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  #about-overlay.open .about-pill:nth-child(1) { animation-delay:.08s; }
+  #about-overlay.open .about-pill:nth-child(2) { animation-delay:.14s; }
+  #about-overlay.open .about-pill:nth-child(3) { animation-delay:.20s; }
+  #about-overlay.open .about-pill:nth-child(4) { animation-delay:.26s; }
+  #about-overlay.open .about-pill:nth-child(5) { animation-delay:.32s; }
+  #about-overlay.open .about-pill:nth-child(6) { animation-delay:.38s; }
+
+  /* ── 24. Scrollbar thumb glow ── */
+  ::-webkit-scrollbar-thumb:hover {
+    background:var(--x);
+    box-shadow:0 0 8px rgba(124,131,253,.4);
+  }
+
+  /* ── 25. Modal / overlay entrance enhancement ── */
+  .modal-card {
+    animation: modal-spring .38s cubic-bezier(.16,1,.3,1) both !important;
+  }
+  @keyframes modal-spring {
+    from { opacity:0; transform:scale(.92) translateY(20px); }
+    to   { opacity:1; transform:scale(1)   translateY(0); }
+  }
+  .about-card {
+    animation: modal-spring .38s cubic-bezier(.16,1,.3,1) both !important;
+  }
+
+  /* ── 26. Topbar logo icon SVG draw ── */
+  .topbar-logo-icon svg path,
+  .topbar-logo-icon svg line,
+  .topbar-logo-icon svg polyline,
+  .auth-logo-icon svg path,
+  .auth-logo-icon svg line,
+  .auth-logo-icon svg polyline {
+    stroke-dasharray: var(--path-len, 80);
+    stroke-dashoffset: var(--path-len, 80);
+    transition: stroke-dashoffset 0s;
+  }
+  .topbar-logo-icon.logo-drawn path,
+  .topbar-logo-icon.logo-drawn line,
+  .topbar-logo-icon.logo-drawn polyline,
+  .auth-logo-icon.logo-drawn path,
+  .auth-logo-icon.logo-drawn line,
+  .auth-logo-icon.logo-drawn polyline {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset .7s cubic-bezier(.16,1,.3,1);
+  }
+
+  /* ── 27. Degree compare card pop ── */
+  .degree-compare-card {
+    transition: all .15s ease !important;
+  }
+  .degree-compare-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+  }
+  .degree-compare-card.best {
+    animation: best-pop .4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes best-pop {
+    from { transform:scale(.9); opacity:.5; }
+    to   { transform:scale(1);  opacity:1; }
+  }
+
+  /* ── 28. Sync dot enhanced pulse ── */
+  @keyframes sync-pulse-v2 {
+    0%   { box-shadow:0 0 0 0px rgba(0,212,160,.5); }
+    50%  { box-shadow:0 0 0 6px rgba(0,212,160,.0); }
+    100% { box-shadow:0 0 0 0px rgba(0,212,160,.0); }
+  }
+  .sync-dot { animation:sync-pulse-v2 1.8s ease-out infinite !important; }
+
 </style>
 </head>
 <body>
@@ -3453,6 +3816,365 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
   });
   window.openAbout = openAbout;
   window.closeAbout = closeAbout;
+</script>
+<script>
+/* =====================================================================
+   SLOPE ANIMATION CONTROLLER
+   Pure-DOM animation layer — no framework dependencies.
+   Runs before the ES6 module so observers are in place at boot.
+   Functions that wrap module exports use window.load (modules are
+   always deferred and execute after DOMContentLoaded).
+===================================================================== */
+(function () {
+  'use strict';
+
+  /* ── Utility ── */
+  function $(s, ctx)  { return (ctx || document).querySelector(s); }
+  function $$(s, ctx) { return Array.from((ctx || document).querySelectorAll(s)); }
+  function raf2(fn)   { requestAnimationFrame(() => requestAnimationFrame(fn)); }
+
+  /* ================================================================
+     1. DIRECTION-AWARE TAB TRANSITIONS
+     Wraps window.switchTab after modules load and detects whether
+     the new tab is to the "right" or "left" of the current one.
+  ================================================================ */
+  const TAB_ORDER = [
+    'nova','multipla','logistica','polinomial','serie',
+    'quantilica','regularizada','importar','historico',
+    'compartilhar','amigos','guia','perfil'
+  ];
+  let _tabIdx = 0;
+
+  window.addEventListener('load', function () {
+    const orig = window.switchTab;
+    if (!orig) return;
+    window.switchTab = function (tab, btn) {
+      const ni = TAB_ORDER.indexOf(tab);
+      if (ni >= 0) {
+        document.documentElement.style.setProperty(
+          '--pan-dir', ni >= _tabIdx ? '1' : '-1'
+        );
+        _tabIdx = ni;
+      }
+      return orig.call(this, tab, btn);
+    };
+  });
+
+  /* ================================================================
+     2. BUTTON RIPPLE
+     Delegated click → creates an absolutely-positioned span that
+     expands from the click point and fades out.
+  ================================================================ */
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest(
+      '.btn-primary,.btn-ghost,.btn-demo,.share-btn,.btn-guide-use'
+    );
+    if (!btn || btn.disabled) return;
+    const r = btn.getBoundingClientRect();
+    const span = document.createElement('span');
+    span.className = 'ripple-effect';
+    span.style.left = (e.clientX - r.left) + 'px';
+    span.style.top  = (e.clientY - r.top)  + 'px';
+    btn.appendChild(span);
+    span.addEventListener('animationend', () => span.remove(), { once: true });
+  });
+
+  /* ================================================================
+     3. AUTH → APP CINEMATIC TRANSITION
+     Observes when #auth-overlay gains .hidden, triggers app-enter
+     animation on #app-container.
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.getElementById('auth-overlay');
+    const app     = document.getElementById('app-container');
+    if (!overlay || !app) return;
+
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        if (m.attributeName !== 'class') return;
+        if (overlay.classList.contains('hidden')) {
+          app.classList.add('app-enter');
+          setTimeout(() => app.classList.remove('app-enter'), 750);
+        }
+      });
+    }).observe(overlay, { attributes: true });
+  });
+
+  /* ================================================================
+     4. STAGGERED RESULTS ANIMATION
+     Watches each result container. When it becomes visible (style
+     changes from display:none), stagger its child cards and pop
+     metric values.
+  ================================================================ */
+  const RESULT_IDS = [
+    'view-padrao','view-avancado',
+    'm-results','lg-results','po-results',
+    'st-results','qr-results','rr-results'
+  ];
+
+  function staggerReveal(container) {
+    const cards = container.querySelectorAll(
+      '.card, .metrics-grid, .chart-wrap, .interp-box, .diag-grid, .tbl-wrap, .qmetric-grid'
+    );
+    cards.forEach(function (c, i) {
+      c.style.setProperty('--card-i', i);
+      c.classList.remove('card-stagger');
+      void c.offsetWidth;
+      c.classList.add('card-stagger');
+    });
+    $$('.metric-val', container).forEach(function (m, i) {
+      m.style.setProperty('--card-i', i);
+      m.classList.remove('metric-pop');
+      void m.offsetWidth;
+      m.classList.add('metric-pop');
+    });
+    container.classList.add('results-reveal');
+    animateMetrics(container);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    RESULT_IDS.forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          if (m.attributeName !== 'style') return;
+          const vis = el.style.display && el.style.display !== 'none';
+          if (vis) raf2(() => staggerReveal(el));
+        });
+      }).observe(el, { attributes: true });
+    });
+  });
+
+  /* ================================================================
+     5. METRIC COUNT-UP
+     Parses numeric metric-val text and counts from 0 to target.
+  ================================================================ */
+  function animateMetrics(container) {
+    $$('.metric-val', container).forEach(function (el) {
+      const raw = el.textContent.trim();
+      /* skip specials: <0.001, —, %, etc. with alpha prefix */
+      const numMatch = raw.match(/^(-?[0-9]+\.?[0-9]*)/);
+      if (!numMatch) return;
+      const target   = parseFloat(numMatch[1]);
+      const suffix   = raw.slice(numMatch[0].length);
+      const decimals = (numMatch[1].includes('.') ? (numMatch[1].split('.')[1] || '').length : 0);
+      const dur      = 650;
+      const t0       = performance.now();
+
+      function tick(now) {
+        const elapsed = now - t0;
+        const p = Math.min(elapsed / dur, 1);
+        /* easeOutExpo */
+        const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+        const v = target * e;
+        el.textContent = (decimals > 0 ? v.toFixed(decimals) : Math.round(v)) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = raw;
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ================================================================
+     6. SVG LOGO DRAW
+     Sets stroke-dasharray/offset on each SVG path to their total
+     length, then animates to 0 — the "draw" effect.
+  ================================================================ */
+  function drawLogoIcon(container, delay) {
+    const paths = container.querySelectorAll('svg path, svg line, svg polyline');
+    paths.forEach(function (p) {
+      const len = p.getTotalLength ? p.getTotalLength() : 50;
+      p.style.setProperty('--path-len', len);
+      p.style.transition = 'none';
+    });
+    setTimeout(function () {
+      raf2(function () {
+        container.classList.add('logo-drawn');
+      });
+    }, delay || 200);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    $$('.topbar-logo-icon, .auth-logo-icon').forEach(function (icon, i) {
+      drawLogoIcon(icon, 150 + i * 80);
+    });
+  });
+
+  /* ================================================================
+     7. TOAST PROGRESS BAR DURATION SYNC
+     Wraps window.showToast to inject --toast-dur before each call.
+  ================================================================ */
+  window.addEventListener('load', function () {
+    const orig = window.showToast;
+    if (!orig) return;
+    window.showToast = function (msg, type, dur) {
+      const ms  = dur || 3000;
+      const toast = document.getElementById('toast');
+      if (toast) toast.style.setProperty('--toast-dur', (ms / 1000) + 's');
+      return orig.call(this, msg, type, dur);
+    };
+  });
+
+  /* ================================================================
+     8. TOPBAR SCROLL SHADOW
+     Adds .scrolled to .topbar when content-area is scrolled.
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const topbar   = document.querySelector('.topbar');
+    const scroller = document.getElementById('content-area');
+    if (!topbar || !scroller) return;
+    scroller.addEventListener('scroll', function () {
+      topbar.classList.toggle('scrolled', scroller.scrollTop > 4);
+    }, { passive: true });
+  });
+
+  /* ================================================================
+     9. GUIDE CARDS INTERSECTION REVEAL
+     Reveals .guide-card elements as they scroll into view using
+     IntersectionObserver (staggered by index).
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        const cards = Array.from(entry.target.parentElement
+          ? entry.target.parentElement.querySelectorAll('.guide-card')
+          : [entry.target]);
+        const idx = cards.indexOf(entry.target);
+        entry.target.style.transitionDelay = Math.max(idx * 60, 0) + 'ms';
+        entry.target.classList.add('revealed');
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+    function observeGuideCards() {
+      $$('.guide-card:not(.revealed)').forEach(c => io.observe(c));
+    }
+    observeGuideCards();
+
+    const panelGuia = document.getElementById('panel-guia');
+    if (panelGuia) {
+      new MutationObserver(observeGuideCards).observe(panelGuia, {
+        childList: true, subtree: true
+      });
+    }
+  });
+
+  /* ================================================================
+     10. HISTORY ITEMS STAGGERED REVEAL
+     Each time history items are injected, stagger-animate them.
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const panelHist = document.getElementById('panel-historico');
+    if (!panelHist) return;
+    new MutationObserver(function () {
+      $$('.history-item:not(.revealed), .hcard:not(.revealed)', panelHist)
+        .forEach(function (el, i) {
+          el.style.setProperty('--card-i', i);
+          el.classList.add('revealed');
+        });
+    }).observe(panelHist, { childList: true, subtree: true });
+  });
+
+  /* ================================================================
+     11. INTERP-BOX ENTRANCE
+     Detects when .interp-box nodes are added to the content area.
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const area = document.getElementById('content-area');
+    if (!area) return;
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        m.addedNodes.forEach(function (node) {
+          if (node.nodeType !== 1) return;
+          const boxes = node.classList && node.classList.contains('interp-box')
+            ? [node] : Array.from((node.querySelectorAll || (() => []))
+                .call(node, '.interp-box'));
+          boxes.forEach(function (box) {
+            box.classList.add('interp-new');
+            box.addEventListener('animationend',
+              () => box.classList.remove('interp-new'), { once: true });
+          });
+        });
+      });
+    }).observe(area, { childList: true, subtree: true });
+  });
+
+  /* ================================================================
+     12. AI INSIGHT ENTRANCE
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const area = document.getElementById('content-area');
+    if (!area) return;
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        m.addedNodes.forEach(function (node) {
+          if (node.nodeType !== 1) return;
+          const insights = node.classList && node.classList.contains('ai-insight')
+            ? [node] : Array.from((node.querySelectorAll || (() => []))
+                .call(node, '.ai-insight'));
+          insights.forEach(function (el) {
+            el.classList.add('ai-new');
+            el.addEventListener('animationend',
+              () => el.classList.remove('ai-new'), { once: true });
+          });
+        });
+      });
+    }).observe(area, { childList: true, subtree: true });
+  });
+
+  /* ================================================================
+     13. FRIEND CARD STAGGER ENTRANCE
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const panel = document.getElementById('panel-amigos');
+    if (!panel) return;
+    new MutationObserver(function () {
+      $$('.friend-card:not(.fc-enter)', panel).forEach(function (card, i) {
+        card.style.setProperty('--fc-i', i);
+        card.classList.add('fc-enter');
+      });
+    }).observe(panel, { childList: true, subtree: true });
+  });
+
+  /* ================================================================
+     14. SHARE CARD STAGGER ENTRANCE
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    const list = document.getElementById('share-list');
+    if (!list) return;
+    new MutationObserver(function () {
+      $$('.share-card:not(.sc-enter)', list).forEach(function (card, i) {
+        card.style.setProperty('--sc-i', i);
+        card.classList.add('sc-enter');
+      });
+    }).observe(list, { childList: true });
+  });
+
+  /* ================================================================
+     15. PREDICTION RESULT POP
+  ================================================================ */
+  document.addEventListener('DOMContentLoaded', function () {
+    ['pred-result','m-pred-result','lg-pred-result','po-pred-result'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      new MutationObserver(function (muts) {
+        muts.forEach(function (m) {
+          if (m.attributeName !== 'style') return;
+          if (el.style.display && el.style.display !== 'none') {
+            el.classList.remove('pred-pop');
+            void el.offsetWidth;
+            el.classList.add('pred-pop');
+            el.addEventListener('animationend',
+              () => el.classList.remove('pred-pop'), { once: true });
+          }
+        });
+      }).observe(el, { attributes: true });
+    });
+  });
+
+})();
 </script>
 <script type="module" src="src/app.js"></script>
 </body>
