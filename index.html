@@ -1813,6 +1813,34 @@
   }
   .sync-dot { animation:sync-pulse-v2 1.8s ease-out infinite !important; }
 
+  /* ── VAR: inputs de nome de variável no header ─────────────────────────── */
+  .var-dh-label {
+    width: 100%; box-sizing: border-box;
+    background: transparent; border: none;
+    color: inherit; text-align: center;
+    font: 600 11px/1 var(--font);
+    padding: 3px 4px; border-radius: 4px;
+    cursor: text;
+    border-bottom: 1px dashed rgba(255,255,255,.18);
+    transition: background .15s, border-color .15s, outline .1s;
+    outline: 2px solid transparent;
+  }
+  .var-dh-label:hover {
+    background: rgba(255,255,255,.06);
+    border-bottom-color: rgba(255,255,255,.4);
+  }
+  .var-dh-label:focus {
+    background: rgba(0,212,160,.09);
+    border-bottom-color: var(--y);
+    outline: 2px solid rgba(0,212,160,.25);
+    outline-offset: 1px;
+  }
+  .light .var-dh-label {
+    border-bottom-color: rgba(0,0,0,.2);
+  }
+  .light .var-dh-label:hover  { background: rgba(0,0,0,.05); border-bottom-color: rgba(0,0,0,.45); }
+  .light .var-dh-label:focus  { background: rgba(0,180,130,.08); }
+
 </style>
 </head>
 <body>

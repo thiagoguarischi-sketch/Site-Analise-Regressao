@@ -186,8 +186,7 @@ function varRebuildTable(clear = false) {
       const name = varNames[i] ?? `Var ${i + 1}`;
       return `<div class="data-header-label" style="padding:0;text-align:center">
         <input type="text" class="var-dh-label" value="${esc(name)}"
-          style="width:100%;background:transparent;border:none;color:inherit;
-                 font:600 11px/1 var(--font);text-align:center;padding:2px 0;box-sizing:border-box"
+          title="Clique para renomear a variável"
           oninput="varUpdateName(${i}, this.value)">
       </div>`;
     }).join('');
