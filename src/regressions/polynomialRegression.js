@@ -17,6 +17,7 @@ import {
   createResidualsVsFitted, createHistogram, createQQPlot,
 } from '../charts/residualPlot.js';
 import { createPolynomialCurve } from '../charts/dashboardCharts.js';
+import { registerChart } from '../charts/baseChart.js';
 
 let poLastResult = null;
 let poDegree = 1;
@@ -283,6 +284,7 @@ function renderPolynomialResults(res, xs, ys, lx, ly) {
   Object.keys(POC).forEach(k => { if (POC[k]) { POC[k].destroy(); delete POC[k]; } });
 
   POC.main   = createPolynomialCurve('po-chart-main', xs, ys, lineXs, lineYs, res.degree, lx, ly);
+  registerChart('po-chart-main', POC.main);
   POC.resfit = createResidualsVsFitted('po-chart-resfit', res.yhat, res.resid, 'rgba(255,179,71,.6)');
   POC.hist   = createHistogram('po-chart-hist', res.resid, res.n, { bg: 'rgba(255,179,71,.5)', border: 'var(--acc2)' });
   POC.qq     = createQQPlot('po-chart-qq', res.resid_std, res.n, { bg: 'rgba(255,179,71,.6)', lineColor: 'rgba(255,255,255,.2)' });
