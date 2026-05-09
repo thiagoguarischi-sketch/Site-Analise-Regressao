@@ -90,6 +90,8 @@ export function stSetModel(model) {
   document.getElementById('st-var-params').style.display = model === 'var' ? 'grid' : 'none';
   document.getElementById('st-scalar-data-card').style.display = model === 'var' ? 'none' : 'block';
   document.getElementById('st-var-data-card').style.display = model === 'var' ? 'block' : 'none';
+  // Recalcula larguras agora que o card está visível (clientWidth correto)
+  if (model === 'var') varRebuildTable();
 }
 
 export function stLoadExample() {
@@ -150,13 +152,23 @@ export function varRemoveVariable() {
   varSyncKDisplay();
 }
 
-// Larguras fixas em px → header e linhas sempre alinhados no scroll
-const VAR_COL_NUM = 28;    // coluna do índice (#)
-const VAR_COL_PER = 120;   // coluna Período
-const VAR_COL_VAR = 110;   // cada coluna de variável
+// Largura dinâmica: preenche o container disponível e só aciona scroll
+// quando a coluna ficaria menor que VAR_COL_MIN.
+const VAR_COL_NUM = 28;   // índice (#) — fixo
+const VAR_COL_MIN = 90;   // largura mínima por coluna antes de rolar
+
+function varColWidth() {
+  const scrollEl = document.getElementById('var-data-header')?.parentElement;
+  const total = scrollEl?.clientWidth || 720;        // fallback quando oculto
+  const numCols = 1 + varK;                          // Período + k variáveis
+  const gaps = (numCols + 1) * 6;                    // espaços entre colunas
+  const available = total - VAR_COL_NUM - gaps;
+  return Math.max(VAR_COL_MIN, Math.floor(available / numCols));
+}
 
 function varGTC() {
-  return `${VAR_COL_NUM}px ${VAR_COL_PER}px ${Array(varK).fill(`${VAR_COL_VAR}px`).join(' ')}`;
+  const w = varColWidth();
+  return `${VAR_COL_NUM}px ${w}px ${Array(varK).fill(`${w}px`).join(' ')}`;
 }
 
 function varRebuildTable(clear = false) {
