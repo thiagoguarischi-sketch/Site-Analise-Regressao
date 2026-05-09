@@ -24,7 +24,7 @@ const STC = {};
 
 // ─── VAR STATE ───────────────────────────────────────────────────────────────
 let varK = 2;
-let varNames = ['Var 1', 'Var 2', 'Var 3', 'Var 4'];
+let varNames = Array.from({ length: 8 }, (_, i) => `Var ${i + 1}`);
 
 function stDestroyChart(id) { if (STC[id]) { STC[id].destroy(); delete STC[id]; } }
 
@@ -150,27 +150,35 @@ export function varRemoveVariable() {
   varSyncKDisplay();
 }
 
+// Larguras fixas em px → header e linhas sempre alinhados no scroll
+const VAR_COL_NUM = 28;    // coluna do índice (#)
+const VAR_COL_PER = 120;   // coluna Período
+const VAR_COL_VAR = 110;   // cada coluna de variável
+
+function varGTC() {
+  return `${VAR_COL_NUM}px ${VAR_COL_PER}px ${Array(varK).fill(`${VAR_COL_VAR}px`).join(' ')}`;
+}
+
 function varRebuildTable(clear = false) {
   const headerEl = document.getElementById('var-data-header');
-  const rowsEl = document.getElementById('var-data-rows');
+  const rowsEl   = document.getElementById('var-data-rows');
+  const gtc = varGTC();
 
-  const gtc = `24px 1.2fr ${Array(varK).fill('1fr').join(' ')}`;
-
-  // Header
-  headerEl.style.display = 'grid';
-  headerEl.style.gridTemplateColumns = gtc;
-  headerEl.style.gap = '6px';
-  headerEl.style.alignItems = 'center';
-  headerEl.style.padding = '4px 0 2px';
-  headerEl.innerHTML = `<span></span>
-    <div class="data-header-label">Período</div>` +
-    Array.from({ length: varK }, (_, i) =>
-      `<div class="data-header-label" style="padding:0">
-        <input type="text" class="var-dh-label" value="${varNames[i]}"
-          style="width:100%;background:transparent;border:none;color:inherit;font:600 11px/1 var(--font);text-align:center;padding:2px 0"
+  // Header — larguras fixas + texto centralizado
+  headerEl.style.cssText =
+    `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:4px 0 2px`;
+  headerEl.innerHTML =
+    `<span></span>
+     <div class="data-header-label" style="text-align:center">Período</div>` +
+    Array.from({ length: varK }, (_, i) => {
+      const name = varNames[i] ?? `Var ${i + 1}`;
+      return `<div class="data-header-label" style="padding:0;text-align:center">
+        <input type="text" class="var-dh-label" value="${esc(name)}"
+          style="width:100%;background:transparent;border:none;color:inherit;
+                 font:600 11px/1 var(--font);text-align:center;padding:2px 0;box-sizing:border-box"
           oninput="varUpdateName(${i}, this.value)">
-      </div>`
-    ).join('');
+      </div>`;
+    }).join('');
 
   if (clear) {
     rowsEl.innerHTML = '';
@@ -179,12 +187,12 @@ function varRebuildTable(clear = false) {
     return;
   }
 
-  // Preserve existing row data
+  // Preserva dados existentes
   const existing = [];
   for (const row of rowsEl.children) {
     const inputs = row.querySelectorAll('input');
-    const lbl = inputs[0]?.value ?? '';
-    const vals = Array.from({ length: inputs.length - 1 }, (_, i) => inputs[i + 1]?.value ?? '');
+    const lbl  = inputs[0]?.value ?? '';
+    const vals = Array.from({ length: inputs.length - 1 }, (_, j) => inputs[j + 1]?.value ?? '');
     existing.push({ lbl, vals });
   }
 
@@ -200,13 +208,16 @@ function varRebuildTable(clear = false) {
 function varAddRowInternal(gtc, rowNum, lbl = '', vals = []) {
   const rowsEl = document.getElementById('var-data-rows');
   const row = document.createElement('div');
-  row.style.cssText = `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:2px 0`;
-  row.innerHTML = `<span class="data-row-n">${rowNum}</span>
-    <input class="data-input" type="text" placeholder="Ex: Jan/24" value="${esc(lbl)}"
-      oninput="varUpdateVarCountDisplay()" style="font-size:12px">` +
+  row.style.cssText =
+    `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:2px 0`;
+  row.innerHTML =
+    `<span class="data-row-n" style="text-align:center">${rowNum}</span>
+     <input class="data-input" type="text" placeholder="Ex: Jan/24" value="${esc(lbl)}"
+       oninput="varUpdateVarCountDisplay()" style="font-size:12px;text-align:center">` +
     Array.from({ length: varK }, (_, i) =>
-      `<input class="data-input" type="number" placeholder="v${i + 1}" step="any"
-        value="${vals[i] ?? ''}" oninput="varUpdateVarCountDisplay()">`
+      `<input class="data-input" type="number" placeholder="—" step="any"
+         value="${vals[i] ?? ''}" oninput="varUpdateVarCountDisplay()"
+         style="text-align:center">`
     ).join('');
   rowsEl.appendChild(row);
 }
@@ -218,8 +229,7 @@ export function varInitRows() {
 
 export function varAddRow() {
   const rowsEl = document.getElementById('var-data-rows');
-  const gtc = `24px 1.2fr ${Array(varK).fill('1fr').join(' ')}`;
-  varAddRowInternal(gtc, rowsEl.children.length + 1);
+  varAddRowInternal(varGTC(), rowsEl.children.length + 1);
   varUpdateVarCountDisplay();
 }
 
@@ -280,23 +290,12 @@ export function varLoadExample() {
   const ex = examples.find(e => e.names.length === varK) || examples[0];
   varK = ex.names.length;
   ex.names.forEach((n, i) => { varNames[i] = n; });
+
+  // Reconstrói header com nomes corretos e popula as linhas
   varRebuildTable(true);
   const rowsEl = document.getElementById('var-data-rows');
   rowsEl.innerHTML = '';
-  const gtc = `24px 1.2fr ${Array(varK).fill('1fr').join(' ')}`;
-  ex.labels.forEach((lbl, i) => varAddRowInternal(gtc, i + 1, lbl, ex.matrix[i].map(String)));
-
-  // Rebuild header with correct names
-  const headerEl = document.getElementById('var-data-header');
-  headerEl.style.cssText = `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:4px 0 2px`;
-  headerEl.innerHTML = `<span></span><div class="data-header-label">Período</div>` +
-    Array.from({ length: varK }, (_, i) =>
-      `<div class="data-header-label" style="padding:0">
-        <input type="text" class="var-dh-label" value="${varNames[i]}"
-          style="width:100%;background:transparent;border:none;color:inherit;font:600 11px/1 var(--font);text-align:center;padding:2px 0"
-          oninput="varUpdateName(${i}, this.value)">
-      </div>`
-    ).join('');
+  ex.labels.forEach((lbl, i) => varAddRowInternal(varGTC(), i + 1, lbl, ex.matrix[i].map(String)));
 
   varUpdateVarCountDisplay();
   varSyncKDisplay();
