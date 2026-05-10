@@ -719,24 +719,7 @@
     top:calc(22px + 50vh); transform:translateY(-50%);
     height:fit-content;
     z-index:50;
-    overflow:hidden;
-    transition: width 2.1s cubic-bezier(.4,0,.2,1), overflow 0s 2.1s;
-  }
-  #sidebar.expanded {
-    width:52px;
     overflow:visible;
-    transition: width 2.1s cubic-bezier(.16,1,.3,1), overflow 0s;
-  }
-  #sidebar:not(.expanded) {
-    width:8px;
-  }
-  #sidebar:not(.expanded) .sidebar-btn {
-    opacity:0;
-    pointer-events:none;
-  }
-  #sidebar:not(.expanded) .sidebar-divider,
-  #sidebar:not(.expanded) .sidebar-spacer {
-    opacity:0;
   }
   #sidebar::before {
     content:''; position:absolute; top:0; left:0; right:0; height:45%;
@@ -764,9 +747,6 @@
     transition: background .15s, color .15s, opacity 1.8s ease;
     position:relative;
   }
-  #sidebar.expanded .sidebar-btn {
-    transition: background .15s, color .15s, opacity 1.8s ease;
-  }
   .sidebar-btn:hover { background:var(--bg3); color:var(--txt); }
   .sidebar-btn.active { background:rgba(124,131,253,.15); color:var(--x); }
   .sidebar-badge {
@@ -785,8 +765,7 @@
     box-shadow:var(--shadow-card); z-index:200;
   }
   .sidebar-btn:hover .sidebar-tooltip { opacity:1; }
-  .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; transition:opacity 1.8s ease; }
-  #sidebar.expanded .sidebar-divider { transition:opacity 1.8s ease; }
+  .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; }
   .sidebar-spacer { flex:1; }
 
   /* Modal Quem Somos */
@@ -4664,32 +4643,6 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
 
 })();
 
-// Sidebar proximity expand
-(function() {
-  const sidebar = document.getElementById('sidebar');
-  if (!sidebar) return;
-  let collapseTimer;
-
-  function expand() {
-    clearTimeout(collapseTimer);
-    sidebar.classList.add('expanded');
-  }
-
-  function scheduleCollapse() {
-    clearTimeout(collapseTimer);
-    collapseTimer = setTimeout(() => sidebar.classList.remove('expanded'), 120);
-  }
-
-  document.addEventListener('mousemove', function(e) {
-    const rect = sidebar.getBoundingClientRect();
-    const proximity = 48;
-    const near = e.clientX <= rect.right + proximity
-              && e.clientY >= rect.top - proximity
-              && e.clientY <= rect.bottom + proximity;
-    if (near) expand();
-    else scheduleCollapse();
-  });
-})();
 </script>
 <script type="module" src="src/app.js"></script>
 </body>
