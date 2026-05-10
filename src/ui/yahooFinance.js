@@ -33,9 +33,13 @@ function _reset() {
   _data   = null;
   const s = document.getElementById('yf-search');
   if (s) s.value = '';
-  _setEl('yf-results',   '');
-  _setEl('yf-options',   null, 'none');
-  _setEl('yf-preview',   null, 'none');
+  _setEl('yf-results', '');
+  _setEl('yf-options', null, 'none');
+  _setEl('yf-preview', null, 'none');
+  // Reset model selector to Linear
+  document.querySelectorAll('.yf-model-btn').forEach(b => b.classList.toggle('active', b.dataset.model === 'nova'));
+  const hidden = document.getElementById('yf-model');
+  if (hidden) hidden.value = 'nova';
 }
 
 // ── Pesquisa de ticker ────────────────────────────────────────────────────────
@@ -149,31 +153,97 @@ function _renderPreview({ rows, currency }) {
 
 // ── Importar para regressão ───────────────────────────────────────────────────
 
+const YNAMES = {
+  open: 'Abertura', high: 'Máxima', low: 'Mínima',
+  close: 'Fechamento', adjclose: 'Adj. Close', volume: 'Volume',
+};
+
+// Configuração de cada modelo: container de rows, prefixo das labels e tab de destino
+const MODEL_CFG = {
+  nova:         { rowsId: 'data-rows',    labelX: 'label-x',    labelY: 'label-y',    tab: 'nova' },
+  polinomial:   { rowsId: 'po-data-rows', labelX: 'po-label-x', labelY: 'po-label-y', tab: 'polinomial' },
+  quantilica:   { rowsId: 'qr-data-rows', labelX: 'qr-label-x', labelY: 'qr-label-y', tab: 'quantilica' },
+  regularizada: { rowsId: 'rr-data-rows', labelX: 'rr-label-x', labelY: 'rr-label-y', tab: 'regularizada' },
+  serie:        { rowsId: 'st-data-rows', labelX: 'st-label-x', labelY: 'st-label-y', tab: 'serie', isSerie: true },
+};
+
+// Prefixos das funções expostas no window por modelo
+const MODEL_FNS = {
+  nova:         { addRow: 'addRow',    updateCount: 'updateCount' },
+  polinomial:   { addRow: 'poAddRow',  updateCount: 'poUpdateCount' },
+  quantilica:   { addRow: 'qrAddRow',  updateCount: 'qrUpdateCount' },
+  regularizada: { addRow: 'rrAddRow',  updateCount: 'rrUpdateCount' },
+  serie:        { addRow: 'stAddRow',  updateCount: 'stUpdateCount' },
+};
+
 export function yfConfirmImport(switchTabFn) {
   if (!_data?.rows?.length) { showToast('Carregue os dados antes de importar.', 'err'); return; }
 
-  const colY = document.getElementById('yf-col-y')?.value || 'close';
-  const rows = _data.rows;
+  const colY  = document.getElementById('yf-col-y')?.value  || 'close';
+  const model = document.getElementById('yf-model')?.value  || 'nova';
+  const cfg   = MODEL_CFG[model] || MODEL_CFG.nova;
+  const fns   = MODEL_FNS[model] || MODEL_FNS.nova;
 
-  const xs = [], ys = [];
-  rows.forEach((r, i) => {
-    const y = r[colY];
-    if (y != null && !isNaN(y)) { xs.push(i + 1); ys.push(y); }
-  });
+  const valid = _data.rows.filter(r => r[colY] != null && !isNaN(r[colY]));
+  if (valid.length < 3) { showToast('Dados insuficientes (mín. 3 observações).', 'err'); return; }
 
-  if (xs.length < 3) { showToast('Dados insuficientes (mín. 3 observações).', 'err'); return; }
+  const yLabel = `${_data.symbol} — ${YNAMES[colY] || colY}`;
 
-  const YNAMES = { open: 'Abertura', high: 'Máxima', low: 'Mínima', close: 'Fechamento', adjclose: 'Adj. Close', volume: 'Volume' };
+  // Limpa o container do modelo destino
+  const container = document.getElementById(cfg.rowsId);
+  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+  container.innerHTML = '';
 
-  document.getElementById('label-x').value = 'Período';
-  document.getElementById('label-y').value = `${_data.symbol} ${YNAMES[colY] || colY}`;
-  window.setRows(xs, ys);
-
-  if (typeof switchTabFn === 'function') {
-    switchTabFn('nova', document.querySelector('[onclick*="nova"]'));
+  if (cfg.isSerie) {
+    // Séries temporais: col 0 = texto (data), col 1 = número (valor)
+    valid.forEach(() => window[fns.addRow]?.());
+    Array.from(container.children).forEach((row, i) => {
+      const inputs = row.querySelectorAll('input');
+      inputs[0].value = valid[i].date;
+      inputs[1].value = valid[i][colY];
+    });
+    _setLabel(cfg.labelX, 'Data');
+    _setLabel(cfg.labelY, yLabel);
+  } else {
+    // Modelos numéricos: col 0 = índice (X), col 1 = preço (Y)
+    if (model === 'nova') {
+      // Usa setRows que já cuida dos paddings de linhas vazias
+      window.setRows(valid.map((_, i) => i + 1), valid.map(r => r[colY]));
+    } else {
+      valid.forEach((r, i) => {
+        window[fns.addRow]?.();
+        const rows = container.children;
+        const last = rows[rows.length - 1];
+        const inputs = last.querySelectorAll('input');
+        inputs[0].value = i + 1;
+        inputs[1].value = r[colY];
+      });
+      // Padding até mín. 8 linhas
+      for (let i = valid.length; i < 8; i++) window[fns.addRow]?.();
+    }
+    _setLabel(cfg.labelX, 'Período');
+    _setLabel(cfg.labelY, yLabel);
   }
+
+  window[fns.updateCount]?.();
+
   closeYahooModal();
-  showToast(`${xs.length} observações importadas para a regressão!`, 'ok');
+  if (typeof switchTabFn === 'function') {
+    switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
+  }
+  showToast(`${valid.length} observações importadas!`, 'ok');
+}
+
+function _setLabel(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.value = value;
+}
+
+export function yfPickModel(btn) {
+  document.querySelectorAll('.yf-model-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const hidden = document.getElementById('yf-model');
+  if (hidden) hidden.value = btn.dataset.model;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

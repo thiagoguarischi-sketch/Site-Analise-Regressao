@@ -166,6 +166,18 @@
   }
   .yf-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-top:4px; }
 
+  /* Model picker */
+  .yf-model-pick { display:flex; flex-direction:column; gap:8px; }
+  .yf-model-btns { display:flex; gap:6px; flex-wrap:wrap; }
+  .yf-model-btn {
+    background:var(--bg3); border:1px solid var(--brd2);
+    color:var(--txt2); border-radius:var(--r-pill);
+    padding:5px 13px; font-size:12px; font-weight:500;
+    cursor:pointer; transition:.15s;
+  }
+  .yf-model-btn:hover { border-color:var(--x); color:var(--txt); }
+  .yf-model-btn.active { background:var(--tint-x); border-color:var(--x); color:var(--x); font-weight:600; }
+
   /* ====== LIGHT THEME ====== */
   html.light {
     --bg:   #F4F4FB;
@@ -4134,9 +4146,20 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
       <div class="yf-preview-tbl-wrap">
         <div id="yf-preview-tbl"></div>
       </div>
+      <div class="yf-model-pick">
+        <span class="yf-label">Importar para:</span>
+        <div class="yf-model-btns">
+          <button class="yf-model-btn active" data-model="nova"          onclick="yfPickModel(this)">Linear</button>
+          <button class="yf-model-btn"         data-model="polinomial"   onclick="yfPickModel(this)">Polinomial</button>
+          <button class="yf-model-btn"         data-model="serie"        onclick="yfPickModel(this)">Séries Temporais</button>
+          <button class="yf-model-btn"         data-model="quantilica"   onclick="yfPickModel(this)">Quantílica</button>
+          <button class="yf-model-btn"         data-model="regularizada" onclick="yfPickModel(this)">Regularizada</button>
+        </div>
+        <input type="hidden" id="yf-model" value="nova">
+      </div>
       <div class="yf-actions">
         <button class="btn-ghost" onclick="closeYahooModal()">Cancelar</button>
-        <button class="btn-primary" onclick="yfConfirmImport()">Importar para regressão →</button>
+        <button class="btn-primary" onclick="yfConfirmImport()">Importar →</button>
       </div>
     </div>
 
