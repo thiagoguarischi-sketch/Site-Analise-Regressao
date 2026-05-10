@@ -1,9 +1,7 @@
 // Regressão linear simples e múltipla — cálculos OLS, render, diagnóstico,
 // previsão, save/load Supabase e exportações Excel BI / CSV.
 
-import { mean, sum, fmt, fmtP, esc, rmse, mae, mape, qualLabel, sigStars, durbinWatson } from '../core/utils.js';
-import { tCDF, tQ, fCDF, normalQ, shapiroWilk, breuschPagan } from '../core/statistics.js';
-import { matMul, matT, matInv } from '../core/matrix.js';
+import { mean, sum, fmt, fmtP, esc, rmse, mae, mape, qualLabel, sigStars } from '../core/utils.js';
 import { showToast, showCloudSaving } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
 import { analyze } from '../services/computeService.js';
@@ -227,30 +225,27 @@ Seja direto e use linguagem acessível.`;
   }
 }
 
-export function runPrediction() {
+export async function runPrediction() {
   if (!lastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
   const xNew = parseFloat(document.getElementById('pred-x').value);
   const conf = parseFloat(document.getElementById('pred-conf').value);
   if (isNaN(xNew)) { showToast('Digite um valor de X.', 'err'); return; }
 
   const res = lastResult;
-  const alpha = 1 - conf;
-  const tVal = tQ(1 - alpha / 2, res.n - 2);
-  const yhat = res.b0 + res.b1 * xNew;
-  const seIC = res.se * Math.sqrt(1 / res.n + (xNew - res.xm) ** 2 / res.Sxx);
-  const seIP = res.se * Math.sqrt(1 + 1 / res.n + (xNew - res.xm) ** 2 / res.Sxx);
-  const icLo = yhat - tVal * seIC, icHi = yhat + tVal * seIC;
-  const ipLo = yhat - tVal * seIP, ipHi = yhat + tVal * seIP;
+  let pred;
+  try {
+    pred = await analyze('linear_pred', { xNew, conf, b0: res.b0, b1: res.b1, se: res.se, n: res.n, xm: res.xm, Sxx: res.Sxx }, {});
+  } catch (e) { showToast('Erro na previsão: ' + e.message, 'err'); return; }
 
   const box = document.getElementById('pred-result');
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
       <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Previsão para ${res.labelX} = ${xNew}</div>
-      <div class="pred-val">${res.labelY} ≈ ${yhat.toFixed(4)}</div>
+      <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IC ${(conf * 100).toFixed(0)}% (média): [${icLo.toFixed(4)}, ${icHi.toFixed(4)}]<br>
-        IP ${(conf * 100).toFixed(0)}% (individual): [${ipLo.toFixed(4)}, ${ipHi.toFixed(4)}]
+        IC ${(conf * 100).toFixed(0)}% (média): [${pred.icLo.toFixed(4)}, ${pred.icHi.toFixed(4)}]<br>
+        IP ${(conf * 100).toFixed(0)}% (individual): [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]
       </div>
     </div>`;
 }
@@ -258,9 +253,7 @@ export function runPrediction() {
 function buildDiagnostic(res) {
   document.getElementById('diag-inline-section').style.display = 'block';
 
-  const sw = shapiroWilk(res.resid);
-  const bp = breuschPagan(res.xs, res.resid);
-  const dw = durbinWatson(res.resid);
+  const { sw, bp, dw } = res;
 
   document.getElementById('diag-tests').innerHTML = `
     <div class="diag-grid">
@@ -806,23 +799,17 @@ function buildMultiplePredInputs(res) {
     </div>`).join('');
 }
 
-export function runMultiplePrediction() {
+export async function runMultiplePrediction() {
   if (!mLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
   const res = mLastResult;
   const xVals = res.varNames.map((_, i) => parseFloat(document.getElementById(`m-px-${i}`).value));
   if (xVals.some(isNaN)) { showToast('Preencha todos os valores.', 'err'); return; }
 
   const conf = parseFloat(document.getElementById('m-pred-conf').value);
-  const alpha = 1 - conf;
-  const tVal = tQ(1 - alpha / 2, res.df_resid);
-
-  const xRow = [1, ...xVals];
-  const XtXinv = mGetXtXinv(res);
-  let varMean = 0;
-  xRow.forEach((xi, i) => xRow.forEach((xj, j) => { varMean += xi * XtXinv[i][j] * xj; }));
-  const yhat = xRow.reduce((s, v, j) => s + v * res.beta[j], 0);
-  const seIC = res.se * Math.sqrt(varMean);
-  const seIP = res.se * Math.sqrt(1 + varMean);
+  let pred;
+  try {
+    pred = await analyze('multiple_pred', { xVals, conf, beta: res.beta, se: res.se, df_resid: res.df_resid, XtXinv: res.XtXinv }, {});
+  } catch (e) { showToast('Erro na previsão: ' + e.message, 'err'); return; }
 
   const box = document.getElementById('m-pred-result');
   box.style.display = 'block';
@@ -831,19 +818,12 @@ export function runMultiplePrediction() {
       <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">
         Previsão para: ${res.varNames.map((n, i) => `${esc(n)}=${xVals[i]}`).join(', ')}
       </div>
-      <div class="pred-val">${res.labelY} ≈ ${yhat.toFixed(4)}</div>
+      <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IC ${(conf * 100).toFixed(0)}% (média): [${(yhat - tVal * seIC).toFixed(4)}, ${(yhat + tVal * seIC).toFixed(4)}]<br>
-        IP ${(conf * 100).toFixed(0)}% (individual): [${(yhat - tVal * seIP).toFixed(4)}, ${(yhat + tVal * seIP).toFixed(4)}]
+        IC ${(conf * 100).toFixed(0)}% (média): [${pred.icLo.toFixed(4)}, ${pred.icHi.toFixed(4)}]<br>
+        IP ${(conf * 100).toFixed(0)}% (individual): [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]
       </div>
     </div>`;
-}
-
-function mGetXtXinv(res) {
-  const { Xs, Y } = res;
-  const Xmat = Y.map((_, i) => [1, ...Xs.map(x => x[i])]);
-  const Xt = matT(Xmat);
-  return matInv(matMul(Xt, Xmat)) || [];
 }
 
 async function mGenerateAI(res) {

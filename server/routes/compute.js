@@ -10,6 +10,7 @@ const { computePolynomial } = require('../compute/polynomial');
 const { computeQuantileCoefs, computeAllQuantiles } = require('../compute/quantile');
 const { computeRidge, computeLasso, computeOLS_rr, rrLambdaSweep } = require('../compute/regularized');
 const { stCompute, arimaCompute, garchCompute, varCompute } = require('../compute/timeSeries');
+const { tQ } = require('../compute/statistics');
 
 /**
  * POST /api/analyze
@@ -139,6 +140,60 @@ router.post('/analyze', requireAuth, (req, res) => {
         if (!matrix || !matrix.length) return res.status(400).json({ error: 'Dados inválidos para VAR.' });
         result = varCompute(matrix, labelsList || [], p, futureN, varNames);
         if (!result) return res.status(422).json({ error: 'Matriz singular — reduza p ou adicione mais dados.' });
+        break;
+      }
+
+      case 'linear_pred': {
+        const { xNew, conf = 0.95, b0, b1, se, n, xm, Sxx } = params;
+        if (xNew === undefined || !isFinite(xNew)) return res.status(400).json({ error: 'xNew inválido.' });
+        const alpha = 1 - conf;
+        const tVal = tQ(1 - alpha / 2, n - 2);
+        const yhat = b0 + b1 * xNew;
+        const seIC = se * Math.sqrt(1 / n + (xNew - xm) ** 2 / Sxx);
+        const seIP = se * Math.sqrt(1 + 1 / n + (xNew - xm) ** 2 / Sxx);
+        result = {
+          yhat,
+          icLo: yhat - tVal * seIC, icHi: yhat + tVal * seIC,
+          ipLo: yhat - tVal * seIP, ipHi: yhat + tVal * seIP,
+          tVal, conf,
+        };
+        break;
+      }
+
+      case 'multiple_pred': {
+        const { xVals, conf = 0.95, beta, se, df_resid, XtXinv } = params;
+        if (!xVals || !beta || !XtXinv) return res.status(400).json({ error: 'Parâmetros inválidos.' });
+        const alpha = 1 - conf;
+        const tVal = tQ(1 - alpha / 2, df_resid);
+        const xRow = [1, ...xVals];
+        let varMean = 0;
+        xRow.forEach((xi, i) => xRow.forEach((xj, j) => { varMean += xi * XtXinv[i][j] * xj; }));
+        const yhat = xRow.reduce((s, v, j) => s + v * beta[j], 0);
+        result = {
+          yhat,
+          icLo: yhat - tVal * se * Math.sqrt(varMean),
+          icHi: yhat + tVal * se * Math.sqrt(varMean),
+          ipLo: yhat - tVal * se * Math.sqrt(1 + varMean),
+          ipHi: yhat + tVal * se * Math.sqrt(1 + varMean),
+          tVal, conf,
+        };
+        break;
+      }
+
+      case 'poly_pred': {
+        const { xNew, beta, se, df_resid, degree, XtXinv } = params;
+        if (xNew === undefined || !beta || !XtXinv) return res.status(400).json({ error: 'Parâmetros inválidos.' });
+        const tVal = tQ(0.975, df_resid);
+        const yhat = beta.reduce((s, b, j) => s + b * Math.pow(xNew, j), 0);
+        const xRow = Array.from({ length: degree + 1 }, (_, j) => Math.pow(xNew, j));
+        let varMean = 0;
+        xRow.forEach((xi, i) => xRow.forEach((xj, j) => { varMean += xi * XtXinv[i][j] * xj; }));
+        result = {
+          yhat,
+          ipLo: yhat - tVal * se * Math.sqrt(1 + varMean),
+          ipHi: yhat + tVal * se * Math.sqrt(1 + varMean),
+          tVal,
+        };
         break;
       }
 

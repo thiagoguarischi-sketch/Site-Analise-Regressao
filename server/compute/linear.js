@@ -1,7 +1,7 @@
 'use strict';
 
-const { mean, sum } = require('./utils');
-const { tCDF, tQ, fCDF } = require('./statistics');
+const { mean, sum, durbinWatson } = require('./utils');
+const { tCDF, tQ, fCDF, shapiroWilk, breuschPagan } = require('./statistics');
 const { matMul, matT, matInv } = require('./matrix');
 
 function compute(xs, ys) {
@@ -34,10 +34,14 @@ function compute(xs, ys) {
   const resid_std = resid.map((r, i) => r / (se * Math.sqrt(1 - hi[i])));
   const cooks_d = resid.map((r, i) => (r ** 2 * hi[i]) / (2 * MSE * (1 - hi[i]) ** 2));
 
+  const sw = shapiroWilk(resid);
+  const bp = breuschPagan(xs, resid);
+  const dw = durbinWatson(resid);
+
   return {
     xs, ys, n, b0, b1, r, r2, r2adj, se, SSR, SSE, SST,
     MSR, MSE, Fstat, pF, se_b1, se_b0, t_b1, t_b0, p_b1, p_b0,
-    t95, yhat, resid, resid_std, hi, cooks_d, Sxx, xm, ym,
+    t95, yhat, resid, resid_std, hi, cooks_d, Sxx, xm, ym, sw, bp, dw,
   };
 }
 
@@ -104,10 +108,15 @@ function computeMultiple(Xs, Y) {
     return r2i >= 0.9999 ? 9999 : 1 / (1 - r2i);
   });
 
+  const sw = shapiroWilk(resid);
+  const bp = breuschPagan(Xs, resid);
+  const dw = durbinWatson(resid);
+
   return {
     n, k, beta, se_beta, t_beta, p_beta, ci_lo, ci_hi,
     r2, r2adj, se, SSR, SSE, SST, MSR, MSE, Fstat, pF,
     yhat, resid, resid_std, hi, vif, df_resid, t_crit, ym,
+    XtXinv, sw, bp, dw,
   };
 }
 

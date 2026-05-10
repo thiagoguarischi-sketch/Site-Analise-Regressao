@@ -1,6 +1,6 @@
 // Regressão logística — gradient descent, deviance, AUC, ROC, calibração e exportações.
 
-import { mean, sum, fmt, fmtP, esc, sigStars } from '../core/utils.js';
+import { fmt, fmtP, esc, sigStars } from '../core/utils.js';
 import { showToast } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
 import { analyze } from '../services/computeService.js';

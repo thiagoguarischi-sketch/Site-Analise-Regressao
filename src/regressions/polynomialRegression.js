@@ -1,8 +1,6 @@
 // Regressão polinomial — Vandermonde + OLS, comparação de graus, diagnóstico residual.
 
-import { mean, sum, fmt, fmtP, esc, rmse, mae, mape, qualLabel } from '../core/utils.js';
-import { tCDF, tQ, fCDF, normalQ } from '../core/statistics.js';
-import { matMul, matT, matInv } from '../core/matrix.js';
+import { fmt, fmtP, esc, rmse, mae, mape, qualLabel } from '../core/utils.js';
 import { showToast } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
 import { analyze } from '../services/computeService.js';
@@ -269,28 +267,24 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
     </table>`;
 }
 
-export function poRunPrediction() {
+export async function poRunPrediction() {
   if (!poLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
   const xNew = parseFloat(document.getElementById('po-pred-x').value);
   if (isNaN(xNew)) { showToast('Digite um valor de X.', 'err'); return; }
   const res = poLastResult;
-  const yhat = poEval(res.beta, xNew);
-  const xRow = Array.from({ length: res.degree + 1 }, (_, j) => Math.pow(xNew, j));
-  const Xmat = poVandermonde(res.xs, res.degree);
-  const Xt = matT(Xmat);
-  const XtXinv2 = matInv(matMul(Xt, Xmat));
-  let varMean = 0;
-  if (XtXinv2) xRow.forEach((xi, i) => xRow.forEach((xj, j) => { varMean += xi * XtXinv2[i][j] * xj; }));
-  const tVal = tQ(0.975, res.df_resid);
-  const seIP = res.se * Math.sqrt(1 + varMean);
+  let pred;
+  try {
+    pred = await analyze('poly_pred', { xNew, beta: res.beta, se: res.se, df_resid: res.df_resid, degree: res.degree, XtXinv: res.XtXinv }, {});
+  } catch (e) { showToast('Erro na previsão: ' + e.message, 'err'); return; }
+
   const box = document.getElementById('po-pred-result');
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
       <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Previsão para ${res.labelX} = ${xNew}</div>
-      <div class="pred-val">${res.labelY} ≈ ${yhat.toFixed(4)}</div>
+      <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IP 95% (individual): [${(yhat - tVal * seIP).toFixed(4)}, ${(yhat + tVal * seIP).toFixed(4)}]<br>
+        IP 95% (individual): [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]<br>
         Grau ${res.degree} | R²adj = ${res.r2adj.toFixed(4)}
       </div>
     </div>`;

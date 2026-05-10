@@ -53,7 +53,7 @@ function computePolynomial(xs, ys, degree) {
   return {
     n, degree, beta, se_beta, t_beta, p_beta, ci_lo, ci_hi,
     r2, r2adj, se, SSR, SSE, SST, MSR, MSE, Fstat, pF,
-    yhat, resid, resid_std, hi, df_resid, df_reg, t_crit, ym,
+    yhat, resid, resid_std, hi, df_resid, df_reg, t_crit, ym, XtXinv,
   };
 }
 
