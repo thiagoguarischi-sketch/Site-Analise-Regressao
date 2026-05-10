@@ -28,7 +28,7 @@ const { stCompute, arimaCompute, garchCompute, varCompute } = require('../comput
  *   'serie'        — dados: { values, labels? }, params: { modelo, windowSize, futureN }
  *   'arima'        — dados: { values, labels? }, params: { p, d, q, futureN }
  *   'garch'        — dados: { values, labels? }, params: { futureN }
- *   'var'          — dados: { matrix, labelsList }, params: { p, futureN }
+ *   'var'          — dados: { matrix, labelsList }, params: { p, futureN, varNames? }
  */
 router.post('/analyze', requireAuth, (req, res) => {
   try {
@@ -135,9 +135,9 @@ router.post('/analyze', requireAuth, (req, res) => {
 
       case 'var': {
         const { matrix, labelsList } = dados;
-        const { p = 1, futureN = 6 } = params;
+        const { p = 1, futureN = 6, varNames } = params;
         if (!matrix || !matrix.length) return res.status(400).json({ error: 'Dados inválidos para VAR.' });
-        result = varCompute(matrix, labelsList || [], p, futureN);
+        result = varCompute(matrix, labelsList || [], p, futureN, varNames);
         if (!result) return res.status(422).json({ error: 'Matriz singular — reduza p ou adicione mais dados.' });
         break;
       }

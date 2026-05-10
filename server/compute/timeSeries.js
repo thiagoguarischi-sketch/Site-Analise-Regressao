@@ -405,7 +405,7 @@ function garchCompute(values, futureN) {
 
 // ─── MODEL: VAR(p) ───────────────────────────────────────────────────────────
 
-function varCompute(matrix, labelsList, p, futureN) {
+function varCompute(matrix, labelsList, p, futureN, varNamesParam) {
   const T = matrix.length;
   const k = matrix[0].length;
   const m = k * p + 1;
@@ -505,9 +505,8 @@ function varCompute(matrix, labelsList, p, futureN) {
     return Math.sqrt(sum(matrix.map(r => (r[j] - mj) ** 2)) / T);
   });
 
-  // varNames derived from labelsList headers
-  const varNames = labelsList.length > 0
-    ? labelsList[0].slice(1)
+  const varNames = (varNamesParam && varNamesParam.length >= k)
+    ? varNamesParam.slice(0, k)
     : Array.from({ length: k }, (_, i) => `V${i + 1}`);
 
   return {
