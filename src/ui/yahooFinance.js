@@ -237,7 +237,7 @@ export function yfToggleNormalize() {
   _normalized = !_normalized;
   const btn = document.getElementById('yf-norm-btn');
   if (btn) {
-    btn.textContent = _normalized ? '📈 Preço real' : '% Variação';
+    btn.textContent = _normalized ? '% Variação' : '📊 Preço real';
     btn.classList.toggle('active', _normalized);
   }
   if (Object.keys(_datasets).length) _renderCompare();
