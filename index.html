@@ -1315,25 +1315,10 @@
   }
   .curso-use-btn:hover { opacity: .85; }
 
-  .curso-layout {
-    display: grid; grid-template-columns: 200px 1fr; gap: 36px;
-    align-items: start;
-  }
-  .curso-toc { position: sticky; top: 20px; }
-  .curso-toc-title {
-    font-size: 11px; font-weight: 600; letter-spacing: .08em;
-    color: var(--txt3); text-transform: uppercase; margin-bottom: 10px;
-  }
-  .curso-toc-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
-  .curso-toc-list a {
-    display: block; padding: 5px 10px; font-size: 13px; color: var(--txt2);
-    text-decoration: none; border-radius: var(--r-sm);
-    border-left: 2px solid transparent; transition: all .15s;
-  }
-  .curso-toc-list a:hover { color: var(--txt); background: var(--bg3); }
-  .curso-toc-list a.active { color: var(--x); border-left-color: var(--x); background: rgba(124,131,253,.08); }
+  .curso-layout { display: block; }
+  .curso-toc { display: none; }
 
-  .curso-content { min-width: 0; }
+  .curso-content { max-width: 760px; margin: 0 auto; }
   .curso-hero { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--brd2); }
   .curso-hero-badge {
     display: inline-flex; align-items: center; gap: 6px;
