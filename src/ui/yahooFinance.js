@@ -217,15 +217,24 @@ function _renderNormal() {
         <span>${rows.length} obs.</span>
         <span>${rows[0]?.date || ''} → ${rows[rows.length-1]?.date || ''}</span>
       </div>
-      <div class="yf-card-import">
-        <select class="yf-select" id="yf-mdl-${_attr(t.symbol)}" style="flex:1;font-size:12px">
+      <div class="yf-card-import" style="flex-wrap:wrap;gap:4px">
+        <select class="yf-select" id="yf-mdl-${_attr(t.symbol)}"
+          onchange="yfOnModelChange('${_attr(t.symbol)}')"
+          style="flex:1;min-width:0;font-size:12px">
           <option value="serie" selected>Séries Temporais</option>
           <option value="nova">Reg. Linear</option>
           <option value="polinomial">Reg. Polinomial</option>
           <option value="quantilica">Reg. Quantílica</option>
           <option value="regularizada">Reg. Regularizada</option>
         </select>
-        <button class="yf-fetch-btn" style="padding:6px 12px;font-size:12px"
+        <select class="yf-select" id="yf-sub-${_attr(t.symbol)}"
+          style="flex:1;min-width:0;font-size:12px">
+          <option value="classic">Decomposição Clássica</option>
+          <option value="arima">ARIMA</option>
+          <option value="garch">GARCH</option>
+          <option value="var">VAR</option>
+        </select>
+        <button class="yf-fetch-btn" style="padding:6px 12px;font-size:12px;white-space:nowrap"
           onclick="yfImportOne('${_attr(t.symbol)}')">Importar</button>
       </div>
     </div>`;
@@ -326,6 +335,13 @@ function _renderCompare() {
   });
 }
 
+// ── Mostrar/ocultar sub-modelo de séries temporais ────────────────────────────
+export function yfOnModelChange(symbol) {
+  const mdl = document.getElementById(`yf-mdl-${symbol}`)?.value;
+  const sub = document.getElementById(`yf-sub-${symbol}`);
+  if (sub) sub.style.display = mdl === 'serie' ? '' : 'none';
+}
+
 // ── Importar um ativo ─────────────────────────────────────────────────────────
 const _YNAMES = {
   open:'Abertura', high:'Máxima', low:'Mínima',
@@ -337,7 +353,10 @@ const _MODEL_CFG = {
   polinomial:   { rowsId:'po-data-rows', lx:'po-label-x', ly:'po-label-y', tab:'polinomial' },
   quantilica:   { rowsId:'qr-data-rows', lx:'qr-label-x', ly:'qr-label-y', tab:'quantilica' },
   regularizada: { rowsId:'rr-data-rows', lx:'rr-label-x', ly:'rr-label-y', tab:'regularizada' },
-  serie:        { rowsId:'st-data-rows', lx:'st-label-x', ly:'st-label-y', tab:'serie', isSerie:true },
+  classic:      { rowsId:'st-data-rows', lx:'st-label-x', ly:'st-label-y', tab:'serie', isSerie:true },
+  arima:        { rowsId:'st-data-rows', lx:'st-label-x', ly:'st-label-y', tab:'serie', isSerie:true },
+  garch:        { rowsId:'st-data-rows', lx:'st-label-x', ly:'st-label-y', tab:'serie', isSerie:true },
+  var:          { rowsId:'var-data-rows', tab:'serie', isVar:true },
 };
 
 const _MODEL_FNS = {
@@ -345,7 +364,10 @@ const _MODEL_FNS = {
   polinomial:   { addRow:'poAddRow',  upd:'poUpdateCount' },
   quantilica:   { addRow:'qrAddRow',  upd:'qrUpdateCount' },
   regularizada: { addRow:'rrAddRow',  upd:'rrUpdateCount' },
-  serie:        { addRow:'stAddRow',  upd:'stUpdateCount' },
+  classic:      { addRow:'stAddRow',  upd:'stUpdateCount' },
+  arima:        { addRow:'stAddRow',  upd:'stUpdateCount' },
+  garch:        { addRow:'stAddRow',  upd:'stUpdateCount' },
+  var:          { addRow:'varAddRow', upd:'varUpdateVarCountDisplay' },
 };
 
 export function yfImportOne(symbol, switchTabFn) {
@@ -353,19 +375,47 @@ export function yfImportOne(symbol, switchTabFn) {
   if (!d?.rows?.length) { showToast(`Dados não carregados para ${symbol}.`, 'err'); return; }
 
   const colY  = document.getElementById('yf-col-y')?.value || 'close';
-  const model = document.getElementById(`yf-mdl-${symbol}`)?.value || 'serie';
-  const cfg   = _MODEL_CFG[model] || _MODEL_CFG.serie;
-  const fns   = _MODEL_FNS[model] || _MODEL_FNS.serie;
+  const mdl   = document.getElementById(`yf-mdl-${symbol}`)?.value || 'serie';
+  const subMdl = mdl === 'serie'
+    ? (document.getElementById(`yf-sub-${symbol}`)?.value || 'classic')
+    : null;
+  const effKey = subMdl ?? mdl;
+
+  const cfg = _MODEL_CFG[effKey];
+  const fns = _MODEL_FNS[effKey];
+  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
 
   const valid = d.rows.filter(r => r[colY] != null && !isNaN(r[colY]));
   if (valid.length < 3) { showToast('Dados insuficientes (mín. 3 obs.).', 'err'); return; }
 
-  const yLabel    = `${symbol} — ${_YNAMES[colY] || colY}`;
-  const container = document.getElementById(cfg.rowsId);
-  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
-  container.innerHTML = '';
+  const yLabel = `${symbol} — ${_YNAMES[colY] || colY}`;
 
-  if (cfg.isSerie) {
+  if (cfg.isVar) {
+    // ── VAR: switch de aba PRIMEIRO para clientWidth correto nas colunas ──
+    if (typeof switchTabFn === 'function')
+      switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
+    window.stSetModel?.('var');   // card visível → varRebuildTable usa largura real
+    window.varInitRows?.();
+    const rowsEl = document.getElementById('var-data-rows');
+    if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+    rowsEl.innerHTML = '';
+    valid.forEach(() => window.varAddRow?.());
+    Array.from(rowsEl.children).forEach((row, i) => {
+      const inp = row.querySelectorAll('input');
+      inp[0].value = valid[i].date;
+      inp[1].value = valid[i][colY];
+    });
+    window.varUpdateName?.(0, yLabel);
+    window.varUpdateVarCountDisplay?.();
+    showToast(`${valid.length} obs. de ${symbol} → VAR (var. 1). Preencha as demais variáveis.`, 'ok');
+    return;
+
+  } else if (cfg.isSerie) {
+    // ── Décomposição clássica / ARIMA / GARCH ─────────────────────────────
+    window.stSetModel?.(effKey);
+    const container = document.getElementById(cfg.rowsId);
+    if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+    container.innerHTML = '';
     valid.forEach(() => window[fns.addRow]?.());
     Array.from(container.children).forEach((row, i) => {
       const inp = row.querySelectorAll('input');
@@ -374,8 +424,14 @@ export function yfImportOne(symbol, switchTabFn) {
     });
     _lbl(cfg.lx, 'Data');
     _lbl(cfg.ly, yLabel);
+    window[fns.upd]?.();
+
   } else {
-    if (model === 'nova') {
+    // ── Regressões (linear, polinomial, quantílica, regularizada) ─────────
+    const container = document.getElementById(cfg.rowsId);
+    if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+    container.innerHTML = '';
+    if (effKey === 'nova') {
       window.setRows(valid.map((_, i) => i + 1), valid.map(r => r[colY]));
     } else {
       valid.forEach((r, i) => {
@@ -385,13 +441,11 @@ export function yfImportOne(symbol, switchTabFn) {
         inp[0].value = i + 1;
         inp[1].value = r[colY];
       });
-      for (let i = valid.length; i < 8; i++) window[fns.addRow]?.();
     }
     _lbl(cfg.lx, 'Período');
     _lbl(cfg.ly, yLabel);
+    window[fns.upd]?.();
   }
-
-  window[fns.upd]?.();
 
   if (typeof switchTabFn === 'function')
     switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
