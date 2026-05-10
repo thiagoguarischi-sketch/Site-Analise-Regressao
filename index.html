@@ -659,15 +659,41 @@
 
   /* ====== SIDEBAR ====== */
   #app-body {
-    display:flex; flex:1; padding-left:52px;
+    display:flex; flex:1; padding-left:68px;
   }
   #sidebar {
-    width:52px; background:var(--bg2);
-    border-right:1px solid var(--brd);
+    width:52px;
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.13);
+    border-radius:18px;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.28),
+      0 2px 8px rgba(0,0,0,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.18);
     display:flex; flex-direction:column; align-items:center;
     padding:10px 0; gap:2px;
-    position:fixed; top:56px; left:0; height:calc(100vh - 56px);
-    z-index:50; flex-shrink:0; box-shadow:var(--shadow-sm);
+    position:fixed; left:8px;
+    top:calc(28px + 50vh); transform:translateY(-50%);
+    height:fit-content;
+    z-index:50; overflow:hidden;
+  }
+  #sidebar::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:45%;
+    background:linear-gradient(180deg, rgba(255,255,255,0.11) 0%, transparent 100%);
+    border-radius:18px 18px 0 0; pointer-events:none;
+  }
+  html.light #sidebar {
+    background:rgba(255,255,255,0.52);
+    border-color:rgba(255,255,255,0.75);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.10),
+      0 2px 8px rgba(0,0,0,0.07),
+      inset 0 1px 0 rgba(255,255,255,0.88);
+  }
+  html.light #sidebar::before {
+    background:linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
   }
   #content-area { flex:1; min-width:0; }
   .sidebar-btn {
@@ -764,7 +790,7 @@
     .diag-grid { grid-template-columns:1fr; }
     .data-grid { grid-template-columns:1fr; }
     .profile-stats { grid-template-columns:1fr 1fr; }
-    #sidebar { width:48px; }
+    #sidebar { width:48px; left:6px; }
   }
 
   /* Smooth transitions */
@@ -1561,7 +1587,7 @@
   html.light .auth-bg::after { background: radial-gradient(circle, rgba(0,212,160,.08) 0%, transparent 70%); }
   html.light ::-webkit-scrollbar-track { background:var(--bg3); }
   html.light ::-webkit-scrollbar-thumb { background:var(--brd2); }
-  @media (max-width:768px) { #app-body { padding-left:48px; } #sidebar { width:48px; } }
+  @media (max-width:768px) { #app-body { padding-left:60px; } #sidebar { width:48px; left:6px; } }
 
   /* =====================================================================
      SLOPE ANIMATION SYSTEM
