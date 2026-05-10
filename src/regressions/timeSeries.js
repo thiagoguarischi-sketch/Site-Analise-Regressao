@@ -3,6 +3,7 @@
 import { mean, sum, esc } from '../core/utils.js';
 import { showToast } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
+import { analyze } from '../services/computeService.js';
 import { callAI, aiLoadingHTML, aiResultHTML, aiFallbackHTML } from '../services/authService.js';
 import {
   S, cell, zebra, buildWS, autoFilter, mergeRange, downloadCSV,

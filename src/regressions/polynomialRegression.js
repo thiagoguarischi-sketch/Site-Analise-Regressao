@@ -5,6 +5,7 @@ import { tCDF, tQ, fCDF, normalQ } from '../core/statistics.js';
 import { matMul, matT, matInv } from '../core/matrix.js';
 import { showToast } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
+import { analyze } from '../services/computeService.js';
 import { callAI, aiLoadingHTML, aiResultHTML, aiFallbackHTML } from '../services/authService.js';
 import {
   S, cell, zebra, buildWS, mergeRange, downloadCSV,
@@ -38,70 +39,23 @@ export function poSetDegree(d, btn) {
   document.getElementById('po-degree-hint').textContent = poHints[d] || '';
 }
 
-function poVandermonde(xs, degree) {
-  return xs.map(x => Array.from({ length: degree + 1 }, (_, j) => Math.pow(x, j)));
-}
-
-function computePolynomial(xs, ys, degree) {
-  const n = xs.length;
-  const Xmat = poVandermonde(xs, degree);
-  const Xt = matT(Xmat);
-  const XtX = matMul(Xt, Xmat);
-  const XtXinv = matInv(XtX);
-  if (!XtXinv) return null;
-
-  const XtY = matMul(Xt, ys.map(y => [y]));
-  const beta = matMul(XtXinv, XtY).map(r => r[0]);
-
-  const yhat = Xmat.map(row => row.reduce((s, v, j) => s + v * beta[j], 0));
-  const resid = ys.map((y, i) => y - yhat[i]);
-  const ym = mean(ys);
-
-  const SSE = sum(resid.map(r => r ** 2));
-  const SST = sum(ys.map(y => (y - ym) ** 2));
-  const SSR = SST - SSE;
-  const r2 = Math.max(0, Math.min(1, SSR / SST));
-  const df_resid = n - degree - 1;
-  const df_reg = degree;
-  const r2adj = 1 - (1 - r2) * (n - 1) / Math.max(1, df_resid);
-  const MSE = SSE / Math.max(1, df_resid);
-  const MSR = SSR / df_reg;
-  const Fstat = MSR / Math.max(1e-15, MSE);
-  const pF = 1 - fCDF(Fstat, df_reg, df_resid);
-  const se = Math.sqrt(MSE);
-
-  const se_beta = beta.map((_, j) => se * Math.sqrt(Math.max(0, XtXinv[j][j])));
-  const t_beta  = beta.map((b, j) => b / Math.max(1e-15, se_beta[j]));
-  const p_beta  = t_beta.map(t => 2 * (1 - tCDF(Math.abs(t), df_resid)));
-  const t_crit  = tQ(0.975, df_resid);
-  const ci_lo   = beta.map((b, j) => b - t_crit * se_beta[j]);
-  const ci_hi   = beta.map((b, j) => b + t_crit * se_beta[j]);
-
-  const hi = Xmat.map(row => {
-    const rv = [row];
-    const M  = matMul(matMul(rv, XtXinv), matT(rv));
-    return Math.min(M[0][0], 0.9999);
-  });
-  const resid_std = resid.map((r, i) => r / (se * Math.sqrt(Math.max(1e-10, 1 - hi[i]))));
-
-  return {
-    n, degree, beta, se_beta, t_beta, p_beta, ci_lo, ci_hi,
-    r2, r2adj, se, SSR, SSE, SST, MSR, MSE, Fstat, pF,
-    yhat, resid, resid_std, hi, df_resid, df_reg, t_crit, ym,
-  };
+async function computePolynomial(xs, ys, degree) {
+  return analyze('polynomial', { degree }, { xs, ys });
 }
 
 function poEval(beta, x) {
   return beta.reduce((s, b, j) => s + b * Math.pow(x, j), 0);
 }
 
-export function poAutoSelectDegree() {
+export async function poAutoSelectDegree() {
   const { xs, ys } = poGetData();
   if (xs.length < 4) { showToast('Insira pelo menos 4 pares.', 'err'); return; }
   let bestDeg = 1, bestR2adj = -Infinity;
   for (let d = 1; d <= Math.min(6, xs.length - 2); d++) {
-    const r = computePolynomial(xs, ys, d);
-    if (r && r.r2adj > bestR2adj) { bestR2adj = r.r2adj; bestDeg = d; }
+    try {
+      const r = await computePolynomial(xs, ys, d);
+      if (r && r.r2adj > bestR2adj) { bestR2adj = r.r2adj; bestDeg = d; }
+    } catch (_) {}
   }
   poDegree = bestDeg;
   document.querySelectorAll('#po-degree-btns .degree-btn').forEach((b, i) => {
@@ -181,13 +135,16 @@ export function poLoadExample() {
   poUpdateCount();
 }
 
-export function runPolynomial() {
+export async function runPolynomial() {
   const { xs, ys } = poGetData();
   if (xs.length < poDegree + 2) { showToast(`Insira pelo menos ${poDegree + 2} pares para grau ${poDegree}.`, 'err'); return; }
 
   const lx = document.getElementById('po-label-x').value || 'X';
   const ly = document.getElementById('po-label-y').value || 'Y';
-  const res = computePolynomial(xs, ys, poDegree);
+  let res;
+  try {
+    res = await computePolynomial(xs, ys, poDegree);
+  } catch (e) { showToast('Erro no servidor: ' + e.message, 'err'); return; }
   if (!res) { showToast('Erro de cálculo (dados colineares?).', 'err'); return; }
   res.xs = xs; res.ys = ys; res.labelX = lx; res.labelY = ly;
   poLastResult = res;
@@ -199,17 +156,20 @@ export function runPolynomial() {
   showToast('Análise polinomial concluída!', 'ok');
 }
 
-function renderPolynomialResults(res, xs, ys, lx, ly) {
+async function renderPolynomialResults(res, xs, ys, lx, ly) {
   const compareEl = document.getElementById('po-degree-compare');
   compareEl.innerHTML = '';
   let bestDeg = 1, bestR2adj = -Infinity;
-  for (let d = 1; d <= Math.min(6, xs.length - 2); d++) {
-    const r = computePolynomial(xs, ys, d);
-    if (!r) continue;
-    if (r.r2adj > bestR2adj) { bestR2adj = r.r2adj; bestDeg = d; }
+  const maxDeg = Math.min(6, xs.length - 2);
+  const degResults = [];
+  for (let d = 1; d <= maxDeg; d++) {
+    try {
+      const r = await computePolynomial(xs, ys, d);
+      degResults.push({ d, r });
+      if (r && r.r2adj > bestR2adj) { bestR2adj = r.r2adj; bestDeg = d; }
+    } catch (_) {}
   }
-  for (let d = 1; d <= Math.min(6, xs.length - 2); d++) {
-    const r = computePolynomial(xs, ys, d);
+  for (const { d, r } of degResults) {
     if (!r) continue;
     const isBest = d === bestDeg;
     const card = document.createElement('div');
