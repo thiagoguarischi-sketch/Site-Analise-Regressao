@@ -12,6 +12,7 @@ import {
 import { QR_COLORS } from '../config/constants.js';
 import { loadHistory, updateProfileStats } from '../ui/tables.js';
 import { createQuantileBand } from '../charts/dashboardCharts.js';
+import { registerChart } from '../charts/baseChart.js';
 
 let qrLastResult = null;
 let qrChartMain = null;
@@ -139,6 +140,7 @@ function qrRenderResults(res) {
 
   if (qrChartMain) qrChartMain.destroy();
   qrChartMain = createQuantileBand('qr-chart-main', xs, ys, taus, quantileResults, lx, ly);
+  registerChart('qr-chart-main', qrChartMain);
 
   document.getElementById('qr-legend').innerHTML = taus.map(tau => {
     const color = QR_COLORS[String(tau)]?.line || '#fff';
