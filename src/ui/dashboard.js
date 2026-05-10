@@ -277,7 +277,6 @@ export async function loginUser(user) {
     document.getElementById('profile-email-display').textContent = currentUser.email;
     document.getElementById('edit-name').value = currentUser.name;
     document.getElementById('edit-email').value = currentUser.email;
-    document.getElementById('sync-status').style.display = 'flex';
     document.getElementById('cloud-banner').style.display = 'flex';
 
     initRows();
