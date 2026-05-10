@@ -5,6 +5,16 @@ let _symbol = null;
 let _data   = null;
 let _searchTimer = null;
 
+// Delegação: captura cliques nos botões de resultado sem depender de onclick inline
+document.addEventListener('click', e => {
+  const btn = e.target.closest('#yf-results .yf-result-btn');
+  if (btn) yfSelectSymbol(btn.dataset.symbol, btn.dataset.name, btn.dataset.exch, btn.dataset.type);
+});
+
+function _attr(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 // ── Abrir / fechar modal ──────────────────────────────────────────────────────
 
 export function openYahooModal() {
@@ -52,7 +62,11 @@ async function _doSearch() {
       const name = q.shortname || q.longname || '';
       const exch = q.exchDisp || q.exchange || '';
       const type = q.quoteType || '';
-      return `<button class="yf-result-btn" onclick="yfSelectSymbol(${JSON.stringify(q.symbol)},${JSON.stringify(name)},${JSON.stringify(exch)},${JSON.stringify(type)})">
+      return `<button class="yf-result-btn"
+        data-symbol="${_attr(q.symbol)}"
+        data-name="${_attr(name)}"
+        data-exch="${_attr(exch)}"
+        data-type="${_attr(type)}">
         <span class="yf-r-ticker">${q.symbol}</span>
         <span class="yf-r-name">${name}</span>
         <span class="yf-r-meta">${exch}${type ? ' · ' + type : ''}</span>
