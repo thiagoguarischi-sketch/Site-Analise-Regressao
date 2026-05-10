@@ -1286,6 +1286,14 @@
     color: var(--txt);
     line-height: 1.2;
   }
+  a.guide-card-link {
+    text-decoration: none;
+    transition: color .15s;
+    display: inline-block;
+  }
+  a.guide-card-link:hover {
+    color: var(--x);
+  }
   .guide-card-tag {
     font-size: 10px;
     font-weight: 600;
@@ -3799,7 +3807,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(124,131,253,.15)">📈</div>
             <div>
-              <div class="guide-card-name">Regressão Linear Simples</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=linear" target="_blank">Regressão Linear Simples ↗</a>
               <span class="guide-card-tag" style="background:rgba(124,131,253,.12);color:var(--x);border:1px solid rgba(124,131,253,.25)">Regressão contínua · 1 variável</span>
             </div>
           </div>
@@ -3848,7 +3856,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(0,212,160,.12)">📊</div>
             <div>
-              <div class="guide-card-name">Regressão Múltipla</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=multipla" target="_blank">Regressão Múltipla ↗</a>
               <span class="guide-card-tag" style="background:rgba(0,212,160,.1);color:var(--y);border:1px solid rgba(0,212,160,.25)">Regressão contínua · N variáveis</span>
             </div>
           </div>
@@ -3896,7 +3904,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(255,107,138,.12)">🎯</div>
             <div>
-              <div class="guide-card-name">Regressão Logística</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=logistica" target="_blank">Regressão Logística ↗</a>
               <span class="guide-card-tag" style="background:rgba(255,107,138,.1);color:var(--acc);border:1px solid rgba(255,107,138,.25)">Classificação binária · 0 ou 1</span>
             </div>
           </div>
@@ -3944,7 +3952,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(255,179,71,.12)">〰️</div>
             <div>
-              <div class="guide-card-name">Regressão Polinomial</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=polinomial" target="_blank">Regressão Polinomial ↗</a>
               <span class="guide-card-tag" style="background:rgba(255,179,71,.1);color:var(--acc2);border:1px solid rgba(255,179,71,.25)">Relações não-lineares · Grau 1–6</span>
             </div>
           </div>
@@ -3991,7 +3999,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(79,195,247,.12)">📅</div>
             <div>
-              <div class="guide-card-name">Séries Temporais</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=serie" target="_blank">Séries Temporais ↗</a>
               <span class="guide-card-tag" style="background:rgba(79,195,247,.1);color:#4FC3F7;border:1px solid rgba(79,195,247,.25)">Dados ordenados no tempo · Previsão</span>
             </div>
           </div>
@@ -4039,7 +4047,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(186,104,200,.15)">🎻</div>
             <div>
-              <div class="guide-card-name">Regressão Quantílica</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=quantilica" target="_blank">Regressão Quantílica ↗</a>
               <span class="guide-card-tag" style="background:rgba(186,104,200,.12);color:#CE93D8;border:1px solid rgba(186,104,200,.3)">Distribuição completa · Robusta a outliers</span>
             </div>
           </div>
@@ -4086,7 +4094,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(38,198,218,.12)">⚖️</div>
             <div>
-              <div class="guide-card-name">Regressão Regularizada</div>
+              <a class="guide-card-name guide-card-link" href="cursos/curso.html?modelo=regularizada" target="_blank">Regressão Regularizada ↗</a>
               <span class="guide-card-tag" style="background:rgba(38,198,218,.1);color:#4DD0E1;border:1px solid rgba(38,198,218,.25)">Ridge (L2) · Lasso (L1) · Anti-overfitting</span>
             </div>
           </div>
