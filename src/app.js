@@ -14,7 +14,7 @@ import { showToast } from './ui/notifications.js';
 import { scaleChart } from './charts/baseChart.js';
 
 import {
-  initRows, addRow, clearRows, setRows, getData, updateCount, loadExample,
+  initRows, addRow, addRowTop, clearRows, setRows, getData, updateCount, loadExample,
   onDragOver, onDragLeave, onDrop, onFileSelect, importURL, confirmImport, cancelImport,
   updateImportStats,
 } from './ui/forms.js';
@@ -27,34 +27,34 @@ import { loadHistory, updateProfileStats } from './ui/tables.js';
 import {
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
   exportExcel, exportCSV,
-  mInitState, mAddVar, mRemoveVar, mAddRow, mClearRows, mUpdateCount, mLoadExample,
+  mInitState, mAddVar, mRemoveVar, mAddRow, mAddRowTop, mClearRows, mUpdateCount, mLoadExample,
   runMultiple, runMultiplePrediction, mSaveAnalysis, mExportExcel, mExportCSV,
 } from './regressions/linearRegression.js';
 
 import {
-  lgInitState, lgAddVar, lgRemoveVar, lgAddRow, lgClearRows, lgUpdateCount, lgLoadExample,
+  lgInitState, lgAddVar, lgRemoveVar, lgAddRow, lgAddRowTop, lgClearRows, lgUpdateCount, lgLoadExample,
   runLogistic, runLogisticPrediction, lgSaveAnalysis, lgExportExcel, lgExportCSV,
 } from './regressions/logisticRegression.js';
 
 import {
-  poSetDegree, poAutoSelectDegree, poInitRows, poAddRow, poClearRows, poUpdateCount, poLoadExample,
+  poSetDegree, poAutoSelectDegree, poInitRows, poAddRow, poAddRowTop, poClearRows, poUpdateCount, poLoadExample,
   runPolynomial, poRunPrediction, poSaveAnalysis, poExportExcel, poExportCSV,
 } from './regressions/polynomialRegression.js';
 
 import {
-  stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample, stSetModel,
+  stInitRows, stAddRow, stAddRowTop, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
-  varInitRows, varAddRow, varClearRows, varAddVariable, varRemoveVariable,
+  varInitRows, varAddRow, varAddRowTop, varClearRows, varAddVariable, varRemoveVariable,
   varUpdateName, varUpdateVarCountDisplay, varLoadExample,
 } from './regressions/timeSeries.js';
 
 import {
-  qrInitRows, qrAddRow, qrClearRows, qrUpdateCount, qrToggleChip, qrLoadExample,
+  qrInitRows, qrAddRow, qrAddRowTop, qrClearRows, qrUpdateCount, qrToggleChip, qrLoadExample,
   runQuantile, qrRunPrediction, qrSaveAnalysis, qrExportExcel, qrExportCSV,
 } from './regressions/quantileRegression.js';
 
 import {
-  rrSetType, rrInitRows, rrAddRow, rrClearRows, rrUpdateCount, rrLoadExample,
+  rrSetType, rrInitRows, rrAddRow, rrAddRowTop, rrClearRows, rrUpdateCount, rrLoadExample,
   runRegularized, rrSaveAnalysis, rrExportExcel, rrExportCSV,
 } from './regressions/regularizedRegression.js';
 
@@ -90,7 +90,7 @@ Object.assign(window, {
   showToast, toggleTheme, scaleChart,
 
   // Linear simples — formulário e import
-  initRows, addRow, clearRows: clearRowsWrapper, setRows, getData, updateCount, loadExample,
+  initRows, addRow, addRowTop, clearRows: clearRowsWrapper, setRows, getData, updateCount, loadExample,
   onDragOver, onDragLeave, onDrop, onFileSelect, importURL,
   confirmImport: confirmImportWrapper, cancelImport, updateImportStats,
 
@@ -112,29 +112,29 @@ Object.assign(window, {
   // Linear simples + múltipla
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
   exportExcel, exportCSV,
-  mInitState, mAddVar, mRemoveVar, mAddRow, mClearRows, mUpdateCount, mLoadExample,
+  mInitState, mAddVar, mRemoveVar, mAddRow, mAddRowTop, mClearRows, mUpdateCount, mLoadExample,
   runMultiple, runMultiplePrediction, mSaveAnalysis, mExportExcel, mExportCSV,
 
   // Logística
-  lgInitState, lgAddVar, lgRemoveVar, lgAddRow, lgClearRows, lgUpdateCount, lgLoadExample,
+  lgInitState, lgAddVar, lgRemoveVar, lgAddRow, lgAddRowTop, lgClearRows, lgUpdateCount, lgLoadExample,
   runLogistic, runLogisticPrediction, lgSaveAnalysis, lgExportExcel, lgExportCSV,
 
   // Polinomial
-  poSetDegree, poAutoSelectDegree, poInitRows, poAddRow, poClearRows, poUpdateCount, poLoadExample,
+  poSetDegree, poAutoSelectDegree, poInitRows, poAddRow, poAddRowTop, poClearRows, poUpdateCount, poLoadExample,
   runPolynomial, poRunPrediction, poSaveAnalysis, poExportExcel, poExportCSV,
 
   // Séries temporais
-  stInitRows, stAddRow, stClearRows, stUpdateCount, stLoadExample, stSetModel,
+  stInitRows, stAddRow, stAddRowTop, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
-  varInitRows, varAddRow, varClearRows, varAddVariable, varRemoveVariable,
+  varInitRows, varAddRow, varAddRowTop, varClearRows, varAddVariable, varRemoveVariable,
   varUpdateName, varUpdateVarCountDisplay, varLoadExample,
 
   // Quantílica
-  qrInitRows, qrAddRow, qrClearRows, qrUpdateCount, qrToggleChip, qrLoadExample,
+  qrInitRows, qrAddRow, qrAddRowTop, qrClearRows, qrUpdateCount, qrToggleChip, qrLoadExample,
   runQuantile, qrRunPrediction, qrSaveAnalysis, qrExportExcel, qrExportCSV,
 
   // Regularizada
-  rrSetType, rrInitRows, rrAddRow, rrClearRows, rrUpdateCount, rrLoadExample,
+  rrSetType, rrInitRows, rrAddRow, rrAddRowTop, rrClearRows, rrUpdateCount, rrLoadExample,
   runRegularized, rrSaveAnalysis, rrExportExcel, rrExportCSV,
 });
 

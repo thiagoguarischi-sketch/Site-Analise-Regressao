@@ -90,6 +90,22 @@ export function lgAddRow() {
   container.appendChild(row);
 }
 
+export function lgAddRowTop() {
+  if (!lgVars.length) return;
+  const container = document.getElementById('lg-data-rows');
+  const row = document.createElement('div');
+  row.style.cssText = `display:grid;grid-template-columns:36px ${lgVars.map(() => '1fr').join(' ')} 1fr;gap:6px;margin-bottom:6px;align-items:center`;
+  row.innerHTML = `<span class="data-row-n">1</span>` +
+    lgVars.map(() => `<input class="data-input" type="number" placeholder="x" oninput="lgUpdateCount()" step="any">`).join('') +
+    `<input class="data-input" type="number" placeholder="0 ou 1" oninput="lgUpdateCount()" min="0" max="1" step="1">`;
+  container.prepend(row);
+  Array.from(container.children).forEach((r, i) => {
+    const span = r.querySelector('.data-row-n');
+    if (span) span.textContent = i + 1;
+  });
+  row.querySelector('input').focus();
+}
+
 export function lgClearRows() {
   document.getElementById('lg-data-rows').innerHTML = '';
   lgInitRows();

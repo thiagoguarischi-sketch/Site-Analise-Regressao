@@ -587,6 +587,22 @@ export function mAddRow() {
   container.appendChild(row);
 }
 
+export function mAddRowTop() {
+  if (!mVars.length) return;
+  const container = document.getElementById('m-data-rows');
+  const row = document.createElement('div');
+  row.style.cssText = `display:grid;grid-template-columns:36px ${mVars.map(() => '1fr').join(' ')} 1fr;gap:6px;margin-bottom:6px;align-items:center`;
+  row.innerHTML = `<span class="data-row-n">1</span>` +
+    mVars.map(() => `<input class="data-input" type="number" placeholder="x" oninput="mUpdateCount()" step="any">`).join('') +
+    `<input class="data-input" type="number" placeholder="y" oninput="mUpdateCount()" step="any">`;
+  container.prepend(row);
+  Array.from(container.children).forEach((r, i) => {
+    const span = r.querySelector('.data-row-n');
+    if (span) span.textContent = i + 1;
+  });
+  row.querySelector('input').focus();
+}
+
 export function mClearRows() {
   document.getElementById('m-data-rows').innerHTML = '';
   mInitRows();

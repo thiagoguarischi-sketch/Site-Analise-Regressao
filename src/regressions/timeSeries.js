@@ -49,6 +49,22 @@ export function stAddRow() {
   container.appendChild(row);
 }
 
+export function stAddRowTop() {
+  const container = document.getElementById('st-data-rows');
+  const row = document.createElement('div');
+  row.className = 'data-row';
+  row.innerHTML = `
+    <span class="data-row-n">1</span>
+    <input class="data-input" type="text" placeholder="Ex: Jan/24" oninput="stUpdateCount()" style="font-size:12px">
+    <input class="data-input" type="number" placeholder="valor" oninput="stUpdateCount()" step="any">`;
+  container.prepend(row);
+  Array.from(container.children).forEach((r, i) => {
+    const span = r.querySelector('.data-row-n');
+    if (span) span.textContent = i + 1;
+  });
+  row.querySelector('input').focus();
+}
+
 export function stClearRows() {
   document.getElementById('st-data-rows').innerHTML = '';
   stInitRows();
@@ -243,6 +259,29 @@ export function varAddRow() {
   const rowsEl = document.getElementById('var-data-rows');
   varAddRowInternal(varGTC(), rowsEl.children.length + 1);
   varUpdateVarCountDisplay();
+}
+
+export function varAddRowTop() {
+  const rowsEl = document.getElementById('var-data-rows');
+  const gtc = varGTC();
+  const row = document.createElement('div');
+  row.style.cssText =
+    `display:grid;grid-template-columns:${gtc};gap:6px;align-items:center;padding:2px 0`;
+  row.innerHTML =
+    `<span class="data-row-n" style="text-align:center">1</span>
+     <input class="data-input" type="text" placeholder="Ex: Jan/24"
+       oninput="varUpdateVarCountDisplay()" style="font-size:12px;text-align:center">` +
+    Array.from({ length: varK }, () =>
+      `<input class="data-input" type="number" placeholder="—" step="any"
+         oninput="varUpdateVarCountDisplay()" style="text-align:center">`
+    ).join('');
+  rowsEl.prepend(row);
+  Array.from(rowsEl.children).forEach((r, i) => {
+    const span = r.querySelector('.data-row-n');
+    if (span) span.textContent = i + 1;
+  });
+  varUpdateVarCountDisplay();
+  row.querySelector('input').focus();
 }
 
 export function varClearRows() {

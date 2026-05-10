@@ -43,6 +43,23 @@ export function rrAddRow() {
   rrUpdateCount();
 }
 
+export function rrAddRowTop() {
+  const container = document.getElementById('rr-data-rows');
+  const row = document.createElement('div');
+  row.className = 'data-row';
+  row.innerHTML = `
+    <span class="data-row-n">1</span>
+    <input class="data-input" type="number" placeholder="x" oninput="rrUpdateCount()" step="any">
+    <input class="data-input" type="number" placeholder="y" oninput="rrUpdateCount()" step="any">`;
+  container.prepend(row);
+  Array.from(container.children).forEach((r, i) => {
+    const span = r.querySelector('.data-row-n');
+    if (span) span.textContent = i + 1;
+  });
+  rrUpdateCount();
+  row.querySelector('input').focus();
+}
+
 export function rrClearRows() {
   document.getElementById('rr-data-rows').innerHTML = '';
   rrInitRows();
