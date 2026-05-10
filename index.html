@@ -467,16 +467,28 @@
   }
 
   .user-area {
-    display:flex; align-items:center; gap:10px; margin-left:auto; flex-shrink:0;
+    display:flex; align-items:center; gap:6px;
+    margin-left:auto; flex-shrink:0;
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.13);
+    border-radius:14px; padding:5px 8px;
+    box-shadow:0 4px 24px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.16);
+  }
+  html.light .user-area {
+    background:rgba(255,255,255,0.55);
+    border-color:rgba(255,255,255,0.75);
+    box-shadow:0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
   }
   .theme-toggle-btn {
-    width:34px; height:34px; border-radius:var(--r-md);
-    border:1px solid var(--brd); background:var(--bg2);
+    width:32px; height:32px; border-radius:9px;
+    border:none; background:transparent;
     color:var(--txt2); font-size:16px;
     display:inline-flex; align-items:center; justify-content:center;
     cursor:pointer; transition:.15s;
   }
-  .theme-toggle-btn:hover { background:var(--bg3); color:var(--txt); }
+  .theme-toggle-btn:hover { background:rgba(255,255,255,0.15); color:var(--txt); }
   .user-avatar {
     width:34px; height:34px; border-radius:50%;
     background:linear-gradient(135deg,var(--x),var(--y));
