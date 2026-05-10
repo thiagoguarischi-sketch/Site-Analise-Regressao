@@ -679,12 +679,12 @@
     height:fit-content;
     z-index:50;
     overflow:hidden;
-    transition: width .7s cubic-bezier(.4,0,.2,1), overflow 0s .7s;
+    transition: width 1.1s cubic-bezier(.4,0,.2,1), overflow 0s 1.1s;
   }
   #sidebar.expanded {
     width:52px;
     overflow:visible;
-    transition: width .7s cubic-bezier(.16,1,.3,1), overflow 0s;
+    transition: width 1.1s cubic-bezier(.16,1,.3,1), overflow 0s;
   }
   #sidebar:not(.expanded) {
     width:8px;
@@ -720,11 +720,11 @@
     border-radius:8px; color:var(--txt2);
     font-size:16px; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
-    transition: background .15s, color .15s, opacity .55s ease;
+    transition: background .15s, color .15s, opacity .9s ease;
     position:relative;
   }
   #sidebar.expanded .sidebar-btn {
-    transition: background .15s, color .15s, opacity .55s ease;
+    transition: background .15s, color .15s, opacity .9s ease;
   }
   .sidebar-btn:hover { background:var(--bg3); color:var(--txt); }
   .sidebar-btn.active { background:rgba(124,131,253,.15); color:var(--x); }
@@ -744,8 +744,8 @@
     box-shadow:var(--shadow-card); z-index:200;
   }
   .sidebar-btn:hover .sidebar-tooltip { opacity:1; }
-  .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; transition:opacity .55s ease; }
-  #sidebar.expanded .sidebar-divider { transition:opacity .55s ease; }
+  .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; transition:opacity .9s ease; }
+  #sidebar.expanded .sidebar-divider { transition:opacity .9s ease; }
   .sidebar-spacer { flex:1; }
 
   /* Modal Quem Somos */
@@ -4644,7 +4644,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
 
   function scheduleCollapse() {
     clearTimeout(collapseTimer);
-    collapseTimer = setTimeout(() => sidebar.classList.remove('expanded'), 350);
+    collapseTimer = setTimeout(() => sidebar.classList.remove('expanded'), 120);
   }
 
   document.addEventListener('mousemove', function(e) {
