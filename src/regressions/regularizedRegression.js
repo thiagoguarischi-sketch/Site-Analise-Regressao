@@ -9,7 +9,7 @@ import {
   buildRawSheet, buildKPISheet, buildDashSheet, buildInsightsSheet,
 } from '../services/exportService.js';
 import { loadHistory, updateProfileStats } from '../ui/tables.js';
-import { C, axis, legendStyle, registerChart } from '../charts/baseChart.js';
+import { C, axis, legendStyle } from '../charts/baseChart.js';
 import { createLambdaSweep } from '../charts/dashboardCharts.js';
 
 let rrLastResult = null;
@@ -205,7 +205,6 @@ function rrRenderResults(res) {
       },
     },
   });
-  registerChart('rr-chart-main', rrChartMain);
 
   const legendItems = datasets.filter(d => d.type === 'line').map(d =>
     `<span style="display:inline-flex;align-items:center;gap:5px">

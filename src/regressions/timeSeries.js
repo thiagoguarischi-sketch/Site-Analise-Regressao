@@ -11,7 +11,6 @@ import {
 } from '../services/exportService.js';
 import { switchTab } from '../ui/dashboard.js';
 import { loadHistory, updateProfileStats } from '../ui/tables.js';
-import { registerChart } from '../charts/baseChart.js';
 import {
   createTimeSeriesMain, createTrendChart, createSeasonChart,
   createTSResidChart, createVolatilityChart,
@@ -439,7 +438,6 @@ function stRenderResults(res) {
 
   stDestroyChart('main');
   STC.main = createTimeSeriesMain('st-chart-main', res, allLabels);
-  registerChart('st-chart-main', STC.main);
   stDestroyChart('trend');
   STC.trend = createTrendChart('st-chart-trend', labels, res.trend);
   stDestroyChart('season');
@@ -493,7 +491,6 @@ function arimaRenderResults(res) {
   const projLabels = Array.from({ length: futureN }, (_, i) => `+${i + 1}`);
   stDestroyChart('main');
   STC.main = createARIMAMainChart('st-chart-main', res, [...labels, ...projLabels]);
-  registerChart('st-chart-main', STC.main);
 
   const confBand = resid.length > 0 ? 1.96 / Math.sqrt(resid.length) : 0.3;
   stDestroyChart('arima-acf');
@@ -544,7 +541,6 @@ function garchRenderResults(res) {
   const projLabels = Array.from({ length: futureN }, (_, i) => `+${i + 1}`);
   stDestroyChart('main');
   STC.main = createGARCHMainChart('st-chart-main', res, [...labels, ...projLabels]);
-  registerChart('st-chart-main', STC.main);
 
   stDestroyChart('garch-var');
   STC['garch-var'] = createGARCHVarChart('st-chart-garch-var', labels, h);
@@ -592,7 +588,6 @@ function varRenderResults(res) {
 
   stDestroyChart('main');
   STC.main = createVARMainChart('st-chart-main', matrix, labelsList, forecast, futureN, vn);
-  registerChart('st-chart-main', STC.main);
 
   // IRF grid: k×k charts — destroy old, build new canvases
   const irfContainer = document.getElementById('st-var-irf-grid');

@@ -14,7 +14,6 @@ import {
 import { switchTab } from '../ui/dashboard.js';
 import { setRows, getData, initRows, updateCount } from '../ui/forms.js';
 import { createScatterWithLine, createObsVsFitChart } from '../charts/scatterPlot.js';
-import { registerChart } from '../charts/baseChart.js';
 import {
   createResidualsVsFitted, createHistogram, createQQPlot, createCookDistance,
 } from '../charts/residualPlot.js';
@@ -80,7 +79,6 @@ function renderPadrao(res) {
 
   if (chartPadrao) chartPadrao.destroy();
   chartPadrao = createScatterWithLine('chart-padrao', res.xs, res.ys, lineX, lineY, res.labelX, res.labelY);
-  registerChart('chart-padrao', chartPadrao);
 
   const dir = res.b1 >= 0 ? 'positiva' : 'negativa';
   const strength = Math.abs(res.r) > 0.8 ? 'forte' : Math.abs(res.r) > 0.5 ? 'moderada' : 'fraca';
@@ -152,7 +150,6 @@ function renderAvancado(res) {
       },
     },
   });
-  registerChart('chart-avancado', chartAvancado);
 
   const ciB1Lo = res.b1 - res.t95 * res.se_b1, ciB1Hi = res.b1 + res.t95 * res.se_b1;
   const ciB0Lo = res.b0 - res.t95 * res.se_b0, ciB0Hi = res.b0 + res.t95 * res.se_b0;

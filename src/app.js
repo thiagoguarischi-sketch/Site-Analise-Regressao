@@ -11,7 +11,6 @@ import {
 } from './ui/dashboard.js';
 
 import { showToast } from './ui/notifications.js';
-import { scaleChart } from './charts/baseChart.js';
 
 import {
   initRows, addRow, addRowTop, clearRows, setRows, getData, updateCount, loadExample,
@@ -87,7 +86,7 @@ Object.assign(window, {
   doLogout, deleteAccount, saveProfile, changePw,
   switchTab, goProfile,
   verifySignupCode, resendSignupCode, backToSignupForm,
-  showToast, toggleTheme, scaleChart,
+  showToast, toggleTheme,
 
   // Linear simples — formulário e import
   initRows, addRow, addRowTop, clearRows: clearRowsWrapper, setRows, getData, updateCount, loadExample,

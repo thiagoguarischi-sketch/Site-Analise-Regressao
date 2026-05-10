@@ -451,14 +451,6 @@
   .metric-g { color:var(--acc2); }
 
   .chart-wrap { position:relative; height:300px; margin:12px 0; }
-  .chart-scale-controls { position:absolute; top:6px; right:6px; display:flex; gap:3px; z-index:10; }
-  .chart-scale-btn {
-    width:26px; height:26px; border-radius:6px; border:1px solid var(--brd);
-    background:var(--bg2); color:var(--txt2); font-size:15px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; transition:.15s;
-    line-height:1; opacity:.65; padding:0;
-  }
-  .chart-scale-btn:hover { border-color:var(--brd2); color:var(--txt); opacity:1; }
 
   /* Alert badges */
   .alert { padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:8px; }
@@ -2132,11 +2124,6 @@
           <div class="card-title">📈 Resultado — Modo Padrão</div>
           <div class="metrics-grid" id="metrics-padrao"></div>
           <div class="chart-wrap">
-            <div class="chart-scale-controls">
-              <button class="chart-scale-btn" onclick="scaleChart('chart-padrao',0.7)" title="Ampliar">+</button>
-              <button class="chart-scale-btn" onclick="scaleChart('chart-padrao',0)" title="Resetar escala">⟳</button>
-              <button class="chart-scale-btn" onclick="scaleChart('chart-padrao',1.43)" title="Reduzir">−</button>
-            </div>
             <canvas id="chart-padrao"></canvas>
           </div>
           <div id="interp-padrao"></div>
@@ -2152,11 +2139,6 @@
           <div class="card-title">📊 Resultado — Modo Avançado</div>
           <div class="metrics-grid" id="metrics-avancado"></div>
           <div class="chart-wrap">
-            <div class="chart-scale-controls">
-              <button class="chart-scale-btn" onclick="scaleChart('chart-avancado',0.7)" title="Ampliar">+</button>
-              <button class="chart-scale-btn" onclick="scaleChart('chart-avancado',0)" title="Resetar escala">⟳</button>
-              <button class="chart-scale-btn" onclick="scaleChart('chart-avancado',1.43)" title="Reduzir">−</button>
-            </div>
             <canvas id="chart-avancado"></canvas>
           </div>
           <div id="tests-avancado"></div>
@@ -2653,11 +2635,6 @@
     <div class="card">
       <div class="card-title">📊 Curva Ajustada</div>
       <div class="chart-wrap">
-        <div class="chart-scale-controls">
-          <button class="chart-scale-btn" onclick="scaleChart('po-chart-main',0.7)" title="Ampliar">+</button>
-          <button class="chart-scale-btn" onclick="scaleChart('po-chart-main',0)" title="Resetar escala">⟳</button>
-          <button class="chart-scale-btn" onclick="scaleChart('po-chart-main',1.43)" title="Reduzir">−</button>
-        </div>
         <canvas id="po-chart-main"></canvas>
       </div>
     </div>
@@ -2894,11 +2871,6 @@
         <div class="card">
           <div class="card-title" id="st-main-chart-title">📈 Série + Tendência + Média Móvel + Projeção</div>
           <div class="chart-wrap" style="height:360px">
-            <div class="chart-scale-controls">
-              <button class="chart-scale-btn" onclick="scaleChart('st-chart-main',0.7)" title="Ampliar">+</button>
-              <button class="chart-scale-btn" onclick="scaleChart('st-chart-main',0)" title="Resetar escala">⟳</button>
-              <button class="chart-scale-btn" onclick="scaleChart('st-chart-main',1.43)" title="Reduzir">−</button>
-            </div>
             <canvas id="st-chart-main"></canvas>
           </div>
         </div>
@@ -3088,11 +3060,6 @@
         <div class="card">
           <div class="card-title">📈 Curvas Quantílicas</div>
           <div class="chart-wrap" style="height:380px">
-            <div class="chart-scale-controls">
-              <button class="chart-scale-btn" onclick="scaleChart('qr-chart-main',0.7)" title="Ampliar">+</button>
-              <button class="chart-scale-btn" onclick="scaleChart('qr-chart-main',0)" title="Resetar escala">⟳</button>
-              <button class="chart-scale-btn" onclick="scaleChart('qr-chart-main',1.43)" title="Reduzir">−</button>
-            </div>
             <canvas id="qr-chart-main"></canvas>
           </div>
           <div class="quantile-legend" id="qr-legend"></div>
@@ -3240,11 +3207,6 @@
         <div class="card">
           <div class="card-title">📊 Dispersão + Linhas Ajustadas</div>
           <div class="chart-wrap" style="height:360px">
-            <div class="chart-scale-controls">
-              <button class="chart-scale-btn" onclick="scaleChart('rr-chart-main',0.7)" title="Ampliar">+</button>
-              <button class="chart-scale-btn" onclick="scaleChart('rr-chart-main',0)" title="Resetar escala">⟳</button>
-              <button class="chart-scale-btn" onclick="scaleChart('rr-chart-main',1.43)" title="Reduzir">−</button>
-            </div>
             <canvas id="rr-chart-main"></canvas>
           </div>
           <div id="rr-legend" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px"></div>
