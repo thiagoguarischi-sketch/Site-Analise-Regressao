@@ -659,7 +659,7 @@
 
   /* ====== SIDEBAR ====== */
   #app-body {
-    display:flex; flex:1; padding-left:68px;
+    display:flex; flex:1; padding-left:24px;
   }
   #sidebar {
     width:52px;
@@ -677,7 +677,25 @@
     position:fixed; left:8px;
     top:calc(28px + 50vh); transform:translateY(-50%);
     height:fit-content;
-    z-index:50; overflow:hidden;
+    z-index:50;
+    overflow:hidden;
+    transition: width .35s cubic-bezier(.16,1,.3,1), overflow 0s .35s;
+  }
+  #sidebar.expanded {
+    width:52px;
+    overflow:visible;
+    transition: width .35s cubic-bezier(.16,1,.3,1), overflow 0s;
+  }
+  #sidebar:not(.expanded) {
+    width:8px;
+  }
+  #sidebar:not(.expanded) .sidebar-btn {
+    opacity:0;
+    pointer-events:none;
+  }
+  #sidebar:not(.expanded) .sidebar-divider,
+  #sidebar:not(.expanded) .sidebar-spacer {
+    opacity:0;
   }
   #sidebar::before {
     content:''; position:absolute; top:0; left:0; right:0; height:45%;
@@ -702,7 +720,8 @@
     border-radius:8px; color:var(--txt2);
     font-size:16px; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
-    transition:.15s; position:relative;
+    transition: background .15s, color .15s, opacity .2s ease;
+    position:relative;
   }
   .sidebar-btn:hover { background:var(--bg3); color:var(--txt); }
   .sidebar-btn.active { background:rgba(124,131,253,.15); color:var(--x); }
@@ -722,7 +741,7 @@
     box-shadow:var(--shadow-card); z-index:200;
   }
   .sidebar-btn:hover .sidebar-tooltip { opacity:1; }
-  .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; }
+  .sidebar-divider { width:24px; height:1px; background:var(--brd); margin:6px 0; transition:opacity .2s ease; }
   .sidebar-spacer { flex:1; }
 
   /* Modal Quem Somos */
@@ -4606,6 +4625,33 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
     });
   });
 
+})();
+
+// Sidebar proximity expand
+(function() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  let collapseTimer;
+
+  function expand() {
+    clearTimeout(collapseTimer);
+    sidebar.classList.add('expanded');
+  }
+
+  function scheduleCollapse() {
+    clearTimeout(collapseTimer);
+    collapseTimer = setTimeout(() => sidebar.classList.remove('expanded'), 350);
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    const rect = sidebar.getBoundingClientRect();
+    const proximity = 48;
+    const near = e.clientX <= rect.right + proximity
+              && e.clientY >= rect.top - proximity
+              && e.clientY <= rect.bottom + proximity;
+    if (near) expand();
+    else scheduleCollapse();
+  });
 })();
 </script>
 <script type="module" src="src/app.js"></script>
