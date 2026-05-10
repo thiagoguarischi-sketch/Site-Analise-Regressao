@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso · Slope</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:   #07080F;
+  --bg2:  #0D0E1A;
+  --bg3:  #141526;
+  --bg4:  #1B1C30;
+  --x:    #7C83FD;
+  --x2:   #5A62F0;
+  --y:    #00D4A0;
+  --acc:  #FF6B8A;
+  --acc2: #FFC254;
+  --txt:  #ECEDF8;
+  --txt2: #8987A8;
+  --txt3: #4E4C68;
+  --brd:  #1C1D30;
+  --brd2: #282944;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(7,8,15,.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--brd2);
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 32px; height: 56px;
+}
+.topbar-back {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--txt2); text-decoration: none; font-size: 13px;
+  padding: 6px 10px; border-radius: var(--r-sm);
+  transition: all .15s;
+}
+.topbar-back:hover { color: var(--txt); background: var(--bg3); }
+.topbar-sep { color: var(--txt3); }
+.topbar-title { color: var(--txt2); font-size: 13px; }
+.topbar-model { color: var(--txt); font-size: 13px; font-weight: 600; }
+.topbar-use {
+  margin-left: auto;
+  background: var(--x); color: #fff; border: none; cursor: pointer;
+  padding: 8px 18px; border-radius: var(--r-sm); font-size: 13px;
+  font-weight: 600; font-family: var(--font-sans);
+  transition: opacity .15s; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.topbar-use:hover { opacity: .85; }
+
+/* ── Layout ── */
+.page-layout {
+  max-width: 1140px; margin: 0 auto;
+  display: grid; grid-template-columns: 220px 1fr;
+  gap: 40px; padding: 48px 24px 80px;
+}
+@media (max-width: 800px) {
+  .page-layout { grid-template-columns: 1fr; }
+  .toc-sidebar { display: none; }
+}
+
+/* ── TOC Sidebar ── */
+.toc-sidebar { position: sticky; top: 76px; align-self: start; }
+.toc-title {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  color: var(--txt3); text-transform: uppercase; margin-bottom: 12px;
+}
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.toc-list a {
+  display: block; padding: 5px 10px;
+  font-size: 13px; color: var(--txt2);
+  text-decoration: none; border-radius: var(--r-sm);
+  border-left: 2px solid transparent;
+  transition: all .15s;
+}
+.toc-list a:hover { color: var(--txt); background: var(--bg3); }
+.toc-list a.active { color: var(--x); border-left-color: var(--x); background: rgba(124,131,253,.08); }
+
+/* ── Content ── */
+.content { min-width: 0; }
+
+/* Hero */
+.hero {
+  margin-bottom: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--brd2);
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; padding: 4px 12px;
+  border-radius: 99px; border: 1px solid; margin-bottom: 16px;
+}
+.hero-icon { font-size: 48px; margin-bottom: 16px; }
+.hero-title { font-size: 36px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 12px; line-height: 1.2; }
+.hero-sub { font-size: 17px; color: var(--txt2); max-width: 640px; margin-bottom: 24px; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-chip {
+  font-size: 12px; font-weight: 500; padding: 4px 12px;
+  border-radius: 99px; background: var(--bg3); border: 1px solid var(--brd2);
+  color: var(--txt2);
+}
+
+/* Sections */
+.section { margin-bottom: 52px; scroll-margin-top: 76px; }
+.section-title {
+  font-size: 22px; font-weight: 700; letter-spacing: -.01em;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+}
+.section-icon { font-size: 20px; }
+.section-body { color: var(--txt2); }
+.section-body p { margin-bottom: 14px; }
+.section-body p:last-child { margin-bottom: 0; }
+.section-body strong { color: var(--txt); font-weight: 600; }
+
+/* Formula box */
+.formula-box {
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); padding: 24px 28px; margin: 20px 0;
+}
+.formula-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  color: var(--txt3); text-transform: uppercase; margin-bottom: 12px;
+}
+.formula-eq {
+  font-family: var(--font-mono); font-size: 15px; color: var(--x);
+  line-height: 1.8; white-space: pre-wrap;
+}
+.formula-note { font-size: 13px; color: var(--txt2); margin-top: 12px; }
+.formula-note code { font-family: var(--font-mono); font-size: 12px; color: var(--txt); background: var(--bg3); padding: 2px 6px; border-radius: 4px; }
+
+/* Steps */
+.steps { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+.step {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); padding: 20px;
+}
+.step-num {
+  flex-shrink: 0; width: 32px; height: 32px;
+  background: var(--x); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+.step-body { flex: 1; }
+.step-title { font-weight: 600; margin-bottom: 4px; }
+.step-desc { font-size: 13px; color: var(--txt2); }
+
+/* Cards grid */
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px; margin-top: 8px;
+}
+.info-card {
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); padding: 18px;
+}
+.info-card-icon { font-size: 22px; margin-bottom: 10px; }
+.info-card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.info-card-body { font-size: 13px; color: var(--txt2); line-height: 1.6; }
+
+/* When to use / not use */
+.use-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.use-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-md); padding: 14px 16px;
+  font-size: 14px;
+}
+.use-item.yes { border-left: 3px solid var(--y); }
+.use-item.no  { border-left: 3px solid var(--acc); }
+.use-dot { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* Metrics grid */
+.metrics-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px; margin-top: 8px;
+}
+.metric-card {
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); padding: 20px;
+}
+.metric-name {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  color: var(--x); margin-bottom: 6px;
+}
+.metric-desc { font-size: 13px; color: var(--txt2); line-height: 1.6; }
+.metric-range {
+  margin-top: 8px; font-size: 12px; font-weight: 500;
+  padding: 3px 8px; border-radius: 99px; display: inline-block;
+  background: rgba(124,131,253,.1); color: var(--x);
+}
+
+/* Assumptions */
+.assumption-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.assumption {
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-left: 3px solid var(--acc2);
+  border-radius: var(--r-md); padding: 14px 16px; font-size: 14px;
+}
+.assumption strong { color: var(--txt); }
+.assumption p { color: var(--txt2); margin-top: 4px; font-size: 13px; }
+
+/* Pitfalls */
+.pitfall-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.pitfall {
+  background: rgba(255,107,138,.05); border: 1px solid rgba(255,107,138,.2);
+  border-radius: var(--r-md); padding: 14px 16px; font-size: 14px;
+}
+.pitfall-title { font-weight: 600; color: var(--acc); margin-bottom: 4px; }
+.pitfall-desc { font-size: 13px; color: var(--txt2); }
+
+/* Example */
+.example-box {
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); overflow: hidden; margin-top: 8px;
+}
+.example-header {
+  padding: 14px 20px; background: var(--bg3); border-bottom: 1px solid var(--brd2);
+  font-size: 13px; font-weight: 600; color: var(--txt2);
+}
+.example-body { padding: 20px; }
+.example-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.example-table th {
+  background: var(--bg3); color: var(--txt2); font-weight: 600;
+  padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--brd2);
+}
+.example-table td { padding: 8px 12px; border-bottom: 1px solid var(--brd); color: var(--txt); }
+.example-table tr:last-child td { border-bottom: none; }
+.example-result {
+  margin-top: 12px; padding: 14px 16px;
+  background: rgba(0,212,160,.06); border: 1px solid rgba(0,212,160,.2);
+  border-radius: var(--r-md); font-size: 13px; color: var(--txt2);
+}
+.example-result strong { color: var(--y); }
+
+/* FAQ */
+.faq-list { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.faq-item {
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px; font-weight: 600; font-size: 14px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  user-select: none;
+}
+.faq-q:hover { background: var(--bg3); }
+.faq-arrow { color: var(--txt3); font-size: 12px; transition: transform .2s; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a {
+  padding: 0 20px; max-height: 0; overflow: hidden;
+  font-size: 13px; color: var(--txt2); line-height: 1.7;
+  transition: max-height .25s ease, padding .25s ease;
+}
+.faq-item.open .faq-a { max-height: 400px; padding: 0 20px 16px; }
+
+/* CTA */
+.cta-box {
+  background: linear-gradient(135deg, rgba(124,131,253,.12) 0%, rgba(0,212,160,.08) 100%);
+  border: 1px solid rgba(124,131,253,.25);
+  border-radius: var(--r-xl); padding: 36px 40px; text-align: center; margin-top: 52px;
+}
+.cta-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+.cta-sub { color: var(--txt2); margin-bottom: 24px; }
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--x); color: #fff; border: none; cursor: pointer;
+  padding: 12px 28px; border-radius: var(--r-md); font-size: 15px;
+  font-weight: 600; font-family: var(--font-sans);
+  text-decoration: none; transition: opacity .15s;
+}
+.cta-btn:hover { opacity: .85; }
+
+/* Comparison table */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+.compare-table th {
+  background: var(--bg3); color: var(--txt2); font-weight: 600;
+  padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--brd2);
+}
+.compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--brd); color: var(--txt); vertical-align: top; }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table .good { color: var(--y); }
+.compare-table .bad { color: var(--acc); }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a class="topbar-back" href="../index.html">← Voltar</a>
+  <span class="topbar-sep">›</span>
+  <span class="topbar-title">Guia de Modelos</span>
+  <span class="topbar-sep">›</span>
+  <span class="topbar-model" id="nav-model-name">Carregando…</span>
+  <a class="topbar-use" href="../index.html" id="nav-use-btn">Usar modelo →</a>
+</nav>
+
+<div class="page-layout">
+  <aside class="toc-sidebar">
+    <div class="toc-title">Neste curso</div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </aside>
+
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+//  MODEL DATA
+// ─────────────────────────────────────────
+const MODELS = {
+
+  linear: {
+    id: 'linear',
+    panel: 'nova',
+    icon: '📈',
+    name: 'Regressão Linear Simples',
+    category: 'Regressão Contínua',
+    level: 'Iniciante',
+    levelColor: '#4CAF50',
+    badgeStyle: 'background:rgba(124,131,253,.12);color:#7C83FD;border-color:rgba(124,131,253,.3)',
+    sub: 'O modelo mais fundamental da estatística. Estima a relação entre uma única variável preditora e uma variável resposta contínua.',
+    chips: ['1 variável preditora', 'Variável resposta contínua', 'OLS', 'Interpretação direta'],
+
+    sections: [
+      {
+        id: 'oque',
+        icon: '🔍',
+        title: 'O que é',
+        html: `
+          <p>A Regressão Linear Simples é o modelo estatístico mais básico e amplamente utilizado. Ela descreve a relação entre <strong>uma variável independente X</strong> (preditora) e <strong>uma variável dependente Y</strong> (resposta) por meio de uma reta.</p>
+          <p>O objetivo é encontrar a reta que melhor se ajusta aos dados, minimizando a distância vertical entre os pontos observados e a reta — esse método se chama <strong>Mínimos Quadrados Ordinários (OLS)</strong>.</p>
+          <p>A reta resultante pode ser usada tanto para <strong>entender a relação</strong> entre X e Y quanto para <strong>fazer previsões</strong> de Y para novos valores de X não observados.</p>
+        `
+      },
+      {
+        id: 'matematica',
+        icon: '📐',
+        title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Equação da reta',
+          eq: `Ŷ = β₀ + β₁·X + ε
+
+β₁ = Σ(xᵢ − x̄)(yᵢ − ȳ) / Σ(xᵢ − x̄)²
+β₀ = ȳ − β₁·x̄`,
+          note: `Onde <code>β₀</code> é o intercepto (valor de Y quando X=0), <code>β₁</code> é a inclinação (quanto Y muda por unidade de X), e <code>ε</code> é o termo de erro (resíduo).`
+        },
+        html: `
+          <p>O método OLS minimiza a <strong>Soma dos Quadrados dos Resíduos (SQR)</strong>: Σ(yᵢ − Ŷᵢ)². A solução analítica garante que os estimadores β₀ e β₁ sejam os melhores estimadores lineares não-viesados (Teorema de Gauss-Markov), desde que as suposições do modelo sejam satisfeitas.</p>
+        `
+      },
+      {
+        id: 'como-funciona',
+        icon: '⚙️',
+        title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Calcular as médias', desc: 'Calcula x̄ (média de X) e ȳ (média de Y) a partir dos dados.' },
+          { title: 'Estimar β₁ (inclinação)', desc: 'Divide a covariância de X e Y pela variância de X. Mede o quanto Y cresce para cada unidade de X.' },
+          { title: 'Estimar β₀ (intercepto)', desc: 'Garante que a reta passe pelo ponto (x̄, ȳ), que é sempre o centro de qualquer regressão OLS.' },
+          { title: 'Calcular os resíduos', desc: 'eᵢ = yᵢ − Ŷᵢ. Os resíduos devem ter distribuição aproximadamente normal e variância constante.' },
+          { title: 'Avaliar com métricas', desc: 'Calcular R², p-valor, IC 95%, estatística F e distância de Cook para validar o modelo.' },
+        ]
+      },
+      {
+        id: 'quando-usar',
+        icon: '✅',
+        title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true, text: 'Relação esperada entre X e Y é aproximadamente linear' },
+          { yes: true, text: 'Y é uma variável contínua (peso, preço, temperatura, salário)' },
+          { yes: true, text: 'Você tem apenas um preditor e quer interpretação simples' },
+          { yes: true, text: 'Tamanho de amostra pequeno a médio, sem alta dimensionalidade' },
+          { yes: false, text: 'Y é binário ou categórico → use Regressão Logística' },
+          { yes: false, text: 'Relação claramente curvilínea → use Regressão Polinomial' },
+          { yes: false, text: 'Dados com muitos outliers severos → use Regressão Quantílica' },
+          { yes: false, text: 'Múltiplas variáveis preditoras → use Regressão Múltipla' },
+        ]
+      },
+      {
+        id: 'suposicoes',
+        icon: '📋',
+        title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Linearidade', desc: 'A relação entre X e Y deve ser linear. Verifique com o gráfico de dispersão e o plot de resíduos vs. valores ajustados.' },
+          { title: 'Independência dos erros', desc: 'Os resíduos não devem ser correlacionados entre si (sem autocorrelação). Importante em séries temporais.' },
+          { title: 'Homocedasticidade', desc: 'A variância dos resíduos deve ser constante ao longo de todos os valores de X (sem padrão de "cone").' },
+          { title: 'Normalidade dos resíduos', desc: 'Os resíduos devem seguir aproximadamente uma distribuição normal. Importante para intervalos de confiança válidos.' },
+        ]
+      },
+      {
+        id: 'metricas',
+        icon: '📊',
+        title: 'Métricas explicadas',
+        metrics: [
+          { name: 'R²', desc: 'Proporção da variância de Y explicada pelo modelo. R²=1 é ajuste perfeito. R²=0 significa que o modelo não explica nada além da média.', range: '0 a 1 (maior = melhor)' },
+          { name: 'R² Ajustado', desc: 'Versão penalizada do R² que desconta a adição de variáveis desnecessárias. Sempre use este em modelos com múltiplos preditores.', range: '≤ R²' },
+          { name: 'p-valor', desc: 'Probabilidade de observar β₁ tão extremo se o coeficiente verdadeiro fosse zero. p < 0.05 → rejeitar H₀ de β₁ = 0.', range: '< 0.05 para significância' },
+          { name: 'IC 95%', desc: 'Intervalo de confiança de 95% para β₁. Se não incluir zero, o coeficiente é estatisticamente significativo.', range: 'Quanto mais estreito, melhor' },
+          { name: 'F-estatístico', desc: 'Testa se o modelo como um todo é significativo (todos os coeficientes = 0). Para regressão simples, equivale ao quadrado do t-estatístico de β₁.', range: 'p(F) < 0.05 para modelo válido' },
+          { name: "Cook's Distance", desc: 'Mede a influência de cada observação no ajuste. Valores > 0.5 indicam pontos influentes que podem distorcer os coeficientes.', range: '< 0.5 é saudável' },
+        ]
+      },
+      {
+        id: 'armadilhas',
+        icon: '⚠️',
+        title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Correlação ≠ Causalidade', desc: 'R² alto não significa que X causa Y. Sempre valide com conhecimento do domínio.' },
+          { title: 'Extrapolação perigosa', desc: 'Prever valores de Y para X muito fora do intervalo dos dados de treino é arriscado — a linearidade pode não valer nessa região.' },
+          { title: 'Outliers inflacionam erros', desc: 'Um único ponto extremo pode puxar toda a reta. Verifique a distância de Cook e considere tratamento de outliers.' },
+          { title: 'Omitir variáveis importantes', desc: 'Se uma variável relevante está ausente, os coeficientes ficam viesados (viés de variável omitida).' },
+        ]
+      },
+      {
+        id: 'exemplo',
+        icon: '🧪',
+        title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Prever salário com base em anos de experiência',
+          tableHeaders: ['Experiência (anos)', 'Salário (R$ mil)'],
+          tableRows: [
+            ['1', '38'], ['2', '42'], ['3', '46'], ['5', '54'], ['7', '62'], ['10', '74'],
+          ],
+          resultHtml: `Ajustando OLS: <strong>Ŷ = 34.8 + 3.9 · X</strong><br>
+Para 8 anos de experiência → Ŷ = 34.8 + 3.9 × 8 = <strong>R$ 66.0 mil</strong><br>
+R² = 0.998 — o modelo explica 99.8% da variação salarial com anos de experiência.`
+        }
+      },
+      {
+        id: 'faq',
+        icon: '❓',
+        title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Qual o tamanho mínimo de amostra?', a: 'A regra prática é pelo menos 10–20 observações por preditor. Para regressão simples, n ≥ 30 costuma ser suficiente para os testes serem confiáveis.' },
+          { q: 'O que fazer se R² for baixo?', a: 'Primeiro verifique se a relação é mesmo linear (talvez use polinomial). Depois considere se faltam preditores importantes (use regressão múltipla). R² baixo não invalida o modelo se o p-valor do coeficiente for significativo.' },
+          { q: 'Como interpretar β₁ negativo?', a: 'Significa que Y diminui quando X aumenta. Por exemplo, β₁ = −2 indica que cada unidade extra de X está associada a uma redução de 2 unidades em Y.' },
+          { q: 'Posso usar com dados categóricos em X?', a: 'X precisa ser numérico. Variáveis categórias em X devem ser convertidas em variáveis dummy (0/1). Para Y categórico, use regressão logística.' },
+        ]
+      },
+    ]
+  },
+
+  multipla: {
+    id: 'multipla',
+    panel: 'multipla',
+    icon: '📊',
+    name: 'Regressão Múltipla',
+    category: 'Regressão Contínua',
+    level: 'Básico',
+    levelColor: '#8BC34A',
+    badgeStyle: 'background:rgba(0,212,160,.1);color:#00D4A0;border-color:rgba(0,212,160,.3)',
+    sub: 'Estende a regressão linear para múltiplos preditores, medindo o efeito de cada variável enquanto controla as demais.',
+    chips: ['N variáveis preditoras', 'Álgebra matricial', 'VIF', 'ANOVA'],
+    sections: [
+      {
+        id: 'oque', icon: '🔍', title: 'O que é',
+        html: `
+          <p>A Regressão Múltipla generaliza a regressão linear simples para incluir <strong>dois ou mais preditores simultâneos</strong>. Isso permite estimar o efeito de cada variável independente sobre Y enquanto <strong>controla (mantém constante) as demais</strong>.</p>
+          <p>Por exemplo: ao prever o preço de imóveis com área e número de quartos, o coeficiente da área mede o impacto de 1 m² adicional <em>fixando o número de quartos</em> constante.</p>
+          <p>Os parâmetros são estimados via <strong>álgebra matricial OLS</strong>: β = (XᵀX)⁻¹Xᵀy, onde X é a matriz de design com uma coluna de 1s (intercepto) e uma coluna por preditor.</p>
+        `
+      },
+      {
+        id: 'matematica', icon: '📐', title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Equação e estimação matricial',
+          eq: `Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ + ε
+
+Em forma matricial:  y = Xβ + ε
+Estimação OLS:       β = (XᵀX)⁻¹Xᵀy`,
+          note: `A matriz <code>XᵀX</code> precisa ser invertível. Se for singular (multicolinearidade perfeita), OLS falha — use Ridge ou Lasso.`
+        },
+        html: `<p>O <strong>VIF (Variance Inflation Factor)</strong> mede quanto a variância do estimador de βⱼ é inflada pela correlação com os demais preditores. VIF = 1/(1 − R²ⱼ), onde R²ⱼ é o R² da regressão de Xⱼ sobre todos os demais. VIF > 10 indica multicolinearidade severa.</p>`
+      },
+      {
+        id: 'como-funciona', icon: '⚙️', title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Montar a matriz de design X', desc: 'Primeira coluna = 1 (intercepto). Demais colunas = valores de cada preditor para cada observação.' },
+          { title: 'Estimar β via OLS matricial', desc: 'β = (XᵀX)⁻¹Xᵀy. A inversão é feita numericamente com decomposição LU ou SVD.' },
+          { title: 'Calcular VIF por preditor', desc: 'Regredir cada Xⱼ sobre os demais e calcular VIF = 1/(1−R²ⱼ). VIF > 5 pede atenção; > 10 é problemático.' },
+          { title: 'ANOVA da regressão', desc: 'Decompõe SQT = SQR + SQE. O F-global testa se ao menos um preditor tem efeito significativo.' },
+          { title: 't-testes individuais', desc: 'Cada βⱼ tem seu t = βⱼ / SE(βⱼ) e p-valor individual para testar H₀: βⱼ = 0.' },
+        ]
+      },
+      {
+        id: 'quando-usar', icon: '✅', title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true,  text: 'Y contínuo e influenciado por dois ou mais fatores simultaneamente' },
+          { yes: true,  text: 'Você quer controlar variáveis de confusão (ex: analisar o efeito do salário controlando a educação)' },
+          { yes: true,  text: 'Testar hipóteses sobre coeficientes individuais com t-testes' },
+          { yes: false, text: 'Muitos preditores altamente correlacionados → Ridge ou Lasso são mais estáveis' },
+          { yes: false, text: 'Mais preditores do que observações (p > n) → regularização obrigatória' },
+          { yes: false, text: 'Y é binário → use Regressão Logística' },
+        ]
+      },
+      {
+        id: 'suposicoes', icon: '📋', title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Linearidade', desc: 'Cada preditor tem efeito linear sobre Y (dado que os demais estejam fixos).' },
+          { title: 'Ausência de multicolinearidade perfeita', desc: 'Nenhuma variável preditora pode ser combinação linear exata das demais. Monitorar com VIF.' },
+          { title: 'Homocedasticidade', desc: 'Variância dos resíduos constante para todos os valores ajustados.' },
+          { title: 'Normalidade dos resíduos', desc: 'Necessário para validade dos testes t e F em amostras pequenas.' },
+        ]
+      },
+      {
+        id: 'metricas', icon: '📊', title: 'Métricas explicadas',
+        metrics: [
+          { name: 'R² Ajustado', desc: 'R² penalizado pelo número de preditores. Aumenta só se o novo preditor melhora o modelo além do que seria esperado por acaso.', range: '≤ R², maior = melhor' },
+          { name: 'VIF', desc: 'Fator de inflação da variância. Acima de 5 indica correlação preocupante entre preditores; acima de 10 é severo.', range: '1 (ideal) a ∞' },
+          { name: 'F-global', desc: 'Testa H₀: todos os βⱼ = 0. Se p(F) < 0.05, ao menos um preditor é útil.', range: 'p < 0.05 → modelo válido' },
+          { name: 't-teste por β', desc: 'Testa se o efeito individual de cada preditor é significativo, condicionado aos demais.', range: 'p < 0.05 para cada β' },
+          { name: 'ANOVA', desc: 'Decompõe a variância total em variância explicada (regressão) e não explicada (resíduo). Valida o modelo globalmente.', range: 'F significativo = modelo útil' },
+        ]
+      },
+      {
+        id: 'armadilhas', icon: '⚠️', title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Multicolinearidade', desc: 'Preditores altamente correlacionados inflam os erros padrão e tornam os coeficientes instáveis. Monitore VIF.' },
+          { title: 'Overfitting com muitas variáveis', desc: 'Adicionar preditores sempre aumenta R², mas pode prejudicar a generalização. Use R² ajustado ou regularização.' },
+          { title: 'Interpretar coeficientes sem contexto', desc: 'β₁ = 5 significa "mantendo X₂, …, Xₙ fixos, um aumento de 1 em X₁ está associado a +5 em Y". Não confunda com efeito total.' },
+        ]
+      },
+      {
+        id: 'exemplo', icon: '🧪', title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Prever preço de imóvel com área e quartos',
+          tableHeaders: ['Área (m²)', 'Quartos', 'Preço (R$ mil)'],
+          tableRows: [
+            ['50','1','280'], ['80','2','370'], ['100','3','450'], ['120','3','510'], ['150','4','620'],
+          ],
+          resultHtml: `Modelo ajustado: <strong>Ŷ = 80 + 3.2·Área + 25·Quartos</strong><br>
+Para imóvel de 110m² e 3 quartos → Ŷ = 80 + 3.2×110 + 25×3 = <strong>R$ 507 mil</strong><br>
+R² = 0.994 · VIF(Área)=2.1, VIF(Quartos)=2.1 — sem multicolinearidade preocupante.`
+        }
+      },
+      {
+        id: 'faq', icon: '❓', title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Quantas variáveis posso incluir?', a: 'A regra prática é pelo menos 10–20 observações por preditor. Com n=100, use no máximo 5–10 preditores sem regularização.' },
+          { q: 'O que fazer quando VIF > 10?', a: 'Opções: (1) Remover uma das variáveis correlacionadas; (2) Combinar preditores correlacionados em um componente principal (PCA); (3) Usar Regressão Ridge que estabiliza coeficientes sob multicolinearidade.' },
+          { q: 'R² ajustado caiu ao adicionar uma variável — o que isso significa?', a: 'Significa que a variável adicionada não contribui o suficiente para compensar a penalidade pelo grau de liberdade extra. Remova-a do modelo.' },
+        ]
+      },
+    ]
+  },
+
+  logistica: {
+    id: 'logistica',
+    panel: 'logistica',
+    icon: '🎯',
+    name: 'Regressão Logística',
+    category: 'Classificação Binária',
+    level: 'Intermediário',
+    levelColor: '#FF9800',
+    badgeStyle: 'background:rgba(255,107,138,.1);color:#FF6B8A;border-color:rgba(255,107,138,.3)',
+    sub: 'Modela a probabilidade de um evento binário ocorrer. Usa a função sigmoide e estimação por máxima verossimilhança.',
+    chips: ['Saída 0 ou 1', 'Probabilidade', 'Sigmoide', 'AUC-ROC'],
+    sections: [
+      {
+        id: 'oque', icon: '🔍', title: 'O que é',
+        html: `
+          <p>A Regressão Logística é o modelo padrão para <strong>classificação binária</strong> — quando a variável resposta Y assume apenas dois valores: 0 (não ocorreu) ou 1 (ocorreu).</p>
+          <p>Em vez de prever Y diretamente (o que violaria os limites 0–1), ela modela a <strong>probabilidade P(Y=1|X)</strong> por meio da <strong>função logística (sigmoide)</strong>, que mapeia qualquer valor real para o intervalo (0, 1).</p>
+          <p>Os parâmetros são estimados por <strong>Máxima Verossimilhança (MLE)</strong> usando descida do gradiente — não existe solução analítica fechada como no OLS.</p>
+        `
+      },
+      {
+        id: 'matematica', icon: '📐', title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Função sigmoide e log-odds',
+          eq: `P(Y=1) = σ(z) = 1 / (1 + e^−z)
+z = β₀ + β₁X₁ + … + βₙXₙ
+
+Log-odds: ln[P/(1−P)] = z = Xβ
+Decisão:  Ŷ = 1 se P ≥ 0.5, senão Ŷ = 0`,
+          note: `Os coeficientes β têm interpretação em <code>log-odds</code>: eᵝ¹ é a razão de chances (odds ratio) para um aumento de 1 unidade em X₁.`
+        },
+        html: `
+          <p>A função de custo usada é a <strong>Log-Loss (entropia cruzada binária)</strong>:</p>
+          <p style="font-family:var(--font-mono);font-size:13px;color:var(--x);background:var(--bg2);padding:12px;border-radius:8px">L = −Σ[yᵢ·log(p̂ᵢ) + (1−yᵢ)·log(1−p̂ᵢ)]</p>
+          <p>A descida do gradiente minimiza essa função iterativamente, atualizando β a cada passo.</p>
+        `
+      },
+      {
+        id: 'como-funciona', icon: '⚙️', title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Inicializar coeficientes', desc: 'β começa em zero ou com valores aleatórios pequenos.' },
+          { title: 'Calcular probabilidades', desc: 'Para cada observação, calcula P(Y=1) = σ(Xβ) com os β atuais.' },
+          { title: 'Calcular o gradiente', desc: '∇L = Xᵀ(p̂ − y). O gradiente indica a direção de maior crescimento da perda.' },
+          { title: 'Atualizar β', desc: 'β ← β − α·∇L, onde α é a taxa de aprendizado. Repetir até convergência.' },
+          { title: 'Avaliar com limiar', desc: 'Com os β finais, calcula P para novos dados. Aplica limiar (default 0.5) para decidir classe 0 ou 1.' },
+        ]
+      },
+      {
+        id: 'quando-usar', icon: '✅', title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true,  text: 'Y é binário (sim/não, 0/1, verdadeiro/falso)' },
+          { yes: true,  text: 'Você precisa de probabilidades calibradas, não apenas da classe' },
+          { yes: true,  text: 'Interpretabilidade dos coeficientes como odds ratios é importante' },
+          { yes: false, text: 'Y tem mais de 2 classes → use Regressão Logística Multinomial ou outro classificador' },
+          { yes: false, text: 'Classes extremamente desbalanceadas sem tratamento (oversample/undersample)' },
+          { yes: false, text: 'Y é contínuo → use Regressão Linear' },
+        ]
+      },
+      {
+        id: 'suposicoes', icon: '📋', title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Log-odds é linear nos preditores', desc: 'A relação entre os preditores e o log-odds de Y deve ser linear. Verificar com curvas de resposta.' },
+          { title: 'Independência das observações', desc: 'As observações devem ser independentes entre si (não há clustering ou dados de painel sem tratamento adequado).' },
+          { title: 'Ausência de multicolinearidade severa', desc: 'Preditores muito correlacionados inflam os erros padrão dos coeficientes.' },
+          { title: 'Tamanho de amostra adequado', desc: 'Regra prática: pelo menos 10 eventos por preditor incluído. Amostras muito pequenas com MLE podem ter estimativas instáveis.' },
+        ]
+      },
+      {
+        id: 'metricas', icon: '📊', title: 'Métricas explicadas',
+        metrics: [
+          { name: 'AUC-ROC', desc: 'Área sob a curva ROC. Mede a capacidade do modelo de distinguir as duas classes. AUC=0.5 é equivalente a chute aleatório; AUC=1 é perfeito.', range: '0.5 (ruim) a 1.0 (perfeito)' },
+          { name: 'McFadden R²', desc: 'Análogo ao R² para modelos de verossimilhança. R²M = 1 − (LL_modelo/LL_nulo). Valores entre 0.2 e 0.4 indicam bom ajuste.', range: '0 a 1 (0.2–0.4 = bom)' },
+          { name: 'Deviance', desc: 'Medida de qualidade do ajuste: Deviance = −2·LL. Quanto menor, melhor. A diferença de deviances entre modelos segue χ² para testes de razão de verossimilhança.', range: 'Quanto menor, melhor' },
+          { name: 'Log-likelihood', desc: 'Logaritmo da verossimilhança dos dados dado o modelo. Maximizado pelo MLE. Útil para comparar modelos via Teste da Razão de Verossimilhança.', range: 'Quanto mais próximo de 0, melhor' },
+          { name: 'Calibração', desc: 'Verifica se as probabilidades previstas correspondem às frequências observadas. Um modelo bem calibrado que prevê P=0.7 deve estar correto em ~70% dos casos.', range: 'Quanto mais próximo da diagonal, melhor' },
+        ]
+      },
+      {
+        id: 'armadilhas', icon: '⚠️', title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Separação perfeita', desc: 'Se um preditor separa perfeitamente as classes no treino, o MLE diverge (coeficiente → ±∞). Use regularização L2 (Ridge logístico).' },
+          { title: 'Desbalanceamento de classes', desc: 'Com 95% de negativos e 5% de positivos, o modelo pode prever sempre 0 e ter 95% de acurácia — mas AUC baixo. Trate com oversample, undersample ou ajuste do limiar.' },
+          { title: 'Usar acurácia como única métrica', desc: 'Com classes desbalanceadas, acurácia é enganosa. Prefira AUC-ROC, precisão, recall e F1.' },
+          { title: 'Confundir probabilidade com certeza', desc: 'P=0.8 não é certeza. O limiar de 0.5 pode não ser ótimo — ajuste conforme o custo relativo de falsos positivos e negativos.' },
+        ]
+      },
+      {
+        id: 'exemplo', icon: '🧪', title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Prever se cliente vai comprar (Y=1) ou não (Y=0)',
+          tableHeaders: ['Tempo no site (min)', 'Páginas visitadas', 'Comprou?'],
+          tableRows: [
+            ['2','3','0'], ['5','7','0'], ['8','10','1'], ['12','15','1'], ['15','20','1'],
+          ],
+          resultHtml: `Modelo: <strong>P(compra) = σ(−4.2 + 0.18·Tempo + 0.22·Páginas)</strong><br>
+Para Tempo=10, Páginas=13 → z = −4.2 + 1.8 + 2.86 = 0.46 → <strong>P = 61.3%</strong> → Classe 1<br>
+AUC-ROC = 0.91 — excelente discriminação entre compradores e não-compradores.`
+        }
+      },
+      {
+        id: 'faq', icon: '❓', title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Como interpretar um odds ratio de 2.5?', a: 'Para cada aumento de 1 unidade em X, as chances (odds) do evento ocorrer multiplicam por 2.5. Odds de 2.5 significa que o evento é 2.5× mais provável do que não ocorrer.' },
+          { q: 'Qual o melhor limiar de decisão?', a: 'Depende do problema. Se falso negativo é muito custoso (ex: diagnóstico médico), use um limiar menor (ex: 0.3). Analise a curva ROC e escolha o ponto que balanceia sensibilidade e especificidade para o seu caso.' },
+          { q: 'Posso usar regressão logística com mais de 2 classes?', a: 'Sim, usando a versão Multinomial (Softmax), que estima K−1 funções logísticas simultâneas para K classes. Para apenas 3–5 classes bem definidas, funciona bem.' },
+        ]
+      },
+    ]
+  },
+
+  polinomial: {
+    id: 'polinomial',
+    panel: 'polinomial',
+    icon: '〰️',
+    name: 'Regressão Polinomial',
+    category: 'Relações Não-Lineares',
+    level: 'Básico',
+    levelColor: '#8BC34A',
+    badgeStyle: 'background:rgba(255,179,71,.1);color:#FFC254;border-color:rgba(255,179,71,.3)',
+    sub: 'Captura relações curvilíneas entre X e Y usando potências de X como preditores. Grau selecionado automaticamente pelo maior R² ajustado.',
+    chips: ['Grau 1 a 6', 'Curvilínea', 'R² ajustado', 'Vandermonde'],
+    sections: [
+      {
+        id: 'oque', icon: '🔍', title: 'O que é',
+        html: `
+          <p>A Regressão Polinomial é uma extensão da regressão linear que adiciona <strong>potências de X</strong> (X², X³, …) como preditores adicionais, permitindo capturar relações não-lineares entre X e Y.</p>
+          <p>Apesar de incluir termos não-lineares de X, o modelo ainda é <strong>linear nos parâmetros β</strong> — o que permite usar OLS diretamente após transformar X numa <strong>Matriz de Vandermonde</strong>.</p>
+          <p>O grau ideal é selecionado automaticamente comparando o R² ajustado de grau 1 a 6: o grau com maior R² ajustado é o escolhido, balanceando ajuste e complexidade.</p>
+        `
+      },
+      {
+        id: 'matematica', icon: '📐', title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Equação polinomial de grau n',
+          eq: `Ŷ = β₀ + β₁X + β₂X² + β₃X³ + … + βₙXⁿ
+
+Matriz de Vandermonde V:
+V = [[1, x₁, x₁², ..., x₁ⁿ],
+     [1, x₂, x₂², ..., x₂ⁿ],
+     ...
+     [1, xₘ, xₘ², ..., xₘⁿ]]
+
+Estimação: β = (VᵀV)⁻¹Vᵀy`,
+          note: `Grau ótimo = argmax_{d∈{1..6}} R²_adj(d). Graus muito altos causam <code>overfitting</code> — a curva oscila violentamente entre os pontos.`
+        },
+        html: `<p>É fundamental <strong>padronizar X</strong> antes de elevar a potências elevadas para evitar problemas numéricos (X¹⁰ pode ultrapassar o limite de ponto flutuante). A plataforma faz isso automaticamente.</p>`
+      },
+      {
+        id: 'como-funciona', icon: '⚙️', title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Padronizar X', desc: 'X ← (X − μX) / σX para estabilidade numérica nas potências elevadas.' },
+          { title: 'Construir a Matriz de Vandermonde', desc: 'Para cada grau d de 1 a 6, criar a matriz [1, X, X², …, Xᵈ].' },
+          { title: 'Ajustar OLS para cada grau', desc: 'Estimar β via OLS para cada um dos 6 modelos candidatos.' },
+          { title: 'Selecionar grau pelo R² ajustado', desc: 'Comparar os 6 modelos e escolher aquele com maior R² ajustado.' },
+          { title: 'Gerar previsões com intervalos', desc: 'Usar o modelo de grau ótimo para prever Ŷ e calcular IC 95%.' },
+        ]
+      },
+      {
+        id: 'quando-usar', icon: '✅', title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true,  text: 'Gráfico de dispersão mostra curvatura clara (parabola, S, U invertido)' },
+          { yes: true,  text: 'Resíduos da regressão linear têm padrão sistemático (não aleatório)' },
+          { yes: true,  text: 'Fenômenos físicos ou biológicos com ponto de máximo ou inflexão' },
+          { yes: false, text: 'Mais de um preditor → use Regressão Múltipla ou Regularizada' },
+          { yes: false, text: 'Amostra muito pequena com graus elevados → overfitting severo' },
+          { yes: false, text: 'Extrapolação muito além dos dados → a curva pode divergir rapidamente' },
+        ]
+      },
+      {
+        id: 'suposicoes', icon: '📋', title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Relação pode ser aproximada por polinômio', desc: 'A curva verdadeira deve ser razoavelmente capturável por um polinômio de baixo grau (até 6).' },
+          { title: 'Homocedasticidade', desc: 'Variância dos resíduos constante ao longo da curva ajustada.' },
+          { title: 'Independência dos erros', desc: 'Resíduos não correlacionados entre si.' },
+          { title: 'Sem outliers extremos', desc: 'Outliers afetam ainda mais a regressão polinomial do que a linear, especialmente em graus altos.' },
+        ]
+      },
+      {
+        id: 'metricas', icon: '📊', title: 'Métricas explicadas',
+        metrics: [
+          { name: 'R² por grau', desc: 'R² calculado para cada grau de 1 a 6. Sempre aumenta com o grau — por isso use o R² ajustado para escolher.', range: 'Sempre cresce com o grau' },
+          { name: 'R² Ajustado', desc: 'Penaliza a adição de termos polinomiais desnecessários. É o critério de seleção do grau ótimo.', range: 'Maior = melhor, com penalidade' },
+          { name: 'Resíduos', desc: 'Os resíduos do modelo ótimo devem ser aleatórios (sem padrão). Se ainda houver curvatura, considere grau maior ou modelo diferente.', range: 'Sem padrão sistemático' },
+          { name: 'QQ-plot', desc: 'Verifica normalidade dos resíduos. Pontos próximos da diagonal indicam normalidade — necessário para IC 95% válidos.', range: 'Próximo da diagonal' },
+        ]
+      },
+      {
+        id: 'armadilhas', icon: '⚠️', title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Overfitting com grau alto', desc: 'Grau 5 ou 6 pode ajustar perfeitamente os dados de treino mas generalizar muito mal para novos dados. Prefira o menor grau com R² ajustado satisfatório.' },
+          { title: 'Extrapolação perigosa', desc: 'Polinômios de grau alto oscilam violentamente fora do domínio dos dados. Nunca extrapole muito além do intervalo de X observado.' },
+          { title: 'Confundir suavidade com veracidade', desc: 'Uma curva bonita não garante que o modelo capture a relação real. Valide com dados fora da amostra.' },
+        ]
+      },
+      {
+        id: 'exemplo', icon: '🧪', title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Relação entre velocidade e consumo de combustível',
+          tableHeaders: ['Velocidade (km/h)', 'Consumo (L/100km)'],
+          tableRows: [
+            ['40','7.2'], ['60','5.8'], ['80','5.1'], ['100','5.9'], ['120','7.4'], ['140','9.8'],
+          ],
+          resultHtml: `Grau selecionado: <strong>2 (parabola)</strong> com R² ajustado = 0.982<br>
+Ŷ = 12.3 − 0.14·v + 0.001·v² → mínimo em ~70 km/h<br>
+Para 110 km/h → consumo previsto = <strong>6.5 L/100km</strong>.`
+        }
+      },
+      {
+        id: 'faq', icon: '❓', title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Por que o R² ajustado caiu ao aumentar o grau?', a: 'Significa que o grau extra não melhora o ajuste o suficiente para compensar a complexidade adicional. O grau anterior era o ótimo.' },
+          { q: 'Posso incluir mais de uma variável preditora?', a: 'Não diretamente neste modelo. Para múltiplas variáveis com termos polinomiais, seriam necessárias interações e expansão de features — considere Regressão Regularizada com feature engineering.' },
+          { q: 'Qual grau máximo é aconselhável?', a: 'Na prática, grau 3 ou 4 já é suficiente para a maioria dos fenômenos físicos e econômicos. Grau ≥ 5 raramente é justificável e quase sempre leva a overfitting.' },
+        ]
+      },
+    ]
+  },
+
+  serie: {
+    id: 'serie',
+    panel: 'serie',
+    icon: '📅',
+    name: 'Séries Temporais',
+    category: 'Dados Temporais',
+    level: 'Intermediário',
+    levelColor: '#FF9800',
+    badgeStyle: 'background:rgba(79,195,247,.1);color:#4FC3F7;border-color:rgba(79,195,247,.3)',
+    sub: 'Decompõe dados ordenados no tempo em Tendência, Sazonalidade e Resíduo, e projeta valores futuros com base nesses componentes.',
+    chips: ['Tendência', 'Sazonalidade', 'Projeção', 'Média móvel'],
+    sections: [
+      {
+        id: 'oque', icon: '🔍', title: 'O que é',
+        html: `
+          <p>Uma série temporal é uma sequência de valores medidos em <strong>intervalos regulares ao longo do tempo</strong> (diário, mensal, anual). Diferente das regressões tradicionais, a ordem das observações importa — o valor no tempo t depende dos valores anteriores.</p>
+          <p>O modelo decompõe a série em três componentes aditivos:</p>
+          <ul style="padding-left:20px;color:var(--txt2);margin-top:8px;display:flex;flex-direction:column;gap:8px">
+            <li><strong style="color:var(--txt)">Tendência</strong>: direção de longo prazo (crescimento, queda, estabilidade)</li>
+            <li><strong style="color:var(--txt)">Sazonalidade</strong>: padrão periódico que se repete regularmente (ex: picos no verão)</li>
+            <li><strong style="color:var(--txt)">Resíduo</strong>: variação aleatória após remover tendência e sazonalidade</li>
+          </ul>
+        `
+      },
+      {
+        id: 'matematica', icon: '📐', title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Decomposição aditiva e projeção',
+          eq: `Yₜ = Tₜ + Sₜ + Rₜ
+
+Tendência Tₜ: regressão linear sobre o tempo t
+Sazonalidade Sₜ: média dos resíduos agrupados por período
+Resíduo Rₜ: Yₜ − Tₜ − Sₜ
+
+Projeção: Ŷₜ₊ₖ = T(t+k) + S(t+k mod período)`,
+          note: `A média móvel de janela <code>w</code> suaviza a série removendo ruído de curto prazo: MMₜ = (1/w)·Σ Yₜ₋ᵢ`
+        },
+        html: `<p>A tendência é estimada por regressão linear de Y sobre o índice temporal. A sazonalidade é extraída calculando a média dos resíduos (Y − Tendência) para cada período do ciclo (ex: cada mês do ano). O resíduo é o que sobra.</p>`
+      },
+      {
+        id: 'como-funciona', icon: '⚙️', title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Organizar os dados por data', desc: 'Os dados devem estar ordenados cronologicamente. Datas são convertidas em índice numérico t = 1, 2, 3, …' },
+          { title: 'Estimar a Tendência', desc: 'Regride Y sobre t via OLS: Ŷ = α + β·t. β > 0 → tendência crescente; β < 0 → decrescente.' },
+          { title: 'Extrair a Sazonalidade', desc: 'Calcula os resíduos detrended = Y − Tendência. Agrupa por período (mês, trimestre, dia da semana) e calcula a média de cada grupo.' },
+          { title: 'Calcular o Resíduo', desc: 'Rₜ = Yₜ − Tₜ − Sₜ. Deve ser ruído branco (sem padrão detectável).' },
+          { title: 'Projetar valores futuros', desc: 'Para k passos à frente: extrapola a tendência e reutiliza o padrão sazonal correspondente ao período.' },
+        ]
+      },
+      {
+        id: 'quando-usar', icon: '✅', title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true,  text: 'Dados coletados em intervalos regulares de tempo (diário, mensal, anual)' },
+          { yes: true,  text: 'Há tendência clara (série claramente crescente ou decrescente)' },
+          { yes: true,  text: 'Há padrão sazonal repetitivo (ex: vendas sobem todo dezembro)' },
+          { yes: false, text: 'Dados sem ordem temporal natural → use regressão linear ou múltipla' },
+          { yes: false, text: 'Série muito curta (< 2 ciclos completos) para detectar sazonalidade confiável' },
+          { yes: false, text: 'Série altamente não-linear ou com quebra estrutural → modelos ARIMA ou Prophet são mais adequados' },
+        ]
+      },
+      {
+        id: 'suposicoes', icon: '📋', title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Decomposição aditiva válida', desc: 'A amplitude da sazonalidade deve ser aproximadamente constante ao longo da série. Se crescer proporcionalmente à tendência, use decomposição multiplicativa.' },
+          { title: 'Tendência linear', desc: 'O modelo usa tendência linear. Se a série tem tendência exponencial ou quadrática, os resíduos terão padrão sistemático.' },
+          { title: 'Sazonalidade estável', desc: 'O padrão sazonal deve se repetir de forma semelhante em cada ciclo.' },
+          { title: 'Resíduo sem autocorrelação', desc: 'Após a decomposição, o resíduo deve ser ruído aleatório sem autocorrelação (verifique com ACF).' },
+        ]
+      },
+      {
+        id: 'metricas', icon: '📊', title: 'Métricas explicadas',
+        metrics: [
+          { name: 'Tendência (β)', desc: 'Crescimento médio por unidade de tempo. Ex: β = 500 → vendas crescem R$500/mês em média.', range: 'Qualquer valor; sinal indica direção' },
+          { name: 'Amplitude Sazonal', desc: 'Diferença entre o pico e o vale do padrão sazonal. Indica o quanto a sazonalidade impacta Y.', range: 'Quanto maior, mais sazonal' },
+          { name: 'CV (%)', desc: 'Coeficiente de variação dos resíduos = std(R)/média(Y). Mede o ruído residual relativo ao nível da série.', range: '< 10% = série bem comportada' },
+          { name: 'Média Móvel', desc: 'Suavização com janela móvel. Revela a tendência subjacente filtrando sazonalidade e ruído.', range: 'Janela maior = mais suavização' },
+          { name: 'Crescimento Médio (%)', desc: 'Taxa percentual média de crescimento por período, calculada sobre a tendência estimada.', range: 'Positivo = crescimento, negativo = queda' },
+        ]
+      },
+      {
+        id: 'armadilhas', icon: '⚠️', title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Extrapolação muito longa', desc: 'Projeções muito distantes acumulam incerteza rapidamente. Use horizontes curtos (1–3 ciclos) e revise com novos dados.' },
+          { title: 'Ignorar quebras estruturais', desc: 'Eventos como crises, mudanças de política ou pandemias quebram a tendência histórica. O modelo não captura automaticamente — ajuste manualmente.' },
+          { title: 'Série muito curta', desc: 'Para detectar sazonalidade mensal, são necessários pelo menos 24 meses de dados. Com menos, o padrão sazonal é estimado com muita imprecisão.' },
+          { title: 'Confundir sazonalidade com tendência', desc: 'Uma série com crescimento forte pode mascarar a sazonalidade. Certifique-se de remover a tendência antes de estimar os índices sazonais.' },
+        ]
+      },
+      {
+        id: 'exemplo', icon: '🧪', title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Vendas mensais de sorvete (Jan–Jun)',
+          tableHeaders: ['Mês', 'Vendas (R$ mil)'],
+          tableRows: [
+            ['Jan','120'], ['Fev','115'], ['Mar','130'], ['Abr','145'], ['Mai','160'], ['Jun','175'],
+          ],
+          resultHtml: `Tendência estimada: <strong>Ŷₜ = 105 + 11.4·t</strong> (+R$ 11.4 mil/mês)<br>
+Amplitude sazonal: variação de ±8 em torno da tendência<br>
+Projeção para Jul (t=7): T = 185 + ajuste sazonal → <strong>~R$ 190 mil</strong>`
+        }
+      },
+      {
+        id: 'faq', icon: '❓', title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Quantos dados históricos são necessários?', a: 'Para projeções confiáveis: pelo menos 2–3 ciclos completos. Para mensal com sazonalidade anual, o mínimo é 24 meses, idealmente 36+.' },
+          { q: 'O modelo considera feriados e eventos especiais?', a: 'Não automaticamente. Feriados e eventos especiais devem ser tratados manualmente — você pode remover esses pontos ou adicionar variáveis dummy antes de importar os dados.' },
+          { q: 'Qual a diferença entre decomposição aditiva e multiplicativa?', a: 'Na aditiva (usada aqui), Yₜ = T + S + R — a amplitude da sazonalidade é constante. Na multiplicativa, Yₜ = T × S × R — a sazonalidade cresce proporcionalmente com a tendência. Use multiplicativa quando os picos sazonais ficam maiores à medida que a série cresce.' },
+        ]
+      },
+    ]
+  },
+
+  quantilica: {
+    id: 'quantilica',
+    panel: 'quantilica',
+    icon: '🎻',
+    name: 'Regressão Quantílica',
+    category: 'Distribuição Completa',
+    level: 'Avançado',
+    levelColor: '#F44336',
+    badgeStyle: 'background:rgba(186,104,200,.12);color:#CE93D8;border-color:rgba(186,104,200,.3)',
+    sub: 'Estima diferentes quantis da distribuição condicional de Y. Robusta a outliers e ideal quando a média é insuficiente para descrever o fenômeno.',
+    chips: ['Quantis τ', 'Função pinball', 'Robusta a outliers', 'VaR'],
+    sections: [
+      {
+        id: 'oque', icon: '🔍', title: 'O que é',
+        html: `
+          <p>Enquanto a regressão OLS estima a <strong>média condicional</strong> de Y dado X, a Regressão Quantílica estima <strong>quantis específicos</strong> da distribuição de Y — como a mediana (τ=0.5), o percentil 90 (τ=0.9) ou qualquer outro.</p>
+          <p>Isso é poderoso quando a média é enganosa: em distribuições assimétricas ou com caudas pesadas (salários, tempos de atendimento, sinistros de seguro), a mediana e os percentis extremos contam histórias muito diferentes.</p>
+          <p>O modelo usa a <strong>função de perda assimétrica (pinball loss)</strong>, que penaliza os erros de forma diferente dependendo do quantil alvo τ.</p>
+        `
+      },
+      {
+        id: 'matematica', icon: '📐', title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Função de perda pinball e otimização',
+          eq: `Perda pinball: L(u, τ) = u·(τ − 𝟙[u < 0])
+
+onde u = y − ŷ  e  τ ∈ (0, 1)
+
+Para τ = 0.5 (mediana): L = |u|/2  (MAE)
+Para τ = 0.9: penaliza 9× mais os subestimados
+
+Estimador: β(τ) = argmin Σ L(yᵢ − Xᵢβ, τ)`,
+          note: `A otimização é feita por <code>descida do gradiente subdiferencial</code> (já que a perda não é diferenciável em u=0). Cada quantil τ gera um conjunto diferente de coeficientes β(τ).`
+        },
+        html: `<p>Uma propriedade importante: a regressão quantílica com τ=0.5 é equivalente à <strong>Regressão de Mínimos Desvios Absolutos (LAD)</strong>, que é muito mais robusta a outliers do que o OLS (que minimiza quadrados).</p>`
+      },
+      {
+        id: 'como-funciona', icon: '⚙️', title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Definir os quantis alvo', desc: 'Selecionar τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9} (ou outro conjunto de interesse).' },
+          { title: 'Minimizar perda pinball para cada τ', desc: 'Usar descida do gradiente adaptativa (Adam) para encontrar β(τ) que minimiza Σ L(yᵢ − Xᵢβ, τ).' },
+          { title: 'Calcular cobertura empírica', desc: 'Verificar se a fração de pontos abaixo de Ŷ(τ) corresponde a τ (ex: ~90% dos pontos devem estar abaixo de Ŷ(0.9)).' },
+          { title: 'Interpretar spread dos quantis', desc: 'A diferença entre Ŷ(0.9) e Ŷ(0.1) é o intervalo interquantílico previsto — mede a dispersão condicional de Y.' },
+          { title: 'Avaliar perda média', desc: 'Calcular a perda pinball média no conjunto de teste para cada quantil.' },
+        ]
+      },
+      {
+        id: 'quando-usar', icon: '✅', title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true,  text: 'Distribuição de Y é assimétrica (salários, sinistros, tempos de resposta)' },
+          { yes: true,  text: 'Outliers são comuns e a média é distorcida por eles' },
+          { yes: true,  text: 'Interessa o comportamento nos extremos (ex: VaR financeiro no percentil 5)' },
+          { yes: true,  text: 'Você quer um intervalo de previsão não-paramétrico e robusto' },
+          { yes: false, text: 'Distribuição de Y é simétrica e sem outliers → OLS é suficiente e mais simples' },
+          { yes: false, text: 'Y é binário → use Regressão Logística' },
+          { yes: false, text: 'Você só precisa da previsão central → mediana (τ=0.5) é mais lenta que OLS para o mesmo resultado' },
+        ]
+      },
+      {
+        id: 'suposicoes', icon: '📋', title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Relação linear nos quantis', desc: 'O quantil τ de Y deve ser linear em X. Isso é menos restritivo que OLS — cada quantil pode ter uma relação levemente diferente.' },
+          { title: 'Independência das observações', desc: 'As observações devem ser independentes (sem clustering ou séries temporais sem correção).' },
+          { title: 'Amostra suficientemente grande', desc: 'Quantis extremos (τ=0.05 ou τ=0.95) requerem mais dados para estimativas estáveis, pois dependem da cauda da distribuição.' },
+        ]
+      },
+      {
+        id: 'metricas', icon: '📊', title: 'Métricas explicadas',
+        metrics: [
+          { name: 'Cobertura (%)', desc: 'Fração de observações abaixo da previsão do quantil τ. Para τ=0.9, a cobertura ideal é 90%. Desvios indicam erro de calibração.', range: 'Deve ser próxima de τ×100%' },
+          { name: 'Perda Pinball', desc: 'Função de custo assimétrica. Quanto menor, melhor o ajuste ao quantil específico. Não comparável entre diferentes quantis sem normalização.', range: 'Quanto menor, melhor' },
+          { name: 'β por quantil', desc: 'Cada quantil τ tem seus próprios coeficientes. Comparar β(0.1) com β(0.9) revela como o efeito de X muda ao longo da distribuição de Y.', range: 'Varia por quantil' },
+          { name: 'Intervalo quantílico', desc: 'Diferença entre Ŷ(0.75) e Ŷ(0.25) (IQR previsto). Mede a dispersão condicional — quanto maior, mais incerto o resultado para aquele X.', range: 'Quanto menor, mais preciso' },
+        ]
+      },
+      {
+        id: 'armadilhas', icon: '⚠️', title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Cruzamento de quantis', desc: 'Em algumas regiões, Ŷ(0.9) pode ficar abaixo de Ŷ(0.75) — isso é um artefato numérico (quantile crossing). Monitorize e aplique pós-processamento monotônico se necessário.' },
+          { title: 'Comparar perdas entre quantis', desc: 'A perda pinball em τ=0.1 não é comparável à de τ=0.9 sem normalização. Não julgue qualidade comparando perdas de diferentes quantis.' },
+          { title: 'Amostras pequenas nos extremos', desc: 'Para τ=0.05 com n=100, você estima a cauda com apenas ~5 observações. Os resultados serão muito instáveis.' },
+        ]
+      },
+      {
+        id: 'exemplo', icon: '🧪', title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Salários de profissionais de TI por anos de experiência',
+          tableHeaders: ['Experiência (anos)', 'Salário P10 (R$k)', 'Mediana (R$k)', 'Salário P90 (R$k)'],
+          tableRows: [
+            ['1','4.2','6.0','9.5'], ['3','5.8','8.5','14.2'], ['5','7.1','11.0','19.8'], ['10','9.0','15.5','32.0'],
+          ],
+          resultHtml: `Para 7 anos de experiência:<br>
+P10 → <strong>R$ 7.9k</strong> | Mediana → <strong>R$ 12.8k</strong> | P90 → <strong>R$ 25.1k</strong><br>
+O spread crescente mostra que a desigualdade salarial <strong>aumenta</strong> com a experiência.`
+        }
+      },
+      {
+        id: 'faq', icon: '❓', title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Como interpretar β(0.9) vs β(0.1)?', a: 'Se β(0.9) > β(0.1), significa que o efeito de X sobre Y é maior para quem já está no topo da distribuição — há heterogeneidade no efeito.' },
+          { q: 'O que é VaR e como a regressão quantílica se relaciona?', a: 'VaR (Value at Risk) é o quantil de perda a 5% ou 1%. A Regressão Quantílica permite estimar o VaR condicional a características do ativo ou portfólio — muito usado em risk management.' },
+          { q: 'A regressão quantílica é paramétrica?', a: 'Sim — ela assume que o quantil condicional é linear em X. Mas ela não assume distribuição gaussiana dos erros, o que a torna mais flexível que OLS.' },
+        ]
+      },
+    ]
+  },
+
+  regularizada: {
+    id: 'regularizada',
+    panel: 'regularizada',
+    icon: '⚖️',
+    name: 'Regressão Regularizada',
+    category: 'Anti-Overfitting',
+    level: 'Avançado',
+    levelColor: '#F44336',
+    badgeStyle: 'background:rgba(38,198,218,.1);color:#4DD0E1;border-color:rgba(38,198,218,.3)',
+    sub: 'Ridge (L2) e Lasso (L1) adicionam penalidades à função de custo do OLS para controlar overfitting e multicolinearidade.',
+    chips: ['Ridge L2', 'Lasso L1', 'Hiperparâmetro λ', 'Seleção de variáveis'],
+    sections: [
+      {
+        id: 'oque', icon: '🔍', title: 'O que é',
+        html: `
+          <p>Quando há muitas variáveis preditoras — especialmente correlacionadas entre si — o OLS padrão produz coeficientes instáveis com alta variância. A regularização adiciona uma <strong>penalidade à magnitude dos coeficientes</strong> na função de custo, forçando o modelo a ser mais parcimonioso.</p>
+          <p><strong>Ridge (L2)</strong>: penaliza a soma dos quadrados dos coeficientes. Encolhe todos os β uniformemente em direção a zero, mas nunca os zera. Ideal para estabilizar coeficientes quando há multicolinearidade.</p>
+          <p><strong>Lasso (L1)</strong>: penaliza a soma dos valores absolutos. Tem o efeito de <strong>zerar coeficientes irrelevantes</strong>, fazendo seleção automática de variáveis. Ideal quando você suspeita que muitas variáveis são espúrias.</p>
+        `
+      },
+      {
+        id: 'matematica', icon: '📐', title: 'Fundamentos matemáticos',
+        formula: {
+          label: 'Funções de custo: Ridge e Lasso',
+          eq: `OLS padrão:  min ‖y − Xβ‖²
+
+Ridge (L2): min ‖y − Xβ‖² + λ·‖β‖²₂
+           = min Σ(yᵢ−Ŷᵢ)² + λ·Σβⱼ²
+           Solução: β = (XᵀX + λI)⁻¹Xᵀy
+
+Lasso (L1): min ‖y − Xβ‖² + λ·‖β‖₁
+           = min Σ(yᵢ−Ŷᵢ)² + λ·Σ|βⱼ|`,
+          note: `<code>λ</code> (lambda) controla a força da regularização: λ=0 → OLS puro; λ→∞ → todos β→0. O λ ótimo é selecionado por validação cruzada (cross-validation).`
+        },
+        html: `
+          <p>Por que Lasso zera coeficientes e Ridge não? Geometricamente, a região de restrição do L1 (losango) tem cantos em que um ou mais coeficientes são exatamente zero — a solução ótima frequentemente cai nesses cantos. A região L2 (esfera) é suave e a solução nunca chega a zero exato.</p>
+        `
+      },
+      {
+        id: 'como-funciona', icon: '⚙️', title: 'Como funciona passo a passo',
+        steps: [
+          { title: 'Padronizar as variáveis', desc: 'Fundamental: a regularização é sensível à escala. Padronize X para média 0 e desvio 1 antes de aplicar Ridge/Lasso.' },
+          { title: 'Definir grade de λ', desc: 'Testar λ em escala logarítmica (ex: 0.001, 0.01, 0.1, 1, 10, 100). A plataforma faz isso automaticamente.' },
+          { title: 'Estimar β para cada λ (Ridge analítico ou Lasso coordenada)', desc: 'Ridge tem solução analítica direta. Lasso usa descida de coordenadas (coordinate descent) pois a norma L1 não é diferenciável em β=0.' },
+          { title: 'Selecionar λ ótimo por validação cruzada', desc: 'Minimizar o RMSE de validação cruzada sobre a grade de λ. O λ com menor RMSE-CV é o escolhido.' },
+          { title: 'Reportar coeficientes e variáveis zeradas (Lasso)', desc: 'Com λ ótimo, os coeficientes Lasso zerados indicam variáveis que o modelo considerou irrelevantes.' },
+        ]
+      },
+      {
+        id: 'quando-usar', icon: '✅', title: 'Quando usar (e quando não usar)',
+        uses: [
+          { yes: true,  text: 'Muitas variáveis preditoras e suspeita de overfitting' },
+          { yes: true,  text: 'Multicolinearidade severa (VIF alto) → Ridge estabiliza coeficientes' },
+          { yes: true,  text: 'Seleção automática de variáveis → Lasso zera irrelevantes' },
+          { yes: true,  text: 'Mais preditores do que observações (p > n) → regularização é essencial' },
+          { yes: false, text: 'Poucos preditores e sem multicolinearidade → OLS é suficiente e mais interpretável' },
+          { yes: false, text: 'Interpretação causal dos coeficientes em nível → regularização induz viés nos β' },
+        ]
+      },
+      {
+        id: 'suposicoes', icon: '📋', title: 'Suposições do modelo',
+        assumptions: [
+          { title: 'Relação linear', desc: 'Como na regressão múltipla, a relação entre Y e cada Xⱼ deve ser linear.' },
+          { title: 'Variáveis padronizadas', desc: 'A regularização não funciona corretamente com variáveis em escalas diferentes. Sempre padronize antes.' },
+          { title: 'λ selecionado por cross-validation', desc: 'λ não pode ser escolhido olhando para os mesmos dados de treino — seria data leakage. Use validação cruzada k-fold.' },
+        ]
+      },
+      {
+        id: 'metricas', icon: '📊', title: 'Métricas explicadas',
+        metrics: [
+          { name: 'λ ótimo', desc: 'Hiperparâmetro selecionado por CV que minimiza o RMSE de validação. Controla o tradeoff viés-variância.', range: 'Definido por cross-validation' },
+          { name: 'RMSE por λ', desc: 'Raiz do erro quadrático médio calculado em validação cruzada para cada λ na grade. A curva tipicamente tem um mínimo em U.', range: 'Quanto menor, melhor' },
+          { name: 'β encolhidos', desc: 'Coeficientes após regularização. Menores em magnitude que os OLS equivalentes — o encolhimento é proposital (viés introduzido para reduzir variância).', range: 'Próximos de 0 para λ grande' },
+          { name: 'Vars zeradas (Lasso)', desc: 'Número de coeficientes exatamente zerados pelo Lasso. Quanto mais esparsidade, mais variáveis foram descartadas automaticamente.', range: 'Maior zeramento = modelo mais simples' },
+          { name: 'R²', desc: 'R² do modelo regularizado com λ ótimo. Geralmente menor que o R² OLS no treino (propositalmente), mas maior na validação.', range: 'Melhor generalização que OLS' },
+        ]
+      },
+      {
+        id: 'ridge-vs-lasso', icon: '⚖️', title: 'Ridge vs. Lasso: comparação',
+        compareTable: {
+          headers: ['Característica', 'Ridge (L2)', 'Lasso (L1)'],
+          rows: [
+            ['Penalidade', 'Σβⱼ²', 'Σ|βⱼ|'],
+            ['Zera coeficientes?', '❌ Nunca', '✅ Sim (seleção automática)'],
+            ['Multicolinearidade', '✅ Estabiliza bem', '⚠️ Seleciona um arbitrariamente'],
+            ['Interpretabilidade', 'Todos os β ativos', 'Modelo esparso mais simples'],
+            ['Solução', 'Analítica fechada', 'Coordinate descent iterativo'],
+            ['Ideal quando', 'Todos os preditores importam', 'Muitos preditores irrelevantes'],
+          ]
+        }
+      },
+      {
+        id: 'armadilhas', icon: '⚠️', title: 'Armadilhas comuns',
+        pitfalls: [
+          { title: 'Não padronizar as variáveis', desc: 'A penalização é aplicada igualmente a todos os coeficientes — se X₁ está em milhares e X₂ em unidades, a regularização penaliza β₁ muito mais injustamente.' },
+          { title: 'Data leakage na seleção de λ', desc: 'Selecionar λ usando todo o dataset e depois avaliar no mesmo dataset superestima a performance. Sempre use K-fold cross-validation.' },
+          { title: 'Interpretar β regularizados como causais', desc: 'A regularização introduz viés nos coeficientes propositalmente. Para inferência causal, use OLS com seleção manual de variáveis.' },
+        ]
+      },
+      {
+        id: 'exemplo', icon: '🧪', title: 'Exemplo prático',
+        example: {
+          header: 'Caso: Prever nota de aluno com 8 variáveis educacionais',
+          tableHeaders: ['Variável', 'β OLS', 'β Ridge (λ=0.1)', 'β Lasso (λ=0.1)'],
+          tableRows: [
+            ['Horas estudo', '4.2', '3.8', '3.5'],
+            ['Frequência (%)', '3.1', '2.9', '2.6'],
+            ['Distância escola', '−0.8', '−0.6', '0.0 ← zerado'],
+            ['Renda familiar', '1.2', '0.9', '0.0 ← zerado'],
+            ['Nº de livros', '0.4', '0.3', '0.0 ← zerado'],
+          ],
+          resultHtml: `Lasso com λ=0.1 selecionou automaticamente apenas <strong>2 variáveis relevantes</strong> (horas estudo + frequência)<br>
+RMSE CV (OLS) = 8.2 · RMSE CV (Ridge) = 6.9 · RMSE CV (Lasso) = <strong>6.7</strong> — Lasso generaliza melhor.`
+        }
+      },
+      {
+        id: 'faq', icon: '❓', title: 'Perguntas frequentes',
+        faqs: [
+          { q: 'Existe uma versão que combina Ridge e Lasso?', a: 'Sim — o Elastic Net combina as duas penalidades: λ₁·‖β‖₁ + λ₂·‖β‖²₂. É útil quando há grupos de variáveis correlacionadas e você quer esparsidade mas com estabilidade de grupo.' },
+          { q: 'Por que a regularização melhora a generalização?', a: 'O tradeoff viés-variância: OLS tem variância alta com muitos preditores (overfitting). Regularização introduz viés (subestima os β) mas reduz muito a variância — o MSE total cai.' },
+          { q: 'O intercepto deve ser regularizado?', a: 'Não — por convenção, β₀ nunca é penalizado. A regularização se aplica apenas aos coeficientes das variáveis preditoras. A plataforma aplica isso corretamente por padrão.' },
+        ]
+      },
+    ]
+  },
+
+}; // end MODELS
+
+
+// ─────────────────────────────────────────
+//  RENDER ENGINE
+// ─────────────────────────────────────────
+function renderSection(sec) {
+  let html = `<section class="section" id="${sec.id}">
+    <h2 class="section-title"><span class="section-icon">${sec.icon}</span>${sec.title}</h2>`;
+
+  if (sec.html) {
+    html += `<div class="section-body">${sec.html}</div>`;
+  }
+
+  if (sec.formula) {
+    html += `<div class="formula-box">
+      <div class="formula-label">${sec.formula.label}</div>
+      <div class="formula-eq">${sec.formula.eq}</div>
+      ${sec.formula.note ? `<div class="formula-note">${sec.formula.note}</div>` : ''}
+    </div>`;
+  }
+
+  if (sec.steps) {
+    html += `<div class="steps">` + sec.steps.map((s,i) =>
+      `<div class="step">
+        <div class="step-num">${i+1}</div>
+        <div class="step-body">
+          <div class="step-title">${s.title}</div>
+          <div class="step-desc">${s.desc}</div>
+        </div>
+      </div>`).join('') + `</div>`;
+  }
+
+  if (sec.uses) {
+    html += `<div class="use-list">` + sec.uses.map(u =>
+      `<div class="use-item ${u.yes ? 'yes' : 'no'}">
+        <span class="use-dot">${u.yes ? '✅' : '❌'}</span>
+        <span>${u.text}</span>
+      </div>`).join('') + `</div>`;
+  }
+
+  if (sec.assumptions) {
+    html += `<div class="assumption-list">` + sec.assumptions.map(a =>
+      `<div class="assumption">
+        <strong>${a.title}</strong>
+        <p>${a.desc}</p>
+      </div>`).join('') + `</div>`;
+  }
+
+  if (sec.metrics) {
+    html += `<div class="metrics-grid">` + sec.metrics.map(m =>
+      `<div class="metric-card">
+        <div class="metric-name">${m.name}</div>
+        <div class="metric-desc">${m.desc}</div>
+        <span class="metric-range">${m.range}</span>
+      </div>`).join('') + `</div>`;
+  }
+
+  if (sec.compareTable) {
+    const t = sec.compareTable;
+    html += `<div style="overflow-x:auto"><table class="compare-table">
+      <thead><tr>${t.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  if (sec.pitfalls) {
+    html += `<div class="pitfall-list">` + sec.pitfalls.map(p =>
+      `<div class="pitfall">
+        <div class="pitfall-title">⚠️ ${p.title}</div>
+        <div class="pitfall-desc">${p.desc}</div>
+      </div>`).join('') + `</div>`;
+  }
+
+  if (sec.example) {
+    const ex = sec.example;
+    html += `<div class="example-box">
+      <div class="example-header">${ex.header}</div>
+      <div class="example-body">
+        <table class="example-table">
+          <thead><tr>${ex.tableHeaders.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${ex.tableRows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+        <div class="example-result">${ex.resultHtml}</div>
+      </div>
+    </div>`;
+  }
+
+  if (sec.faqs) {
+    html += `<div class="faq-list">` + sec.faqs.map((f,i) =>
+      `<div class="faq-item" id="faq-${i}">
+        <div class="faq-q" onclick="toggleFaq('faq-${i}')">
+          <span>${f.q}</span>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-a">${f.a}</div>
+      </div>`).join('') + `</div>`;
+  }
+
+  html += `</section>`;
+  return html;
+}
+
+function toggleFaq(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function init() {
+  const params = new URLSearchParams(window.location.search);
+  const modelId = params.get('modelo') || 'linear';
+  const model = MODELS[modelId];
+
+  if (!model) {
+    document.getElementById('content').innerHTML = `<p style="color:var(--acc)">Modelo não encontrado.</p>`;
+    return;
+  }
+
+  document.title = `${model.name} · Slope`;
+  document.getElementById('nav-model-name').textContent = model.name;
+
+  const useBtn = document.getElementById('nav-use-btn');
+  useBtn.href = `../index.html#panel-${model.panel}`;
+  useBtn.style.background = model.id === 'logistica' ? 'var(--acc)' :
+                             model.id === 'regularizada' ? '#4DD0E1' :
+                             model.id === 'quantilica' ? '#CE93D8' :
+                             model.id === 'serie' ? '#4FC3F7' :
+                             model.id === 'polinomial' ? 'var(--acc2)' : 'var(--x)';
+  if (['acc2','#FFC254'].includes(useBtn.style.background)) useBtn.style.color = '#000';
+
+  // Build TOC
+  const toc = document.getElementById('toc-list');
+  model.sections.forEach(sec => {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="#${sec.id}">${sec.title}</a>`;
+    toc.appendChild(li);
+  });
+
+  // Build hero
+  let heroHtml = `
+    <div class="hero">
+      <span class="hero-badge" style="${model.badgeStyle}">${model.icon} ${model.category}</span>
+      <div class="hero-title">${model.name}</div>
+      <div class="hero-sub">${model.sub}</div>
+      <div class="hero-chips">
+        ${model.chips.map(c=>`<span class="hero-chip">${c}</span>`).join('')}
+        <span class="hero-chip" style="color:${model.levelColor};border-color:${model.levelColor}22;background:${model.levelColor}15">Nível: ${model.level}</span>
+      </div>
+    </div>`;
+
+  // Build sections
+  let sectionsHtml = model.sections.map(renderSection).join('');
+
+  // CTA
+  let ctaHtml = `
+    <div class="cta-box">
+      <div class="cta-title">Pronto para experimentar?</div>
+      <div class="cta-sub">Importe seus dados e aplique ${model.name} com um clique na plataforma.</div>
+      <a class="cta-btn" href="../index.html">Abrir plataforma →</a>
+    </div>`;
+
+  document.getElementById('content').innerHTML = heroHtml + sectionsHtml + ctaHtml;
+
+  // TOC active on scroll
+  const sections = document.querySelectorAll('.section');
+  const tocLinks = toc.querySelectorAll('a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('active'));
+        const active = toc.querySelector(`a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+}
+
+init();
+</script>
+</body>
+</html>
