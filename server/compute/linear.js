@@ -1,7 +1,7 @@
 'use strict';
 
 const { mean, sum, durbinWatson } = require('./utils');
-const { tCDF, tQ, fCDF, shapiroWilk, breuschPagan } = require('./statistics');
+const { tCDF, tQ, fCDF, shapiroWilk, breuschPagan, chiCDF } = require('./statistics');
 const { matMul, matT, matInv } = require('./matrix');
 
 function compute(xs, ys) {
@@ -43,6 +43,25 @@ function compute(xs, ys) {
     MSR, MSE, Fstat, pF, se_b1, se_b0, t_b1, t_b0, p_b1, p_b0,
     t95, yhat, resid, resid_std, hi, cooks_d, Sxx, xm, ym, sw, bp, dw,
   };
+}
+
+// Breusch-Pagan para k preditores: regride e² em [1, X1...Xk], LM ~ χ²(k)
+function breuschPaganMultiple(Xs, resids) {
+  const k = Xs.length;
+  const n = resids.length;
+  const e2 = resids.map(r => r ** 2);
+  const e2m = mean(e2);
+  const Xmat = Array.from({ length: n }, (_, i) => [1, ...Xs.map(x => x[i])]);
+  const Xt = matT(Xmat);
+  const XtXinv = matInv(matMul(Xt, Xmat));
+  if (!XtXinv) return { stat: 0, p: 1 };
+  const beta = matMul(XtXinv, matMul(Xt, e2.map(v => [v]))).map(r => r[0]);
+  const fitted = Xmat.map(row => row.reduce((s, v, j) => s + v * beta[j], 0));
+  const SSR = sum(fitted.map(f => (f - e2m) ** 2));
+  const SST = sum(e2.map(v => (v - e2m) ** 2));
+  const R2 = SST > 0 ? SSR / SST : 0;
+  const LM = n * R2;
+  return { stat: LM, p: 1 - chiCDF(LM, k) };
 }
 
 function computeVIF_R2(xi, others, n) {
@@ -109,7 +128,7 @@ function computeMultiple(Xs, Y) {
   });
 
   const sw = shapiroWilk(resid);
-  const bp = breuschPagan(Xs, resid);
+  const bp = breuschPaganMultiple(Xs, resid);
   const dw = durbinWatson(resid);
 
   return {

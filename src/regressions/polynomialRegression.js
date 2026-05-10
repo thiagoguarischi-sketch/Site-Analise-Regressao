@@ -371,7 +371,7 @@ export async function loadPolynomialAnalysis(a) {
   showToast('Regressão polinomial carregada ✏️', 'info');
 }
 
-export function poExportExcel() {
+export async function poExportExcel() {
   if (!poLastResult) return;
   const res = poLastResult;
   const name = document.getElementById('po-analysis-name').value || 'Polinomial';
@@ -415,7 +415,7 @@ export function poExportExcel() {
   let bestR2adj = -Infinity, bestDeg = 1;
   const degData = [];
   for (let d = 1; d <= Math.min(6, res.xs.length - 2); d++) {
-    const r = computePolynomial(res.xs, res.ys, d);
+    const r = await computePolynomial(res.xs, res.ys, d);
     if (r && r.r2adj > bestR2adj) { bestR2adj = r.r2adj; bestDeg = d; }
     if (r) degData.push([d, r.r2, r.r2adj]);
   }
