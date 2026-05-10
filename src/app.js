@@ -22,6 +22,7 @@ import { viewAnalysis, closeModal, editAnalysis, deleteAnalysis as deleteAnalysi
 import { loadShareList, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
 import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
+import { openYahooModal, closeYahooModal, yfSearchInput, yfSelectSymbol, yfFetchData, yfConfirmImport } from './ui/yahooFinance.js';
 
 import {
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
@@ -107,6 +108,10 @@ Object.assign(window, {
 
   // Chat
   openChat, closeChat, sendMessage,
+
+  // Yahoo Finance
+  openYahooModal, closeYahooModal, yfSearchInput, yfSelectSymbol, yfFetchData,
+  yfConfirmImport: () => yfConfirmImport(switchTab),
 
   // Linear simples + múltipla
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,

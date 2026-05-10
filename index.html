@@ -61,6 +61,111 @@
     --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
   }
 
+  /* ====== YAHOO FINANCE MODAL ====== */
+  #yf-modal {
+    position:fixed; inset:0; z-index:950;
+    background:rgba(0,0,0,.72); backdrop-filter:blur(5px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; visibility:hidden;
+    transition: opacity .25s, visibility .25s;
+  }
+  #yf-modal.open { opacity:1; visibility:visible; }
+  .yf-modal-card {
+    background:var(--bg2); border:1px solid var(--brd2);
+    border-radius:16px; padding:28px;
+    width:90%; max-width:660px; max-height:90vh;
+    overflow-y:auto;
+    animation: slide-up .3s cubic-bezier(.16,1,.3,1);
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .yf-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .yf-header-title { font-size:17px; font-weight:700; }
+  .yf-header-sub { font-size:12px; color:var(--txt3); margin-top:3px; }
+  .yf-close {
+    background:none; border:none; color:var(--txt2);
+    font-size:22px; line-height:1; cursor:pointer; padding:2px 6px;
+    border-radius:6px; flex-shrink:0;
+    transition:.15s;
+  }
+  .yf-close:hover { background:var(--bg3); color:var(--txt); }
+
+  /* Search bar */
+  .yf-search-wrap {
+    display:flex; align-items:center; gap:10px;
+    background:var(--bg3); border:1px solid var(--brd2);
+    border-radius:var(--r-md); padding:0 14px;
+    transition:.15s;
+  }
+  .yf-search-wrap:focus-within { border-color:var(--x); box-shadow:0 0 0 2px rgba(124,131,253,.15); }
+  .yf-search-icon { font-size:15px; flex-shrink:0; }
+  .yf-search-input {
+    flex:1; background:none; border:none; outline:none;
+    color:var(--txt); font-family:var(--font-sans); font-size:14px;
+    padding:11px 0;
+  }
+  .yf-search-input::placeholder { color:var(--txt3); }
+
+  /* Results dropdown */
+  .yf-results {
+    background:var(--bg3); border:1px solid var(--brd2);
+    border-radius:var(--r-md); overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .yf-results:empty { display:none; }
+  .yf-result-btn {
+    display:flex; align-items:center; gap:10px;
+    background:none; border:none; border-bottom:1px solid var(--brd);
+    padding:10px 14px; cursor:pointer; text-align:left; width:100%;
+    transition:.12s;
+  }
+  .yf-result-btn:last-child { border-bottom:none; }
+  .yf-result-btn:hover { background:var(--bg4); }
+  .yf-r-ticker { font-weight:700; font-size:13px; color:var(--x); min-width:70px; font-family:var(--font-mono); }
+  .yf-r-name { flex:1; font-size:13px; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .yf-r-meta { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .yf-loading, .yf-no-results { padding:12px 14px; font-size:13px; color:var(--txt2); }
+
+  /* Options row */
+  .yf-selected-label {
+    font-size:13px; font-weight:600; color:var(--y);
+    background:var(--tint-y); border:1px solid rgba(0,212,160,.2);
+    border-radius:var(--r-sm); padding:8px 12px;
+  }
+  .yf-opts-row {
+    display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;
+  }
+  .yf-field { display:flex; flex-direction:column; gap:5px; }
+  .yf-label { font-size:11px; color:var(--txt2); font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+  .yf-select {
+    background:var(--bg3); border:1px solid var(--brd2);
+    color:var(--txt); border-radius:var(--r-sm); padding:7px 10px;
+    font-size:13px; font-family:var(--font-sans); cursor:pointer;
+    outline:none; transition:.15s;
+  }
+  .yf-select:focus { border-color:var(--x); }
+  .yf-fetch-btn {
+    background:var(--x); color:#fff; border:none;
+    border-radius:var(--r-sm); padding:8px 16px;
+    font-size:13px; font-weight:600; cursor:pointer;
+    transition:.15s; white-space:nowrap; align-self:flex-end;
+  }
+  .yf-fetch-btn:hover { background:var(--x2); }
+  .yf-fetch-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+  /* Preview */
+  .yf-preview-header { display:flex; align-items:center; gap:10px; }
+  .yf-count-badge {
+    background:var(--tint-x); color:var(--x);
+    border:1px solid rgba(124,131,253,.3);
+    border-radius:var(--r-pill); padding:3px 10px;
+    font-size:12px; font-weight:600;
+  }
+  .yf-preview-tbl-wrap {
+    border:1px solid var(--brd); border-radius:var(--r-md);
+    overflow:hidden; overflow-x:auto;
+  }
+  .yf-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; margin-top:4px; }
+
   /* ====== LIGHT THEME ====== */
   html.light {
     --bg:   #F4F4FB;
@@ -1467,7 +1572,7 @@
   }
 
   /* ── Smooth theme-switch transitions ── */
-  body, .topbar, #sidebar, .auth-card, .card, .modal-card, .about-card,
+  body, .topbar, #sidebar, .auth-card, .card, .modal-card, .about-card, .yf-modal-card,
   .metric, .hcard, .history-item, .stat-card, .diag-card,
   .friend-card, .share-card, .guide-card,
   .field-input, .data-input, .form-input, .label-input {
@@ -2017,6 +2122,11 @@
       <button class="sidebar-btn" onclick="switchTab('importar',this)" title="Importar">
         📂
         <span class="sidebar-tooltip">Importar</span>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-btn" onclick="openYahooModal()" title="Yahoo Finance">
+        📈
+        <span class="sidebar-tooltip">Yahoo Finance</span>
       </button>
       <div class="sidebar-divider"></div>
       <button class="sidebar-btn" id="btn-historico" onclick="switchTab('historico',this)" title="Histórico">
@@ -3951,6 +4061,85 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
     </div>
 
     <div class="about-version">Slope v1.0 &nbsp;·&nbsp; Feito com ♥ no Brasil</div>
+  </div>
+</div>
+
+<!-- Modal Yahoo Finance -->
+<div id="yf-modal" onclick="if(event.target===this)closeYahooModal()">
+  <div class="yf-modal-card">
+
+    <!-- Cabeçalho -->
+    <div class="yf-header">
+      <div>
+        <div class="yf-header-title">📈 Yahoo Finance</div>
+        <div class="yf-header-sub">Busque um ativo e importe dados históricos para a regressão</div>
+      </div>
+      <button class="yf-close" onclick="closeYahooModal()">×</button>
+    </div>
+
+    <!-- Barra de busca -->
+    <div class="yf-search-wrap">
+      <span class="yf-search-icon">🔍</span>
+      <input id="yf-search" class="yf-search-input" type="text"
+        placeholder="Pesquise um ativo: AAPL, PETR4.SA, BTC-USD…"
+        oninput="yfSearchInput()" autocomplete="off" spellcheck="false">
+    </div>
+    <div id="yf-results" class="yf-results"></div>
+
+    <!-- Opções (visível após selecionar ativo) -->
+    <div id="yf-options" style="display:none">
+      <div class="yf-selected-label" id="yf-symbol-label"></div>
+
+      <div class="yf-opts-row">
+        <div class="yf-field">
+          <label class="yf-label">Período</label>
+          <select id="yf-period" class="yf-select" onchange="document.getElementById('yf-preview').style.display='none'">
+            <option value="1mo">1 mês</option>
+            <option value="3mo">3 meses</option>
+            <option value="6mo">6 meses</option>
+            <option value="1y" selected>1 ano</option>
+            <option value="2y">2 anos</option>
+            <option value="5y">5 anos</option>
+          </select>
+        </div>
+        <div class="yf-field">
+          <label class="yf-label">Intervalo</label>
+          <select id="yf-interval" class="yf-select" onchange="document.getElementById('yf-preview').style.display='none'">
+            <option value="1d" selected>Diário</option>
+            <option value="1wk">Semanal</option>
+            <option value="1mo">Mensal</option>
+          </select>
+        </div>
+        <div class="yf-field">
+          <label class="yf-label">Variável Y</label>
+          <select id="yf-col-y" class="yf-select">
+            <option value="close" selected>Fechamento</option>
+            <option value="adjclose">Adj. Close</option>
+            <option value="open">Abertura</option>
+            <option value="high">Máxima</option>
+            <option value="low">Mínima</option>
+            <option value="volume">Volume</option>
+          </select>
+        </div>
+        <button id="yf-fetch-btn" class="yf-fetch-btn" onclick="yfFetchData()">Carregar dados</button>
+      </div>
+    </div>
+
+    <!-- Preview (visível após carregar) -->
+    <div id="yf-preview" style="display:none">
+      <div class="yf-preview-header">
+        <span class="yf-count-badge" id="yf-count"></span>
+        <span style="font-size:12px;color:var(--txt3)">Últimas 10 observações</span>
+      </div>
+      <div class="yf-preview-tbl-wrap">
+        <div id="yf-preview-tbl"></div>
+      </div>
+      <div class="yf-actions">
+        <button class="btn-ghost" onclick="closeYahooModal()">Cancelar</button>
+        <button class="btn-primary" onclick="yfConfirmImport()">Importar para regressão →</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
