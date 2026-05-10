@@ -19,7 +19,7 @@ router.get('/yahoo/search', async (req, res) => {
     const r = await fetch(url, { headers: YF_HEADERS });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
-    const quotes = (data.finance?.result?.[0]?.quotes || []).filter(
+    const quotes = (data.quotes || []).filter(
       q => q.quoteType === 'EQUITY' || q.quoteType === 'ETF' || q.quoteType === 'INDEX' || q.quoteType === 'CURRENCY' || q.quoteType === 'FUTURE'
     );
     res.json({ quotes });
