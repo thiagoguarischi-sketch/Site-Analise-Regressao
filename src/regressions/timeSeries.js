@@ -168,6 +168,12 @@ export function varRemoveVariable() {
   varSyncKDisplay();
 }
 
+export function varSetK(newK) {
+  varK = Math.max(2, Math.min(8, newK));
+  varRebuildTable(true);
+  varSyncKDisplay();
+}
+
 // Largura dinâmica: preenche o container disponível e só aciona scroll
 // quando a coluna ficaria menor que VAR_COL_MIN.
 const VAR_COL_NUM = 28;   // índice (#) — fixo

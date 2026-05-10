@@ -45,7 +45,7 @@ import {
   stInitRows, stAddRow, stAddRowTop, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
   varInitRows, varAddRow, varAddRowTop, varClearRows, varAddVariable, varRemoveVariable,
-  varUpdateName, varUpdateVarCountDisplay, varLoadExample,
+  varUpdateName, varUpdateVarCountDisplay, varLoadExample, varSetK,
 } from './regressions/timeSeries.js';
 
 import {
@@ -132,7 +132,7 @@ Object.assign(window, {
   stInitRows, stAddRow, stAddRowTop, stClearRows, stUpdateCount, stLoadExample, stSetModel,
   runSerie, stSaveAnalysis, stExportExcel, stExportCSV,
   varInitRows, varAddRow, varAddRowTop, varClearRows, varAddVariable, varRemoveVariable,
-  varUpdateName, varUpdateVarCountDisplay, varLoadExample,
+  varUpdateName, varUpdateVarCountDisplay, varLoadExample, varSetK,
 
   // Quantílica
   qrInitRows, qrAddRow, qrAddRowTop, qrClearRows, qrUpdateCount, qrToggleChip, qrLoadExample,

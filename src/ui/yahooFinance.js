@@ -391,6 +391,19 @@ export function yfImportOne(symbol, switchTabFn) {
   const yLabel = `${symbol} — ${_YNAMES[colY] || colY}`;
 
   if (cfg.isVar) {
+    // Verificar se há múltiplos ativos com VAR selecionado
+    const varCandidates = _tickers.filter(t => {
+      if (!_datasets[t.symbol]) return false;
+      const m = document.getElementById(`yf-mdl-${t.symbol}`)?.value;
+      const s = document.getElementById(`yf-sub-${t.symbol}`)?.value;
+      return m === 'serie' && s === 'var';
+    });
+
+    if (varCandidates.length > 1) {
+      _importMultipleToVar(varCandidates, colY, switchTabFn);
+      return;
+    }
+
     // ── VAR: switch de aba PRIMEIRO para clientWidth correto nas colunas ──
     if (typeof switchTabFn === 'function')
       switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
@@ -451,6 +464,68 @@ export function yfImportOne(symbol, switchTabFn) {
     switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
 
   showToast(`${valid.length} obs. de ${symbol} importadas!`, 'ok');
+}
+
+// ── Importar múltiplos ativos para VAR (um por variável) ─────────────────────
+function _importMultipleToVar(assets, colY, switchTabFn) {
+  const k = Math.min(assets.length, 8);
+  const selected = assets.slice(0, k);
+
+  // Mapa data→valor por ativo
+  const maps = selected.map(t => {
+    const m = new Map();
+    (_datasets[t.symbol]?.rows || [])
+      .filter(r => r[colY] != null && !isNaN(r[colY]))
+      .forEach(r => m.set(r.date, r[colY]));
+    return { symbol: t.symbol, map: m };
+  });
+
+  // Interseção de datas comuns a todos os ativos
+  let dates = Array.from(maps[0].map.keys());
+  for (let i = 1; i < maps.length; i++) {
+    dates = dates.filter(d => maps[i].map.has(d));
+  }
+  dates.sort();
+
+  if (dates.length < 3) {
+    showToast('Datas em comum insuficientes entre os ativos selecionados.', 'err');
+    return;
+  }
+
+  // Ativa aba e modelo ANTES de rebuildar (garante clientWidth correto)
+  if (typeof switchTabFn === 'function')
+    switchTabFn('serie', document.querySelector('[onclick*="serie"]'));
+  window.stSetModel?.('var');
+
+  // Define número de variáveis e reconstrói tabela
+  window.varSetK?.(k);
+
+  const rowsEl = document.getElementById('var-data-rows');
+  if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+
+  // Substitui linhas pelo número exato de observações comuns
+  rowsEl.innerHTML = '';
+  dates.forEach(() => window.varAddRow?.());
+
+  Array.from(rowsEl.children).forEach((row, i) => {
+    const inp = row.querySelectorAll('input');
+    inp[0].value = dates[i];
+    maps.forEach((m, j) => {
+      if (inp[j + 1]) inp[j + 1].value = m.map.get(dates[i]) ?? '';
+    });
+  });
+
+  // Nomeia variáveis com os símbolos
+  maps.forEach((m, j) => {
+    window.varUpdateName?.(j, `${m.symbol} — ${_YNAMES[colY] || colY}`);
+  });
+
+  window.varUpdateVarCountDisplay?.();
+
+  const extra = assets.length > 8
+    ? ` (máx. 8; ${assets.length - 8} ignorado${assets.length - 8 > 1 ? 's' : ''})`
+    : '';
+  showToast(`${dates.length} obs. — ${k} ativos importados para o VAR${extra}`, 'ok');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
