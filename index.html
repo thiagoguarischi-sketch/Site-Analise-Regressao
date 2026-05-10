@@ -413,11 +413,20 @@
   #app-container.visible { display:flex; }
 
   .topbar {
-    height:56px; background:var(--bg2);
-    border-bottom:1px solid var(--brd);
+    height:56px;
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border-bottom:1px solid rgba(255,255,255,0.13);
+    box-shadow:0 2px 16px rgba(0,0,0,0.18), inset 0 -1px 0 rgba(255,255,255,0.08);
     display:flex; align-items:center;
     padding:0 20px; gap:16px;
     position:sticky; top:0; z-index:100;
+  }
+  html.light .topbar {
+    background:rgba(255,255,255,0.55);
+    border-bottom-color:rgba(255,255,255,0.75);
+    box-shadow:0 2px 16px rgba(0,0,0,0.08), inset 0 -1px 0 rgba(255,255,255,0.9);
   }
   .topbar-logo {
     display:flex; align-items:center; gap:9px;
@@ -1769,8 +1778,15 @@
   .topbar { transition: box-shadow .3s ease !important; }
   .topbar.scrolled {
     box-shadow:
-      0 1px 0 var(--brd),
-      0 4px 24px rgba(0,0,0,.35);
+      0 2px 16px rgba(0,0,0,0.28),
+      0 8px 32px rgba(0,0,0,0.18),
+      inset 0 -1px 0 rgba(255,255,255,0.08);
+  }
+  html.light .topbar.scrolled {
+    box-shadow:
+      0 2px 16px rgba(0,0,0,0.12),
+      0 8px 32px rgba(0,0,0,0.07),
+      inset 0 -1px 0 rgba(255,255,255,0.9);
   }
 
   /* ── 11. Tab active underline ── */
