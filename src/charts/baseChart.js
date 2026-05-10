@@ -45,9 +45,42 @@ export function legendStyle(size = 11) {
 // ── Controles de escala (zoom in/out/reset) ──
 
 const _chartRegistry = {};
+const _mousePos = {}; // última posição do mouse em coordenadas de dados por chart id
+
+function _pixelToData(chart, px, py) {
+  const sx = chart.scales.x;
+  const sy = chart.scales.y;
+  if (!sx || !sy) return null;
+  return {
+    x: sx.getValueForPixel(px),
+    y: sy.getValueForPixel(py),
+  };
+}
+
+function _attachMouseTracking(id, chart) {
+  const canvas = chart.canvas;
+  if (!canvas) return;
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    const data = _pixelToData(chart, px, py);
+    if (data) _mousePos[id] = data;
+  });
+  canvas.addEventListener('mouseleave', () => {
+    delete _mousePos[id];
+  });
+  // Scroll do mouse também faz zoom centrado no cursor
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 0.7 : 1.43;
+    scaleChart(id, factor);
+  }, { passive: false });
+}
 
 export function registerChart(id, chart) {
   _chartRegistry[id] = chart;
+  _attachMouseTracking(id, chart);
 }
 
 export function scaleChart(id, factor) {
@@ -63,14 +96,18 @@ export function scaleChart(id, factor) {
     const sx = chart.scales.x;
     const sy = chart.scales.y;
     if (!sx || !sy) return;
-    const cx = (sx.min + sx.max) / 2;
-    const cy = (sy.min + sy.max) / 2;
-    const rx = (sx.max - sx.min) / 2 * factor;
-    const ry = (sy.max - sy.min) / 2 * factor;
-    chart.options.scales.x.min = cx - rx;
-    chart.options.scales.x.max = cx + rx;
-    chart.options.scales.y.min = cy - ry;
-    chart.options.scales.y.max = cy + ry;
+
+    // Usa a posição do mouse como âncora; senão usa o centro
+    const anchor = _mousePos[id] ?? {
+      x: (sx.min + sx.max) / 2,
+      y: (sy.min + sy.max) / 2,
+    };
+
+    // Mantém a âncora fixa: distâncias das bordas escalam pelo fator
+    chart.options.scales.x.min = anchor.x - (anchor.x - sx.min) * factor;
+    chart.options.scales.x.max = anchor.x + (sx.max - anchor.x) * factor;
+    chart.options.scales.y.min = anchor.y - (anchor.y - sy.min) * factor;
+    chart.options.scales.y.max = anchor.y + (sy.max - anchor.y) * factor;
   }
 
   chart.update('none');
