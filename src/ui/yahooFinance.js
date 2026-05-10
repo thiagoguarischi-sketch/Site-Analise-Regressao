@@ -471,24 +471,36 @@ function _importMultipleToVar(assets, colY, switchTabFn) {
   const k = Math.min(assets.length, 8);
   const selected = assets.slice(0, k);
 
-  // Mapa data→valor por ativo
+  // Mapa data→valor e lista de timestamps por ativo
   const maps = selected.map(t => {
-    const m = new Map();
+    const byDate = new Map();
+    const ts = [];
     (_datasets[t.symbol]?.rows || [])
       .filter(r => r[colY] != null && !isNaN(r[colY]))
-      .forEach(r => m.set(r.date, r[colY]));
-    return { symbol: t.symbol, map: m };
+      .forEach(r => { byDate.set(r.date, r[colY]); ts.push(new Date(r.date).getTime()); });
+    ts.sort((a, b) => a - b);
+    return { symbol: t.symbol, byDate, ts };
   });
 
-  // Interseção de datas comuns a todos os ativos
-  let dates = Array.from(maps[0].map.keys());
-  for (let i = 1; i < maps.length; i++) {
-    dates = dates.filter(d => maps[i].map.has(d));
-  }
-  dates.sort();
+  // Usa as datas do primeiro ativo como referência e alinha os demais
+  // com tolerância de ±2 dias úteis para cobrir feriados entre mercados.
+  const TOLERANCE_MS = 2 * 86400 * 1000;
 
-  if (dates.length < 3) {
-    showToast('Datas em comum insuficientes entre os ativos selecionados.', 'err');
+  function closestVal(m, refTs) {
+    const dateStr = new Date(refTs).toISOString().slice(0, 10);
+    if (m.byDate.has(dateStr)) return m.byDate.get(dateStr);
+    let best = null, bestDiff = Infinity;
+    for (const t of m.ts) {
+      const diff = Math.abs(t - refTs);
+      if (diff < bestDiff) { bestDiff = diff; best = t; }
+    }
+    if (bestDiff > TOLERANCE_MS) return null;
+    return m.byDate.get(new Date(best).toISOString().slice(0, 10)) ?? null;
+  }
+
+  const refTs = maps[0].ts;
+  if (refTs.length < 3) {
+    showToast(`Dados insuficientes para ${selected[0].symbol} (mín. 3 obs.).`, 'err');
     return;
   }
 
@@ -503,15 +515,16 @@ function _importMultipleToVar(assets, colY, switchTabFn) {
   const rowsEl = document.getElementById('var-data-rows');
   if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
 
-  // Substitui linhas pelo número exato de observações comuns
   rowsEl.innerHTML = '';
-  dates.forEach(() => window.varAddRow?.());
+  refTs.forEach(() => window.varAddRow?.());
 
   Array.from(rowsEl.children).forEach((row, i) => {
-    const inp = row.querySelectorAll('input');
-    inp[0].value = dates[i];
+    const inp  = row.querySelectorAll('input');
+    const date = new Date(refTs[i]).toISOString().slice(0, 10);
+    inp[0].value = date;
     maps.forEach((m, j) => {
-      if (inp[j + 1]) inp[j + 1].value = m.map.get(dates[i]) ?? '';
+      const val = closestVal(m, refTs[i]);
+      if (inp[j + 1]) inp[j + 1].value = val ?? '';
     });
   });
 
@@ -525,7 +538,7 @@ function _importMultipleToVar(assets, colY, switchTabFn) {
   const extra = assets.length > 8
     ? ` (máx. 8; ${assets.length - 8} ignorado${assets.length - 8 > 1 ? 's' : ''})`
     : '';
-  showToast(`${dates.length} obs. — ${k} ativos importados para o VAR${extra}`, 'ok');
+  showToast(`${refTs.length} obs. — ${k} ativos importados para o VAR${extra}`, 'ok');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
