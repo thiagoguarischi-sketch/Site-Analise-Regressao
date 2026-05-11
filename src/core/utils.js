@@ -3,8 +3,8 @@
 export const mean = arr => arr.reduce((s, v) => s + v, 0) / arr.length;
 export const sum = arr => arr.reduce((s, v) => s + v, 0);
 
-export const fmt = v => isNaN(v) ? 'NaN' : v.toFixed(4);
-export const fmtP = v => v < 0.0001 ? '<0.0001' : v.toFixed(4);
+export const fmt = v => (v == null || !isFinite(v)) ? '—' : v.toFixed(4);
+export const fmtP = v => (v == null || !isFinite(v)) ? '—' : v < 0.0001 ? '<0.0001' : v.toFixed(4);
 
 export function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
