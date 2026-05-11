@@ -109,7 +109,7 @@ Object.assign(window, {
   // Chat
   openChat, closeChat, sendMessage,
 
-  // Yahoo Finance
+  // Mercado Financeiro
   yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize,
   yfOnModelChange,
   yfImportOne: sym => yfImportOne(sym, switchTab),

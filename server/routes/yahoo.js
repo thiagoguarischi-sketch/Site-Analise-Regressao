@@ -35,7 +35,7 @@ router.get('/yahoo/search', async (req, res) => {
     res.json({ quotes });
   } catch (e) {
     console.error('[Yahoo search]', e.message);
-    res.status(502).json({ error: 'Erro ao buscar no Yahoo Finance.' });
+    res.status(502).json({ error: 'Erro ao buscar no Mercado Financeiro.' });
   }
 });
 
@@ -92,7 +92,7 @@ router.get('/yahoo/chart', async (req, res) => {
     });
   } catch (e) {
     console.error('[Yahoo chart]', e.message);
-    res.status(502).json({ error: 'Erro ao buscar dados do Yahoo Finance.' });
+    res.status(502).json({ error: 'Erro ao buscar dados do Mercado Financeiro.' });
   }
 });
 
