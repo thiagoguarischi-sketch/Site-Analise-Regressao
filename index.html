@@ -2694,6 +2694,13 @@
           <div id="m-anova-tbl"></div>
         </div>
 
+        <!-- Diagnóstico das Suposições -->
+        <div class="card">
+          <div class="card-title">🔬 Diagnóstico das Suposições</div>
+          <div id="m-diag-alerts" style="margin-bottom:12px"></div>
+          <div id="m-diag-tests"></div>
+        </div>
+
         <!-- Gráficos -->
         <div class="card">
           <div class="card-title">📊 Gráficos Diagnósticos</div>
@@ -2714,7 +2721,17 @@
               <div class="diag-title">QQ-Plot (Normalidade)</div>
               <div class="diag-chart-wrap"><canvas id="m-chart-qq"></canvas></div>
             </div>
+            <div class="diag-card">
+              <div class="diag-title">Distância de Cook</div>
+              <div class="diag-chart-wrap"><canvas id="m-chart-cook"></canvas></div>
+            </div>
           </div>
+        </div>
+
+        <!-- Outliers e Observações Influentes -->
+        <div class="card">
+          <div class="card-title">🚨 Outliers e Observações Influentes</div>
+          <div class="tbl-wrap" id="m-influential-tbl"></div>
         </div>
 
         <!-- Gráficos de efeito parcial por variável -->

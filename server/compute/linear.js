@@ -127,6 +127,8 @@ function computeMultiple(Xs, Y) {
     return r2i >= 0.9999 ? 9999 : 1 / (1 - r2i);
   });
 
+  const cooks_d = resid.map((r, i) => (r ** 2 * hi[i]) / ((k + 1) * MSE * (1 - hi[i]) ** 2));
+
   const sw = shapiroWilk(resid);
   const bp = breuschPaganMultiple(Xs, resid);
   const dw = durbinWatson(resid);
@@ -134,7 +136,7 @@ function computeMultiple(Xs, Y) {
   return {
     n, k, beta, se_beta, t_beta, p_beta, ci_lo, ci_hi,
     r2, r2adj, se, SSR, SSE, SST, MSR, MSE, Fstat, pF,
-    yhat, resid, resid_std, hi, vif, df_resid, t_crit, ym,
+    yhat, resid, resid_std, hi, cooks_d, vif, df_resid, t_crit, ym,
     XtXinv, sw, bp, dw,
   };
 }

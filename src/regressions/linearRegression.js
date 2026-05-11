@@ -106,6 +106,8 @@ function renderAvancado(res) {
   document.getElementById('view-padrao').style.display = 'none';
   document.getElementById('view-avancado').style.display = 'block';
 
+  const _rmseA = rmse(res.resid);
+  const _maeA  = mae(res.resid);
   document.getElementById('metrics-avancado').innerHTML = `
     <div class="metric"><div class="metric-val metric-x">${fmt(res.b1)}</div><div class="metric-lab">β₁</div></div>
     <div class="metric"><div class="metric-val metric-x">${fmt(res.b0)}</div><div class="metric-lab">β₀</div></div>
@@ -113,6 +115,8 @@ function renderAvancado(res) {
     <div class="metric"><div class="metric-val metric-y">${fmt(res.r2adj)}</div><div class="metric-lab">R² Ajustado</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.se)}</div><div class="metric-lab">Erro padrão</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.Fstat)}</div><div class="metric-lab">F-stat</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_rmseA)}</div><div class="metric-lab">RMSE</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_maeA)}</div><div class="metric-lab">MAE</div></div>
   `;
 
   const xMin = Math.min(...res.xs), xMax = Math.max(...res.xs);
@@ -706,11 +710,15 @@ function renderMultipleResults(res) {
   varNames.forEach((name, i) => { eq += ` + ${fmt(beta[i + 1])}·X${i + 1}(${name})`; });
   document.getElementById('m-equation').innerHTML = `<b>${esc(eq)}</b>`;
 
+  const _rmseM = rmse(res.resid);
+  const _maeM  = mae(res.resid);
   document.getElementById('m-metrics').innerHTML = `
     <div class="metric"><div class="metric-val metric-y">${fmt(r2)}</div><div class="metric-lab">R²</div></div>
     <div class="metric"><div class="metric-val metric-y">${fmt(r2adj)}</div><div class="metric-lab">R² Ajustado</div></div>
     <div class="metric"><div class="metric-val metric-g">${fmt(se)}</div><div class="metric-lab">Erro padrão</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(Fstat)}</div><div class="metric-lab">F-stat</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_rmseM)}</div><div class="metric-lab">RMSE</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_maeM)}</div><div class="metric-lab">MAE</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${n}</div><div class="metric-lab">n</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${k}</div><div class="metric-lab">preditores</div></div>
   `;
@@ -769,12 +777,72 @@ function renderMultipleResults(res) {
     </table>`;
 
   renderMultipleCharts(res);
+  buildMultipleDiagnostic(res);
 }
 
 function destroyMC(id) { if (MC[id]) { MC[id].destroy(); delete MC[id]; } }
 
+function buildMultipleDiagnostic(res) {
+  const { sw, bp, dw, hi, resid_std, cooks_d, n, k, varNames, Y, yhat } = res;
+
+  // alertas automáticos
+  const alerts = [];
+  if (sw.p <= 0.05) alerts.push({ type: 'alert-err', msg: '✗ Normalidade dos resíduos rejeitada (Shapiro-Wilk p=' + fmtP(sw.p) + ')' });
+  if (bp.p <= 0.05) alerts.push({ type: 'alert-warn', msg: '⚠ Possível heterocedasticidade (Breusch-Pagan p=' + fmtP(bp.p) + ')' });
+  if (dw <= 1.5 || dw >= 2.5) alerts.push({ type: 'alert-warn', msg: '⚠ Possível autocorrelação nos resíduos (DW=' + dw.toFixed(3) + ')' });
+  const nOutliers = resid_std.filter(r => Math.abs(r) > 2.5).length;
+  if (nOutliers > 0) alerts.push({ type: 'alert-warn', msg: `⚠ ${nOutliers} outlier(s) detectado(s) (|resíduo std| > 2.5)` });
+  const highVIF = res.vif.filter(v => v > 10).length;
+  if (highVIF > 0) alerts.push({ type: 'alert-err', msg: `✗ ${highVIF} variável(is) com VIF > 10 (multicolinearidade severa)` });
+  const alertsEl = document.getElementById('m-diag-alerts');
+  if (alerts.length === 0) {
+    alertsEl.innerHTML = '<div class="alert alert-ok">✓ Nenhuma violação severa das suposições detectada automaticamente.</div>';
+  } else {
+    alertsEl.innerHTML = alerts.map(a => `<div class="alert ${a.type}" style="margin-bottom:6px">${a.msg}</div>`).join('');
+  }
+
+  // testes formais
+  document.getElementById('m-diag-tests').innerHTML = `
+    <div class="diag-grid">
+      <div class="alert ${sw.p > 0.05 ? 'alert-ok' : 'alert-err'}">
+        <b>Shapiro-Wilk:</b> W=${sw.W.toFixed(4)}, p=${fmtP(sw.p)}<br>
+        ${sw.p > 0.05 ? '✓ Normalidade dos resíduos não rejeitada' : '✗ Possível violação de normalidade'}
+      </div>
+      <div class="alert ${bp.p > 0.05 ? 'alert-ok' : 'alert-warn'}">
+        <b>Breusch-Pagan:</b> LM=${bp.stat.toFixed(4)}, p=${fmtP(bp.p)}<br>
+        ${bp.p > 0.05 ? '✓ Homocedasticidade não rejeitada' : '⚠ Possível heterocedasticidade'}
+      </div>
+      <div class="alert ${dw > 1.5 && dw < 2.5 ? 'alert-ok' : 'alert-warn'}">
+        <b>Durbin-Watson:</b> DW=${dw.toFixed(4)}<br>
+        ${dw > 1.5 && dw < 2.5 ? '✓ Sem evidência forte de autocorrelação' : '⚠ Verificar autocorrelação nos resíduos'}
+      </div>
+      <div class="alert alert-ok">
+        <b>Observações influentes:</b> ${cooks_d.filter(c => c > 4 / n).length} ponto(s) com Cook's D > 4/n<br>
+        Leverage: ${hi.filter(h => h > 2 * (k + 1) / n).length} observaç${hi.filter(h => h > 2 * (k + 1) / n).length === 1 ? 'ão' : 'ões'} com leverage elevado
+      </div>
+    </div>`;
+
+  // tabela de outliers/influência
+  const rows = Y.map((y, i) => {
+    const isOut = Math.abs(resid_std[i]) > 2.5;
+    const isInfl = cooks_d[i] > 4 / n;
+    return `<tr>
+      <td>${i + 1}</td><td>${y.toFixed(3)}</td><td>${yhat[i].toFixed(3)}</td>
+      <td>${hi[i].toFixed(4)}</td>
+      <td style="color:${isOut ? 'var(--acc)' : 'inherit'}">${resid_std[i].toFixed(3)}</td>
+      <td style="color:${isInfl ? 'var(--acc)' : 'inherit'}">${cooks_d[i].toFixed(4)}</td>
+      <td>${isOut ? '<span style="color:var(--acc)">Outlier</span>' : ''}${isInfl ? '<span style="color:var(--acc2)"> Influente</span>' : ''}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('m-influential-tbl').innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Y</th><th>Ŷ</th><th>Leverage</th><th>Resíd. Std</th><th>Cook's D</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
 function renderMultipleCharts(res) {
-  const { yhat, resid, resid_std, Y, n, Xs, varNames, labelY } = res;
+  const { yhat, resid, resid_std, Y, n, Xs, varNames, labelY, cooks_d } = res;
 
   destroyMC('obsFit');
   MC['obsFit'] = createObsVsFitChart('m-chart-obs-fit', Y, yhat, labelY);
@@ -787,6 +855,9 @@ function renderMultipleCharts(res) {
 
   destroyMC('qq');
   MC['qq'] = createQQPlot('m-chart-qq', resid_std, n, { bg: 'rgba(255,107,107,.6)' });
+
+  destroyMC('cook');
+  MC['cook'] = createCookDistance('m-chart-cook', cooks_d, n);
 
   const container = document.getElementById('m-partial-charts');
   container.innerHTML = '';
