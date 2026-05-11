@@ -186,6 +186,7 @@ function _renderResults() {
   _setDisplay('yf-results-area', 'block');
   if (_view === 'compare') _renderCompare();
   else                     _renderNormal();
+  _renderPairSection();
 }
 
 export function yfSwitchView(view) {
@@ -574,6 +575,114 @@ function _importMultipleToVar(assets, colY, switchTabFn) {
     ? ` (máx. 8; ${assets.length - 8} ignorado${assets.length - 8 > 1 ? 's' : ''})`
     : '';
   showToast(`${refTs.length} obs. — ${k} ativos importados para o VAR${extra}`, 'ok');
+}
+
+// ── Seção de importar par de ativos ──────────────────────────────────────────
+function _renderPairSection() {
+  const loaded = _tickers.filter(t => _datasets[t.symbol]);
+  const section = document.getElementById('yf-pair-section');
+  if (!section) return;
+
+  if (loaded.length < 2) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+
+  const opts = loaded.map(t =>
+    `<option value="${_attr(t.symbol)}">${t.symbol}${t.name ? ' — ' + (t.name.length > 28 ? t.name.slice(0,26)+'…' : t.name) : ''}</option>`
+  ).join('');
+
+  const xSel = document.getElementById('yf-pair-x-sym');
+  const ySel = document.getElementById('yf-pair-y-sym');
+  if (!xSel || !ySel) return;
+
+  const prevX = xSel.value, prevY = ySel.value;
+  xSel.innerHTML = opts;
+  ySel.innerHTML = opts;
+
+  // Tenta manter seleção anterior; senão pré-seleciona X=primeiro, Y=segundo
+  if (loaded.some(t => t.symbol === prevX)) xSel.value = prevX;
+  if (loaded.some(t => t.symbol === prevY)) ySel.value = prevY;
+  else if (loaded.length >= 2) ySel.value = loaded[1].symbol;
+}
+
+export function yfImportPair(switchTabFn) {
+  const xSym  = document.getElementById('yf-pair-x-sym')?.value;
+  const ySym  = document.getElementById('yf-pair-y-sym')?.value;
+  const xCol  = document.getElementById('yf-pair-x-col')?.value || 'close';
+  const yCol  = document.getElementById('yf-pair-y-col')?.value || 'close';
+  const model = document.getElementById('yf-pair-model')?.value || 'nova';
+
+  if (!xSym || !ySym) { showToast('Selecione os dois ativos.', 'err'); return; }
+  if (xSym === ySym && xCol === yCol) { showToast('X e Y são idênticos. Escolha ativos ou colunas diferentes.', 'err'); return; }
+
+  const dX = _datasets[xSym], dY = _datasets[ySym];
+  if (!dX?.rows?.length) { showToast(`Dados não carregados para ${xSym}.`, 'err'); return; }
+  if (!dY?.rows?.length) { showToast(`Dados não carregados para ${ySym}.`, 'err'); return; }
+
+  // Alinha por data com tolerância de ±2 dias úteis
+  const TOLERANCE_MS = 2 * 86400 * 1000;
+  const mapY = new Map();
+  const tsY  = [];
+  dY.rows.filter(r => r[yCol] != null && !isNaN(r[yCol])).forEach(r => {
+    mapY.set(r.date, r[yCol]);
+    tsY.push(new Date(r.date).getTime());
+  });
+
+  function closestY(refTs) {
+    const dateStr = new Date(refTs).toISOString().slice(0, 10);
+    if (mapY.has(dateStr)) return mapY.get(dateStr);
+    let best = null, bestDiff = Infinity;
+    for (const t of tsY) {
+      const diff = Math.abs(t - refTs);
+      if (diff < bestDiff) { bestDiff = diff; best = t; }
+    }
+    if (bestDiff > TOLERANCE_MS) return null;
+    return mapY.get(new Date(best).toISOString().slice(0, 10)) ?? null;
+  }
+
+  const pairs = dX.rows
+    .filter(r => r[xCol] != null && !isNaN(r[xCol]))
+    .map(r => {
+      const yVal = closestY(new Date(r.date).getTime());
+      return yVal != null ? { x: r[xCol], y: yVal } : null;
+    })
+    .filter(Boolean);
+
+  if (pairs.length < 3) {
+    showToast('Datas não se alinham (mín. 3 obs. coincidentes).', 'err');
+    return;
+  }
+
+  const cfg = _MODEL_CFG[model];
+  const fns = _MODEL_FNS[model];
+  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
+
+  const xLabel = `${xSym} — ${_YNAMES[xCol] || xCol}`;
+  const yLabel = `${ySym} — ${_YNAMES[yCol] || yCol}`;
+
+  const container = document.getElementById(cfg.rowsId);
+  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+
+  container.innerHTML = '';
+  if (model === 'nova') {
+    window.setRows(pairs.map(p => p.x), pairs.map(p => p.y));
+  } else {
+    pairs.forEach(p => {
+      window[fns.addRow]?.();
+      const last = container.children[container.children.length - 1];
+      const inp  = last.querySelectorAll('input');
+      inp[0].value = p.x;
+      inp[1].value = p.y;
+    });
+  }
+
+  _lbl(cfg.lx, xLabel);
+  _lbl(cfg.ly, yLabel);
+  window[fns.upd]?.();
+
+  if (typeof switchTabFn === 'function')
+    switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
+
+  showToast(`${pairs.length} obs. importadas: ${xSym} (X) × ${ySym} (Y)`, 'ok');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

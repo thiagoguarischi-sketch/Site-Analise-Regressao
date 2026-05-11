@@ -3881,6 +3881,59 @@
           </div>
         </div>
 
+        <!-- Importar par de ativos para regressão -->
+        <div id="yf-pair-section" style="display:none;margin-top:16px">
+          <div class="card" style="padding:20px">
+            <div class="card-title" style="font-size:14px;margin-bottom:14px">
+              <div class="card-title-icon" style="background:rgba(124,131,253,.15);font-size:14px">🔗</div>
+              Importar par de ativos para regressão
+            </div>
+            <p style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">
+              Selecione dois ativos e importe-os como variáveis X e Y em qualquer modelo de regressão. Exemplo: Petrobras × Ibovespa na Regressão Linear.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div>
+                <div style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ativo X (variável independente)</div>
+                <div style="display:flex;gap:6px">
+                  <select class="yf-select" id="yf-pair-x-sym" style="flex:1;min-width:0"></select>
+                  <select class="yf-select" id="yf-pair-x-col" style="width:110px">
+                    <option value="close">Fechamento</option>
+                    <option value="adjclose">Adj. Close</option>
+                    <option value="open">Abertura</option>
+                    <option value="high">Máxima</option>
+                    <option value="low">Mínima</option>
+                    <option value="volume">Volume</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ativo Y (variável dependente)</div>
+                <div style="display:flex;gap:6px">
+                  <select class="yf-select" id="yf-pair-y-sym" style="flex:1;min-width:0"></select>
+                  <select class="yf-select" id="yf-pair-y-col" style="width:110px">
+                    <option value="close">Fechamento</option>
+                    <option value="adjclose">Adj. Close</option>
+                    <option value="open">Abertura</option>
+                    <option value="high">Máxima</option>
+                    <option value="low">Mínima</option>
+                    <option value="volume">Volume</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <select class="yf-select" id="yf-pair-model" style="flex:1;min-width:160px;font-size:12px">
+                <option value="nova">Reg. Linear</option>
+                <option value="polinomial">Reg. Polinomial</option>
+                <option value="quantilica">Reg. Quantílica</option>
+                <option value="regularizada">Reg. Regularizada</option>
+              </select>
+              <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px;white-space:nowrap"
+                onclick="yfImportPair()">Importar par</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
