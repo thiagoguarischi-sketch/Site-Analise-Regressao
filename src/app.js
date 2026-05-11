@@ -22,7 +22,7 @@ import { viewAnalysis, closeModal, editAnalysis, deleteAnalysis as deleteAnalysi
 import { loadShareList, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
 import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
-import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange } from './ui/yahooFinance.js';
+import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair } from './ui/yahooFinance.js';
 
 import {
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
@@ -113,6 +113,7 @@ Object.assign(window, {
   yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize,
   yfOnModelChange,
   yfImportOne: sym => yfImportOne(sym, switchTab),
+  yfImportPair: () => yfImportPair(switchTab),
 
   // Linear simples + múltipla
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
