@@ -127,7 +127,10 @@ function computeMultiple(Xs, Y) {
     return r2i >= 0.9999 ? 9999 : 1 / (1 - r2i);
   });
 
-  const cooks_d = resid.map((r, i) => (r ** 2 * hi[i]) / ((k + 1) * MSE * (1 - hi[i]) ** 2));
+  const cooks_d = resid.map((r, i) => {
+    const denom = (k + 1) * MSE * (1 - hi[i]) ** 2;
+    return denom > 0 ? (r ** 2 * hi[i]) / denom : 0;
+  });
 
   const sw = shapiroWilk(resid);
   const bp = breuschPaganMultiple(Xs, resid);

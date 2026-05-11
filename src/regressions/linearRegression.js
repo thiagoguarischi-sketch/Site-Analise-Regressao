@@ -783,7 +783,9 @@ function renderMultipleResults(res) {
 function destroyMC(id) { if (MC[id]) { MC[id].destroy(); delete MC[id]; } }
 
 function buildMultipleDiagnostic(res) {
-  const { sw, bp, dw, hi, resid_std, cooks_d, n, k, varNames, Y, yhat } = res;
+  if (!res.sw || !res.bp || res.dw === undefined) return;
+  const { sw, bp, dw, hi, resid_std, n, k, varNames, Y, yhat } = res;
+  const cooks_d = (res.cooks_d || []).map(v => v ?? 0);
 
   // alertas automáticos
   const alerts = [];
@@ -823,6 +825,7 @@ function buildMultipleDiagnostic(res) {
     </div>`;
 
   // tabela de outliers/influência
+  if (!Y || !Y.length) return;
   const rows = Y.map((y, i) => {
     const isOut = Math.abs(resid_std[i]) > 2.5;
     const isInfl = cooks_d[i] > 4 / n;
@@ -856,8 +859,10 @@ function renderMultipleCharts(res) {
   destroyMC('qq');
   MC['qq'] = createQQPlot('m-chart-qq', resid_std, n, { bg: 'rgba(255,107,107,.6)' });
 
-  destroyMC('cook');
-  MC['cook'] = createCookDistance('m-chart-cook', cooks_d, n);
+  if (Array.isArray(cooks_d) && cooks_d.length > 0) {
+    destroyMC('cook');
+    MC['cook'] = createCookDistance('m-chart-cook', cooks_d.map(v => v ?? 0), n);
+  }
 
   const container = document.getElementById('m-partial-charts');
   container.innerHTML = '';
