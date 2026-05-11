@@ -11,6 +11,37 @@ let _searchTimer  = null;
 
 const PALETTE = ['#7C83FD','#00D4A0','#FF6B8A','#FFC254','#4FC3F7','#CE93D8','#80CBC4','#FFAB40'];
 
+// ── Inicializa date pickers com intervalo padrão de 1 ano ────────────────────
+function _initDatePickers() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const maxDate = yesterday.toISOString().slice(0, 10);
+
+  const oneYearAgo = new Date(yesterday);
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const defaultFrom = oneYearAgo.toISOString().slice(0, 10);
+
+  const fromEl = document.getElementById('yf-date-from');
+  const toEl   = document.getElementById('yf-date-to');
+  if (!fromEl || !toEl) return;
+
+  fromEl.max = maxDate;
+  toEl.max   = maxDate;
+  fromEl.value = defaultFrom;
+  toEl.value   = maxDate;
+
+  fromEl.addEventListener('change', () => {
+    if (toEl.value && fromEl.value > toEl.value) toEl.value = fromEl.value;
+    toEl.min = fromEl.value;
+  });
+  toEl.addEventListener('change', () => {
+    if (fromEl.value && toEl.value < fromEl.value) fromEl.value = toEl.value;
+    fromEl.max = toEl.value || maxDate;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', _initDatePickers);
+
 // ── Delegação de cliques ──────────────────────────────────────────────────────
 document.addEventListener('click', e => {
   const btn = e.target.closest('#yf-results .yf-result-btn');
@@ -117,8 +148,12 @@ function _renderChips() {
 export async function yfLoadAll() {
   if (!_tickers.length) { showToast('Adicione ao menos um ativo.', 'err'); return; }
 
-  const period   = document.getElementById('yf-period')?.value   || '1y';
+  const fromVal  = document.getElementById('yf-date-from')?.value;
+  const toVal    = document.getElementById('yf-date-to')?.value;
   const interval = document.getElementById('yf-interval')?.value || '1d';
+
+  if (!fromVal || !toVal) { showToast('Selecione o intervalo de datas.', 'err'); return; }
+  if (fromVal >= toVal)   { showToast('A data inicial deve ser anterior à data final.', 'err'); return; }
 
   const btn = document.getElementById('yf-load-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Carregando…'; }
@@ -126,7 +161,7 @@ export async function yfLoadAll() {
 
   try {
     const results = await Promise.all(_tickers.map(t =>
-      fetch(`${API_BASE}/yahoo/chart?symbol=${encodeURIComponent(t.symbol)}&period=${period}&interval=${interval}`)
+      fetch(`${API_BASE}/yahoo/chart?symbol=${encodeURIComponent(t.symbol)}&from=${fromVal}&to=${toVal}&interval=${interval}`)
         .then(r => r.json())
         .catch(() => ({ error: 'Falha na requisição' }))
     ));

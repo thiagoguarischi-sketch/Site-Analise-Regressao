@@ -9,6 +9,16 @@ const YF_HEADERS = {
 
 const PERIOD_DAYS = { '1mo': 30, '3mo': 90, '6mo': 180, '1y': 365, '2y': 730, '5y': 1825 };
 
+function _toUnix(dateStr) {
+  return Math.floor(new Date(dateStr + 'T00:00:00Z').getTime() / 1000);
+}
+
+function _yesterday() {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
 // GET /api/yahoo/search?q=AAPL
 router.get('/yahoo/search', async (req, res) => {
   const { q = '' } = req.query;
@@ -29,17 +39,27 @@ router.get('/yahoo/search', async (req, res) => {
   }
 });
 
-// GET /api/yahoo/chart?symbol=AAPL&period=1y&interval=1d
+// GET /api/yahoo/chart?symbol=AAPL&from=2024-01-01&to=2024-12-31&interval=1d
 router.get('/yahoo/chart', async (req, res) => {
-  const { symbol, period = '1y', interval = '1d' } = req.query;
+  const { symbol, from, to, period = '1y', interval = '1d' } = req.query;
   if (!symbol) return res.status(400).json({ error: 'Parâmetro "symbol" obrigatório.' });
 
-  const now = Math.floor(Date.now() / 1000);
-  const days = PERIOD_DAYS[period] || 365;
-  const from = now - days * 86400;
+  const maxTo = _yesterday();
+  let period1, period2;
+
+  if (from && to) {
+    const clampedTo = to > maxTo ? maxTo : to;
+    if (from >= clampedTo) return res.status(400).json({ error: 'Data inicial deve ser anterior à data final.' });
+    period1 = _toUnix(from);
+    period2 = _toUnix(clampedTo) + 86399; // fim do dia
+  } else {
+    period2 = Math.floor(Date.now() / 1000);
+    const days = PERIOD_DAYS[period] || 365;
+    period1 = period2 - days * 86400;
+  }
 
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${from}&period2=${now}&interval=${interval}&events=history&includeAdjustedClose=true`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=${interval}&events=history&includeAdjustedClose=true`;
     const r = await fetch(url, { headers: YF_HEADERS });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();

@@ -129,6 +129,14 @@
     font-size:13px; font-family:var(--font-sans); cursor:pointer; outline:none; transition:.15s;
   }
   .yf-select:focus { border-color:var(--x); }
+  .yf-date {
+    background:var(--bg3); border:1px solid var(--brd2);
+    color:var(--txt); border-radius:var(--r-sm); padding:7px 10px;
+    font-size:13px; font-family:var(--font-sans); cursor:pointer; outline:none; transition:.15s;
+    color-scheme: dark;
+  }
+  .yf-date:focus { border-color:var(--x); box-shadow:0 0 0 2px rgba(124,131,253,.15); }
+  html.light .yf-date { color-scheme: light; }
   .yf-fetch-btn {
     background:var(--x); color:#fff; border:none;
     border-radius:var(--r-sm); padding:8px 16px;
@@ -3816,15 +3824,12 @@
         <!-- Opções globais -->
         <div id="yf-global-opts" class="yf-opts-row" style="display:none">
           <div class="yf-field">
-            <label class="yf-label">Período</label>
-            <select id="yf-period" class="yf-select">
-              <option value="1mo">1 mês</option>
-              <option value="3mo">3 meses</option>
-              <option value="6mo">6 meses</option>
-              <option value="1y" selected>1 ano</option>
-              <option value="2y">2 anos</option>
-              <option value="5y">5 anos</option>
-            </select>
+            <label class="yf-label">De</label>
+            <input type="date" id="yf-date-from" class="yf-date">
+          </div>
+          <div class="yf-field">
+            <label class="yf-label">Até</label>
+            <input type="date" id="yf-date-to" class="yf-date">
           </div>
           <div class="yf-field">
             <label class="yf-label">Intervalo</label>
