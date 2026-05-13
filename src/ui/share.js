@@ -468,7 +468,8 @@ function _showReadonlyShared(a) {
   const tipoLabel = _tipoLabel(a);
   const date = new Date(a.created_at).toLocaleString('pt-BR');
   const text = _buildTextSummary(a);
-  const hasRawData = !!(a.dados?.xs?.length || a.dados?.ys?.length);
+  const hasRawData = !!(a.dados?.xs?.length || a.dados?.ys?.length
+    || a.dados?.labels?.length || a.dados?.matrix?.length);
 
   const overlay = document.createElement('div');
   overlay.className = 'shared-readonly-overlay';
