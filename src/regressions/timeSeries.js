@@ -848,6 +848,29 @@ export async function loadSerieAnalysis(a) {
       stUpdateCount();
     }
   }
+
+  // Render saved results if available
+  const hasResults = d.modelo === 'classic' ? d.b0 !== undefined
+    : d.modelo === 'arima' ? d.phi !== undefined
+    : d.modelo === 'garch' ? d.omega !== undefined
+    : d.modelo === 'var' ? d.aic !== undefined
+    : false;
+
+  if (hasResults) {
+    const res = { ...d, model: d.modelo, labelX: d.labelX || 'Período', labelY: d.labelY || 'Valor' };
+    stLastResult = res;
+    document.getElementById('st-classic-section').style.display = d.modelo === 'classic' ? 'block' : 'none';
+    document.getElementById('st-arima-section').style.display  = d.modelo === 'arima'   ? 'block' : 'none';
+    document.getElementById('st-garch-section').style.display  = d.modelo === 'garch'   ? 'block' : 'none';
+    document.getElementById('st-var-section').style.display    = d.modelo === 'var'     ? 'block' : 'none';
+    if (d.modelo === 'classic')    stRenderResults(res);
+    else if (d.modelo === 'arima') arimaRenderResults(res);
+    else if (d.modelo === 'garch') garchRenderResults(res);
+    else if (d.modelo === 'var')   varRenderResults(res);
+    document.getElementById('st-results').style.display = 'block';
+    document.getElementById('st-btn-save').style.display = 'inline-flex';
+  }
+
   showToast('Série temporal carregada ✏️', 'info');
 }
 
