@@ -297,12 +297,7 @@ export async function doLogout() {
   await signOut();
   currentUser = null;
   await clearSession();
-  document.getElementById('auth-overlay').classList.remove('hidden');
-  document.getElementById('app-container').classList.remove('visible');
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-pw').value = '';
-  document.getElementById('login-error').classList.remove('show');
-  showToast('Até logo! 👋', 'info');
+  window.location.href = 'landing.html';
 }
 
 export async function deleteAccount() {
