@@ -2243,9 +2243,46 @@
   .light .var-dh-label:hover  { background: rgba(0,0,0,.05); border-bottom-color: rgba(0,0,0,.45); }
   .light .var-dh-label:focus  { background: rgba(0,180,130,.08); }
 
+  /* ── GALAXY CANVAS ─────────────────────────────────── */
+  #galaxy-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
+  html.light #galaxy-bg { opacity: 0; }
+
+  /* Auth overlay semi-transparent so stars show */
+  #auth-overlay {
+    background: rgba(7,8,15,.88) !important;
+  }
+  html.light #auth-overlay {
+    background: var(--bg) !important;
+  }
+
+  /* Section tag shimmer (matches landing) */
+  .section-tag-galaxy {
+    background: linear-gradient(90deg,
+      var(--x) 0%, #b0b7ff 35%, var(--y) 55%, var(--x) 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: cosmicShimmer 5s ease infinite;
+  }
+  @keyframes cosmicShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+
 </style>
 </head>
 <body>
+
+<!-- GALAXY BACKGROUND -->
+<canvas id="galaxy-bg"></canvas>
 
 <!-- ====== AUTH OVERLAY ====== -->
 <div id="auth-overlay">
@@ -5473,6 +5510,166 @@ function openCurso(modelId) {
 }
 
 window.openCurso = openCurso;
+</script>
+
+<script>
+// ── GALAXY BACKGROUND ─────────────────────────────────────────────────────
+(function () {
+  const canvas = document.getElementById('galaxy-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  const STAR_COUNT = 260;
+  const stars = [];
+  const shoots = [];
+  let nextShoot = 4000 + Math.random() * 5000;
+  let lastShootTime = 0;
+
+  let mx = 0, my = 0, tmx = 0, tmy = 0;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  const COLORS = ['#ffffff','#ffffff','#ffffff','#7C83FD','#A8BDFF','#FFE9D0','#00D4A0'];
+  function mkStar() {
+    return {
+      x:    Math.random() * W,
+      y:    Math.random() * H,
+      r:    Math.pow(Math.random(), 2.2) * 1.9 + 0.2,
+      base: Math.random() * 0.55 + 0.18,
+      op:   Math.random() * 0.55 + 0.18,
+      tp:   Math.random() * Math.PI * 2,
+      ts:   Math.random() * 0.022 + 0.004,
+      col:  COLORS[Math.floor(Math.random() * COLORS.length)],
+      vx:   (Math.random() - 0.5) * 0.032,
+      vy:   (Math.random() - 0.5) * 0.032,
+    };
+  }
+
+  function initStars() {
+    stars.length = 0;
+    for (let i = 0; i < STAR_COUNT; i++) stars.push(mkStar());
+  }
+
+  function hexRgb(h) {
+    return `${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;
+  }
+
+  function spawnShoot() {
+    const startLeft = Math.random() < 0.5;
+    const x = startLeft ? Math.random() * W * 0.55 : W * 0.15 + Math.random() * W * 0.5;
+    const y = startLeft ? Math.random() * H * 0.35 : 0;
+    const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.55;
+    const speed = 10 + Math.random() * 8;
+    shoots.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 0,
+      maxLife: 36 + Math.random() * 22,
+      trail: [],
+      r: 1.4 + Math.random() * 0.9,
+    });
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+
+    // nebula glows
+    const n1 = ctx.createRadialGradient(W*.18, H*.28, 0, W*.18, H*.28, W*.44);
+    n1.addColorStop(0, 'rgba(124,131,253,0.030)'); n1.addColorStop(1, 'transparent');
+    ctx.fillStyle = n1; ctx.fillRect(0, 0, W, H);
+
+    const n2 = ctx.createRadialGradient(W*.82, H*.72, 0, W*.82, H*.72, W*.38);
+    n2.addColorStop(0, 'rgba(0,212,160,0.024)'); n2.addColorStop(1, 'transparent');
+    ctx.fillStyle = n2; ctx.fillRect(0, 0, W, H);
+
+    const n3 = ctx.createRadialGradient(W*.5, H*.05, 0, W*.5, H*.05, W*.32);
+    n3.addColorStop(0, 'rgba(255,107,138,0.013)'); n3.addColorStop(1, 'transparent');
+    ctx.fillStyle = n3; ctx.fillRect(0, 0, W, H);
+
+    // parallax
+    mx += (tmx - mx) * 0.06;
+    my += (tmy - my) * 0.06;
+
+    // stars
+    stars.forEach(s => {
+      s.tp += s.ts;
+      const twinkle = 0.62 + 0.38 * Math.sin(s.tp);
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < -2) s.x = W+2; if (s.x > W+2) s.x = -2;
+      if (s.y < -2) s.y = H+2; if (s.y > H+2) s.y = -2;
+
+      const px = s.x + (mx - W*.5) * 0.006 * s.r;
+      const py = s.y + (my - H*.5) * 0.006 * s.r;
+      const a  = s.op * twinkle;
+      if (a < 0.02) return;
+
+      const rgb = hexRgb(s.col);
+      ctx.beginPath();
+      ctx.arc(px, py, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${rgb},${a})`;
+      ctx.fill();
+
+      if (s.r > 1.05) {
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, s.r * 3.8);
+        glow.addColorStop(0, `rgba(${rgb},${a * 0.22})`);
+        glow.addColorStop(1, 'transparent');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(px, py, s.r * 3.8, 0, Math.PI*2);
+        ctx.fill();
+      }
+    });
+
+    // shooting stars
+    if (t - lastShootTime > nextShoot) {
+      spawnShoot();
+      lastShootTime = t;
+      nextShoot = 4200 + Math.random() * 5000;
+    }
+    for (let i = shoots.length - 1; i >= 0; i--) {
+      const s = shoots[i];
+      s.trail.unshift({ x: s.x, y: s.y });
+      if (s.trail.length > 24) s.trail.pop();
+      s.x += s.vx; s.y += s.vy; s.life++;
+      if (s.life > s.maxLife || s.x > W+60 || s.y > H+60 || s.x < -60) {
+        shoots.splice(i, 1); continue;
+      }
+      const lr = 1 - s.life / s.maxLife;
+      s.trail.forEach((pt, j) => {
+        const ta = lr * (1 - j/s.trail.length) * 0.82;
+        const tr = s.r  * (1 - j/s.trail.length) * 0.68;
+        if (ta < 0.02 || tr < 0.05) return;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, tr, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(200,218,255,${ta})`;
+        ctx.fill();
+      });
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${lr * 0.92})`;
+      ctx.fill();
+      const gl = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r*5);
+      gl.addColorStop(0, `rgba(190,215,255,${lr * 0.55})`);
+      gl.addColorStop(1, 'transparent');
+      ctx.fillStyle = gl;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r*5, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  document.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+  window.addEventListener('resize', () => { resize(); initStars(); }, { passive: true });
+  resize();
+  initStars();
+  requestAnimationFrame(draw);
+})();
 </script>
 </body>
 </html>
