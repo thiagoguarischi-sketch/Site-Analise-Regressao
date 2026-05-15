@@ -365,6 +365,53 @@ body {
   display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0;
 }
 @media (max-width: 600px) { .formula-grid { grid-template-columns: 1fr; } }
+
+/* ── Module Panels ── */
+.module-panel { display: none; }
+.module-panel.active { display: block; }
+
+/* ── Module Navigation ── */
+.module-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 56px; padding-top: 32px;
+  border-top: 1px solid var(--brd2); gap: 12px;
+}
+.module-nav-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; border-radius: var(--r-md);
+  border: 1px solid var(--brd2); background: var(--bg2);
+  color: var(--txt2); font-size: 14px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: all .15s;
+  font-family: var(--font-sans); white-space: nowrap;
+}
+.module-nav-btn:hover { color: var(--txt); background: var(--bg3); }
+.module-nav-btn.next {
+  background: var(--y); color: #000; border-color: transparent;
+}
+.module-nav-btn.next:hover { opacity: .85; }
+.module-nav-spacer { min-width: 120px; }
+.module-nav-center {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  flex: 1; min-width: 0;
+}
+.module-progress {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+}
+.module-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--brd2); cursor: pointer;
+  transition: all .2s; flex-shrink: 0;
+}
+.module-dot.active { background: var(--y); transform: scale(1.3); }
+.module-dot.visited { background: var(--txt3); }
+.module-nav-label {
+  font-size: 12px; color: var(--txt3); text-align: center;
+}
+@media (max-width: 640px) {
+  .module-nav { flex-wrap: wrap; }
+  .module-nav-center { order: -1; width: 100%; }
+  .module-nav-btn { font-size: 13px; padding: 9px 16px; }
+}
 </style>
 </head>
 <body>
@@ -382,70 +429,70 @@ body {
   <aside class="toc-sidebar">
     <div class="toc-title">Conteúdo</div>
     <ul class="toc-list" id="toc-list">
-      <li><div class="toc-module">Introdução</div></li>
-      <li><a href="#intro">O que é o Mercado Financeiro</a></li>
+      <li class="toc-group" data-for-module="0"><div class="toc-module">Introdução</div></li>
+      <li class="toc-group" data-for-module="0"><a href="#intro">O que é o Mercado Financeiro</a></li>
 
-      <li><div class="toc-module">Módulo 1 · Economia</div></li>
-      <li><a href="#oferta-demanda">Oferta e Demanda</a></li>
-      <li><a href="#inflacao">Inflação e Índices</a></li>
-      <li><a href="#taxa-juros">Taxa de Juros: Selic e CDI</a></li>
-      <li><a href="#pib">PIB e Ciclos Econômicos</a></li>
-      <li><a href="#cambio">Câmbio</a></li>
-      <li><a href="#politica-monetaria">Política Monetária e Fiscal</a></li>
-      <li><a href="#curva-juros">Curva de Juros</a></li>
-      <li><a href="#balanco-pagamentos">Balanço de Pagamentos</a></li>
+      <li class="toc-group" data-for-module="1"><div class="toc-module">Módulo 1 · Economia</div></li>
+      <li class="toc-group" data-for-module="1"><a href="#oferta-demanda">Oferta e Demanda</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#inflacao">Inflação e Índices</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#taxa-juros">Taxa de Juros: Selic e CDI</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#pib">PIB e Ciclos Econômicos</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#cambio">Câmbio</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#politica-monetaria">Política Monetária e Fiscal</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#curva-juros">Curva de Juros</a></li>
+      <li class="toc-group" data-for-module="1"><a href="#balanco-pagamentos">Balanço de Pagamentos</a></li>
 
-      <li><div class="toc-module">Módulo 2 · Renda Fixa</div></li>
-      <li><a href="#o-que-rf">O que é Renda Fixa</a></li>
-      <li><a href="#marcacao-mercado">Marcação a Mercado e Duration</a></li>
-      <li><a href="#tesouro">Tesouro Direto</a></li>
-      <li><a href="#cdb">CDB</a></li>
-      <li><a href="#lci-lca">LCI e LCA</a></li>
-      <li><a href="#cri-cra">CRI e CRA</a></li>
-      <li><a href="#debentures">Debêntures</a></li>
-      <li><a href="#fundos-rf">Fundos de Renda Fixa</a></li>
-      <li><a href="#previdencia">Previdência Privada</a></li>
-      <li><a href="#comparar-rf">Como Comparar Investimentos</a></li>
+      <li class="toc-group" data-for-module="2"><div class="toc-module">Módulo 2 · Renda Fixa</div></li>
+      <li class="toc-group" data-for-module="2"><a href="#o-que-rf">O que é Renda Fixa</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#marcacao-mercado">Marcação a Mercado e Duration</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#tesouro">Tesouro Direto</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#cdb">CDB</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#lci-lca">LCI e LCA</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#cri-cra">CRI e CRA</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#debentures">Debêntures</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#fundos-rf">Fundos de Renda Fixa</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#previdencia">Previdência Privada</a></li>
+      <li class="toc-group" data-for-module="2"><a href="#comparar-rf">Como Comparar Investimentos</a></li>
 
-      <li><div class="toc-module">Módulo 3 · Renda Variável</div></li>
-      <li><a href="#o-que-rv">O que é Renda Variável</a></li>
-      <li><a href="#acoes">Ações: Como Funcionam</a></li>
-      <li><a href="#ipo">IPO: Abertura de Capital</a></li>
-      <li><a href="#b3">A Bolsa de Valores (B3)</a></li>
-      <li><a href="#demonstrativos">Demonstrativos Financeiros</a></li>
-      <li><a href="#analise-fund">Análise Fundamentalista</a></li>
-      <li><a href="#valuation">Valuation</a></li>
-      <li><a href="#analise-tec">Análise Técnica</a></li>
-      <li><a href="#fiis">Fundos Imobiliários (FIIs)</a></li>
-      <li><a href="#etfs">ETFs</a></li>
-      <li><a href="#bdrs">BDRs</a></li>
-      <li><a href="#dividendos">Dividendos e JCP</a></li>
+      <li class="toc-group" data-for-module="3"><div class="toc-module">Módulo 3 · Renda Variável</div></li>
+      <li class="toc-group" data-for-module="3"><a href="#o-que-rv">O que é Renda Variável</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#acoes">Ações: Como Funcionam</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#ipo">IPO: Abertura de Capital</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#b3">A Bolsa de Valores (B3)</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#demonstrativos">Demonstrativos Financeiros</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#analise-fund">Análise Fundamentalista</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#valuation">Valuation</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#analise-tec">Análise Técnica</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#fiis">Fundos Imobiliários (FIIs)</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#etfs">ETFs</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#bdrs">BDRs</a></li>
+      <li class="toc-group" data-for-module="3"><a href="#dividendos">Dividendos e JCP</a></li>
 
-      <li><div class="toc-module">Módulo 4 · Derivativos</div></li>
-      <li><a href="#intro-derivativos">Introdução aos Derivativos</a></li>
-      <li><a href="#futuros">Contratos Futuros</a></li>
-      <li><a href="#opcoes">Opções: Calls e Puts</a></li>
-      <li><a href="#estrategias-opcoes">Estratégias com Opções</a></li>
-      <li><a href="#swaps">Swaps e Hedge</a></li>
+      <li class="toc-group" data-for-module="4"><div class="toc-module">Módulo 4 · Derivativos</div></li>
+      <li class="toc-group" data-for-module="4"><a href="#intro-derivativos">Introdução aos Derivativos</a></li>
+      <li class="toc-group" data-for-module="4"><a href="#futuros">Contratos Futuros</a></li>
+      <li class="toc-group" data-for-module="4"><a href="#opcoes">Opções: Calls e Puts</a></li>
+      <li class="toc-group" data-for-module="4"><a href="#estrategias-opcoes">Estratégias com Opções</a></li>
+      <li class="toc-group" data-for-module="4"><a href="#swaps">Swaps e Hedge</a></li>
 
-      <li><div class="toc-module">Módulo 5 · Gestão Avançada</div></li>
-      <li><a href="#markowitz">Teoria Moderna de Portfólio</a></li>
-      <li><a href="#correlacao">Correlação e Diversificação</a></li>
-      <li><a href="#metricas">Índice de Sharpe e Métricas</a></li>
-      <li><a href="#gestao-risco">Gestão de Risco</a></li>
-      <li><a href="#psicologia">Psicologia do Investidor</a></li>
-      <li><a href="#tributacao">Tributação do Investidor</a></li>
+      <li class="toc-group" data-for-module="5"><div class="toc-module">Módulo 5 · Gestão Avançada</div></li>
+      <li class="toc-group" data-for-module="5"><a href="#markowitz">Teoria Moderna de Portfólio</a></li>
+      <li class="toc-group" data-for-module="5"><a href="#correlacao">Correlação e Diversificação</a></li>
+      <li class="toc-group" data-for-module="5"><a href="#metricas">Índice de Sharpe e Métricas</a></li>
+      <li class="toc-group" data-for-module="5"><a href="#gestao-risco">Gestão de Risco</a></li>
+      <li class="toc-group" data-for-module="5"><a href="#psicologia">Psicologia do Investidor</a></li>
+      <li class="toc-group" data-for-module="5"><a href="#tributacao">Tributação do Investidor</a></li>
 
-      <li><div class="toc-module">Conclusão</div></li>
-      <li><a href="#montando-carteira">Montando sua Carteira</a></li>
+      <li class="toc-group" data-for-module="6"><div class="toc-module">Conclusão</div></li>
+      <li class="toc-group" data-for-module="6"><a href="#montando-carteira">Montando sua Carteira</a></li>
 
-      <li><div class="toc-module">Módulo Extra · Slope</div></li>
-      <li><a href="#slope-intro">Regressão para Investidores</a></li>
-      <li><a href="#slope-beta">Calculando o Beta</a></li>
-      <li><a href="#slope-macro">Variáveis Macroeconômicas</a></li>
-      <li><a href="#slope-series">Séries Temporais (ARIMA/GARCH)</a></li>
-      <li><a href="#slope-opcoes">Opções e Regressão Quantílica</a></li>
-      <li><a href="#slope-fluxo">Fluxo Completo de Análise</a></li>
+      <li class="toc-group" data-for-module="7"><div class="toc-module">Módulo Extra · Slope</div></li>
+      <li class="toc-group" data-for-module="7"><a href="#slope-intro">Regressão para Investidores</a></li>
+      <li class="toc-group" data-for-module="7"><a href="#slope-beta">Calculando o Beta</a></li>
+      <li class="toc-group" data-for-module="7"><a href="#slope-macro">Variáveis Macroeconômicas</a></li>
+      <li class="toc-group" data-for-module="7"><a href="#slope-series">Séries Temporais (ARIMA/GARCH)</a></li>
+      <li class="toc-group" data-for-module="7"><a href="#slope-opcoes">Opções e Regressão Quantílica</a></li>
+      <li class="toc-group" data-for-module="7"><a href="#slope-fluxo">Fluxo Completo de Análise</a></li>
     </ul>
   </aside>
 
@@ -470,6 +517,7 @@ body {
     </div>
 
     <!-- ── INTRODUÇÃO ── -->
+    <div class="module-panel active" data-module="0">
     <section class="section" id="intro">
       <div class="section-title"><span class="section-icon">🌐</span> O que é o Mercado Financeiro</div>
       <div class="section-body">
@@ -514,7 +562,18 @@ body {
       </div>
     </section>
 
+    <div class="module-nav">
+      <div class="module-nav-spacer"></div>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Introdução · 1 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(1)">Módulo 1: Economia →</button>
+    </div>
+    </div><!-- /panel-0 -->
+
     <!-- ── MÓDULO 1: ECONOMIA ── -->
+    <div class="module-panel" data-module="1">
     <div class="module-divider" id="mod-economia">
       <div class="module-number">Módulo 1</div>
       <div class="module-title">📊 Fundamentos de Economia</div>
@@ -894,7 +953,18 @@ Longo prazo (5+ anos): prêmio de risco fiscal (dívida/PIB, credibilidade do go
       </div>
     </section>
 
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(0)">← Introdução</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Módulo 1 · Economia · 2 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(2)">Módulo 2: Renda Fixa →</button>
+    </div>
+    </div><!-- /panel-1 -->
+
     <!-- ── MÓDULO 2: RENDA FIXA ── -->
+    <div class="module-panel" data-module="2">
     <div class="module-divider" id="mod-rf">
       <div class="module-number">Módulo 2</div>
       <div class="module-title">🔒 Renda Fixa</div>
@@ -1422,9 +1492,18 @@ Preço = 1.000 / (1,14)^1 = R$ 877,19   ← título perdeu valor</div>
       </div>
     </section>
 
-    <!-- MÓDULO 3 -->
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(1)">← Módulo 1: Economia</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Módulo 2 · Renda Fixa · 3 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(3)">Módulo 3: Renda Variável →</button>
+    </div>
+    </div><!-- /panel-2 -->
 
     <!-- ── MÓDULO 3: RENDA VARIÁVEL ── -->
+    <div class="module-panel" data-module="3">
     <div class="module-divider" id="mod-rv">
       <div class="module-number">Módulo 3</div>
       <div class="module-title">📈 Renda Variável</div>
@@ -1983,7 +2062,18 @@ Preço Justo = (EV − Dívida Líquida) / Número de ações</div>
       </div>
     </section>
 
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(2)">← Módulo 2: Renda Fixa</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Módulo 3 · Renda Variável · 4 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(4)">Módulo 4: Derivativos →</button>
+    </div>
+    </div><!-- /panel-3 -->
+
     <!-- ── MÓDULO 4: DERIVATIVOS ── -->
+    <div class="module-panel" data-module="4">
     <div class="module-divider" id="mod-der">
       <div class="module-number">Módulo 4</div>
       <div class="module-title">⚙️ Derivativos</div>
@@ -2294,9 +2384,18 @@ Valor Temporal = prêmio − valor intrínseco
       </div>
     </section>
 
-    <!-- MÓDULO 5 -->
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(3)">← Módulo 3: Renda Variável</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Módulo 4 · Derivativos · 5 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(5)">Módulo 5: Gestão Avançada →</button>
+    </div>
+    </div><!-- /panel-4 -->
 
     <!-- MÓDULO 5 -->
+    <div class="module-panel" data-module="5">
     <div class="module-divider" id="mod-5">
       <div class="module-number">Módulo 5</div>
       <div class="module-title">🧠 Gestão Avançada de Carteira</div>
@@ -2773,7 +2872,18 @@ Valor Temporal = prêmio − valor intrínseco
       </div>
     </section>
 
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(4)">← Módulo 4: Derivativos</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Módulo 5 · Gestão Avançada · 6 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(6)">Conclusão →</button>
+    </div>
+    </div><!-- /panel-5 -->
+
     <!-- CONCLUSÃO -->
+    <div class="module-panel" data-module="6">
     <div class="module-divider" id="conclusao">
       <div class="module-number">Conclusão</div>
       <div class="module-title">🗺️ Montando sua Carteira</div>
@@ -2886,7 +2996,18 @@ Valor Temporal = prêmio − valor intrínseco
       </div>
     </section>
 
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(5)">← Módulo 5: Gestão Avançada</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Conclusão · 7 de 8</div>
+      </div>
+      <button class="module-nav-btn next" onclick="showModule(7)">Módulo Extra: Slope →</button>
+    </div>
+    </div><!-- /panel-6 -->
+
     <!-- MÓDULO EXTRA -->
+    <div class="module-panel" data-module="7">
     <div class="module-divider" id="mod-extra">
       <div class="module-number">Módulo Extra</div>
       <div class="module-title">⚙️ Aplicando na Plataforma Slope</div>
@@ -3192,6 +3313,16 @@ Valor Temporal = prêmio − valor intrínseco
       </div>
     </section>
 
+    <div class="module-nav">
+      <button class="module-nav-btn" onclick="showModule(6)">← Conclusão</button>
+      <div class="module-nav-center">
+        <div class="module-progress"></div>
+        <div class="module-nav-label">Módulo Extra · Slope · 8 de 8</div>
+      </div>
+      <div class="module-nav-spacer"></div>
+    </div>
+    </div><!-- /panel-7 -->
+
   </main>
 </div>
 
@@ -3201,19 +3332,59 @@ function toggleFaq(id) {
   el.classList.toggle('open');
 }
 
-// TOC active on scroll
+const MODULE_LABELS = [
+  'Introdução',
+  'Módulo 1 · Economia',
+  'Módulo 2 · Renda Fixa',
+  'Módulo 3 · Renda Variável',
+  'Módulo 4 · Derivativos',
+  'Módulo 5 · Gestão Avançada',
+  'Conclusão',
+  'Módulo Extra · Slope',
+];
+
+function showModule(n, skipScroll) {
+  const total = MODULE_LABELS.length;
+  if (n < 0 || n >= total) return;
+
+  document.querySelectorAll('.module-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('.module-panel[data-module="' + n + '"]').classList.add('active');
+
+  document.querySelectorAll('.toc-group').forEach(li => {
+    li.style.display = (parseInt(li.dataset.forModule) === n) ? '' : 'none';
+  });
+
+  document.querySelectorAll('.module-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === n);
+    dot.classList.toggle('visited', i < n);
+  });
+
+  if (!skipScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Init progress dots in every panel, then show panel 0
+(function() {
+  document.querySelectorAll('.module-progress').forEach(function(container) {
+    container.innerHTML = MODULE_LABELS.map(function(label, i) {
+      return '<div class="module-dot" onclick="showModule(' + i + ')" title="' + label + '"></div>';
+    }).join('');
+  });
+  showModule(0, true);
+})();
+
+// TOC link active state within a module
 const tocLinks = document.querySelectorAll('.toc-list a');
 const sections = document.querySelectorAll('.section');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
+const observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
     if (entry.isIntersecting) {
-      tocLinks.forEach(a => a.classList.remove('active'));
-      const active = document.querySelector(`.toc-list a[href="#${entry.target.id}"]`);
+      tocLinks.forEach(function(a) { a.classList.remove('active'); });
+      const active = document.querySelector('.toc-list a[href="#' + entry.target.id + '"]');
       if (active) active.classList.add('active');
     }
   });
 }, { rootMargin: '-15% 0px -75% 0px' });
-sections.forEach(s => observer.observe(s));
+sections.forEach(function(s) { observer.observe(s); });
 </script>
 </body>
 </html>
