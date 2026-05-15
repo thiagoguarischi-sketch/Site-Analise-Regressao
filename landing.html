@@ -738,6 +738,149 @@
 
       .cta-box { padding: 52px 24px; }
     }
+
+    /* ── ANIMATIONS & TRANSITIONS ─────────────────────────── */
+
+    /* Hero entrance staggered */
+    @keyframes heroEntrance {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes heroFade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .hero-badge    { animation: heroEntrance .7s cubic-bezier(.22,.68,0,1.2) .1s  both; }
+    .hero h1       { animation: heroEntrance .75s cubic-bezier(.22,.68,0,1.2) .28s both; }
+    .hero-sub      { animation: heroEntrance .7s ease .46s both; }
+    .hero-actions  { animation: heroEntrance .7s ease .62s both; }
+    .hero-stats    { animation: heroFade .7s ease .84s both; }
+
+    /* Floating ambient orbs */
+    @keyframes float1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%      { transform: translate(18px, -22px) scale(1.06); }
+      66%      { transform: translate(-12px, -10px) scale(.96); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%      { transform: translate(-14px, 20px) scale(.95); }
+      66%      { transform: translate(10px, -10px) scale(1.05); }
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(72px);
+    }
+    .hero-orb-1 {
+      width: 480px; height: 480px;
+      top: 0%; left: 5%;
+      background: radial-gradient(circle, rgba(124,131,253,.16) 0%, transparent 70%);
+      animation: float1 14s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+      width: 380px; height: 380px;
+      bottom: 8%; right: 8%;
+      background: radial-gradient(circle, rgba(0,212,160,.13) 0%, transparent 70%);
+      animation: float2 17s ease-in-out infinite;
+    }
+    .hero-orb-3 {
+      width: 220px; height: 220px;
+      top: 35%; right: 20%;
+      background: radial-gradient(circle, rgba(255,107,138,.07) 0%, transparent 70%);
+      animation: float1 10s ease-in-out infinite reverse;
+    }
+
+    /* Scroll reveal */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    [data-reveal].is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    [data-reveal="left"]  { transform: translateX(-32px); }
+    [data-reveal="right"] { transform: translateX(32px); }
+    [data-reveal="left"].is-visible,
+    [data-reveal="right"].is-visible { transform: translateX(0); }
+    [data-reveal="scale"] { transform: scale(.93) translateY(18px); }
+    [data-reveal="scale"].is-visible { transform: scale(1) translateY(0); }
+    [data-reveal="fade"]  { transform: none; }
+
+    /* Stagger delays */
+    [data-delay="1"] { transition-delay: .07s; }
+    [data-delay="2"] { transition-delay: .14s; }
+    [data-delay="3"] { transition-delay: .21s; }
+    [data-delay="4"] { transition-delay: .28s; }
+    [data-delay="5"] { transition-delay: .35s; }
+    [data-delay="6"] { transition-delay: .42s; }
+    [data-delay="7"] { transition-delay: .49s; }
+
+    /* SVG chart animation */
+    .regression-line {
+      stroke-dasharray: 420;
+      stroke-dashoffset: 420;
+      transition: stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1) .4s;
+    }
+    .regression-line.chart-animate { stroke-dashoffset: 0; }
+
+    .chart-fill-area {
+      opacity: 0;
+      transition: opacity .9s ease 1s;
+    }
+    .chart-fill-area.chart-animate { opacity: .15; }
+
+    .scatter-dot {
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+    /* r attribute animated via JS classList */
+
+    /* Product card inner glow on hover */
+    .product-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--r-xl);
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none;
+    }
+    .card-blue::after  { background: radial-gradient(ellipse at 50% -10%, rgba(124,131,253,.08), transparent 65%); }
+    .card-teal::after  { background: radial-gradient(ellipse at 50% -10%, rgba(0,212,160,.07),  transparent 65%); }
+    .product-card:hover::after { opacity: 1; }
+
+    /* Model card lift */
+    .model-card { transition: border-color .2s, background .2s, transform .25s, box-shadow .25s; }
+    .model-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+
+    /* Nav link underline slide */
+    .nav-links a:not(.nav-cta) {
+      position: relative;
+    }
+    .nav-links a:not(.nav-cta)::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--x);
+      transition: width .25s ease;
+    }
+    .nav-links a:not(.nav-cta):hover::after { width: 100%; }
+
+    /* Shimmer line on section separators */
+    @keyframes shimmerLine {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .section-tag {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -759,6 +902,9 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-dot-grid"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
 
     <div class="hero-badge">
       <span class="hero-badge-dot"></span>
@@ -807,35 +953,35 @@
     <div class="container">
       <div class="about-grid">
         <div>
-          <span class="section-tag">O que é o Slope</span>
-          <h2 class="section-title">Uma plataforma feita para quem leva dados a sério</h2>
-          <p class="section-sub">
+          <span class="section-tag" data-reveal="fade">O que é o Slope</span>
+          <h2 class="section-title" data-reveal data-delay="1">Uma plataforma feita para quem leva dados a sério</h2>
+          <p class="section-sub" data-reveal data-delay="2">
             Slope nasce da ideia de que análise estatística rigorosa e educação financeira de qualidade devem estar no mesmo lugar — acessíveis, em português, sem enrolação.
           </p>
 
           <div class="about-features">
-            <div class="about-feature">
+            <div class="about-feature" data-reveal data-delay="3">
               <div class="feature-icon-wrap blue">📐</div>
               <div class="feature-text">
                 <h4>Regressão com qualidade acadêmica</h4>
                 <p>Modelos testados com métricas completas: R², RMSE, coeficientes, intervalos de confiança e visualizações interativas.</p>
               </div>
             </div>
-            <div class="about-feature">
+            <div class="about-feature" data-reveal data-delay="4">
               <div class="feature-icon-wrap teal">📈</div>
               <div class="feature-text">
                 <h4>Dados do mercado financeiro</h4>
                 <p>Integração com cotações e séries históricas diretamente na plataforma de análise, sem copiar e colar planilhas.</p>
               </div>
             </div>
-            <div class="about-feature">
+            <div class="about-feature" data-reveal data-delay="5">
               <div class="feature-icon-wrap amber">🎓</div>
               <div class="feature-text">
                 <h4>Educação financeira do zero ao avançado</h4>
                 <p>Curso estruturado cobrindo economia, renda fixa, renda variável, derivativos e muito mais — com linguagem direta.</p>
               </div>
             </div>
-            <div class="about-feature">
+            <div class="about-feature" data-reveal data-delay="6">
               <div class="feature-icon-wrap pink">🔗</div>
               <div class="feature-text">
                 <h4>Colaboração e compartilhamento</h4>
@@ -846,7 +992,7 @@
         </div>
 
         <!-- mock visual da plataforma -->
-        <div class="about-visual">
+        <div class="about-visual" data-reveal="right">
           <div class="chart-mock">
             <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
               <!-- grade -->
@@ -856,19 +1002,19 @@
               <line x1="40" y1="80"  x2="310" y2="80"  stroke="#1C1D30" stroke-width="1" stroke-dasharray="4,4"/>
               <line x1="40" y1="40"  x2="310" y2="40"  stroke="#1C1D30" stroke-width="1" stroke-dasharray="4,4"/>
               <!-- pontos de dispersão -->
-              <circle cx="70"  cy="140" r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="95"  cy="125" r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="120" cy="112" r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="145" cy="100" r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="170" cy="88"  r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="200" cy="78"  r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="225" cy="62"  r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="250" cy="52"  r="4" fill="#7C83FD" opacity=".7"/>
-              <circle cx="280" cy="38"  r="4" fill="#7C83FD" opacity=".7"/>
+              <circle class="scatter-dot" cx="70"  cy="140" r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="95"  cy="125" r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="120" cy="112" r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="145" cy="100" r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="170" cy="88"  r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="200" cy="78"  r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="225" cy="62"  r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="250" cy="52"  r="4" fill="#7C83FD"/>
+              <circle class="scatter-dot" cx="280" cy="38"  r="4" fill="#7C83FD"/>
               <!-- linha de regressão -->
-              <line x1="55" y1="148" x2="295" y2="30" stroke="url(#rline)" stroke-width="2.5" stroke-linecap="round"/>
+              <line class="regression-line" x1="55" y1="148" x2="295" y2="30" stroke="url(#rline)" stroke-width="2.5" stroke-linecap="round"/>
               <!-- área sob a linha -->
-              <path d="M55,148 L295,30 L295,160 L55,160 Z" fill="url(#area)" opacity=".15"/>
+              <path class="chart-fill-area" d="M55,148 L295,30 L295,160 L55,160 Z" fill="url(#area)"/>
               <defs>
                 <linearGradient id="rline" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%"   stop-color="#7C83FD"/>
@@ -907,15 +1053,15 @@
   <section id="produtos">
     <div class="container">
       <div class="products-header">
-        <span class="section-tag">Nossos produtos</span>
-        <h2 class="section-title">Dois caminhos, um objetivo</h2>
-        <p class="section-sub">Escolha por onde começar — ou explore os dois ao mesmo tempo.</p>
+        <span class="section-tag" data-reveal="fade">Nossos produtos</span>
+        <h2 class="section-title" data-reveal data-delay="1">Dois caminhos, um objetivo</h2>
+        <p class="section-sub" data-reveal data-delay="2">Escolha por onde começar — ou explore os dois ao mesmo tempo.</p>
       </div>
 
       <div class="products-grid">
 
         <!-- Plataforma de Análise -->
-        <div class="product-card card-blue">
+        <div class="product-card card-blue" data-reveal="scale" data-delay="1">
           <div class="card-glow"></div>
           <div class="card-badge"><span class="card-badge-dot"></span>Disponível agora</div>
           <div class="card-icon">📊</div>
@@ -938,7 +1084,7 @@
         </div>
 
         <!-- Curso de Mercado Financeiro -->
-        <div class="product-card card-teal">
+        <div class="product-card card-teal" data-reveal="scale" data-delay="2">
           <div class="card-glow"></div>
           <div class="card-badge"><span class="card-badge-dot"></span>Em breve</div>
           <div class="card-icon">🎓</div>
@@ -968,55 +1114,55 @@
   <section id="modelos">
     <div class="container">
       <div class="models-header">
-        <span class="section-tag">Plataforma de análise</span>
-        <h2 class="section-title">7 modelos na ponta dos dedos</h2>
-        <p class="section-sub">De regressões simples a séries temporais e modelos regularizados — tudo no mesmo lugar.</p>
+        <span class="section-tag" data-reveal="fade">Plataforma de análise</span>
+        <h2 class="section-title" data-reveal data-delay="1">7 modelos na ponta dos dedos</h2>
+        <p class="section-sub" data-reveal data-delay="2">De regressões simples a séries temporais e modelos regularizados — tudo no mesmo lugar.</p>
       </div>
 
       <div class="models-grid">
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="1">
           <div class="model-card-top">
             <span class="model-emoji">📏</span>
             <span class="model-name">Regressão Linear</span>
           </div>
           <p class="model-desc">Relação linear entre uma variável preditora e uma resposta. Simples, interpretável e poderoso.</p>
         </div>
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="2">
           <div class="model-card-top">
             <span class="model-emoji">🔢</span>
             <span class="model-name">Regressão Múltipla</span>
           </div>
           <p class="model-desc">Múltiplas variáveis explicativas com controle de multicolinearidade e teste de significância.</p>
         </div>
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="3">
           <div class="model-card-top">
             <span class="model-emoji">⚖️</span>
             <span class="model-name">Regressão Logística</span>
           </div>
           <p class="model-desc">Classificação binária com curva ROC, matriz de confusão e probabilidade calibrada.</p>
         </div>
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="4">
           <div class="model-card-top">
             <span class="model-emoji">〰️</span>
             <span class="model-name">Regressão Polinomial</span>
           </div>
           <p class="model-desc">Captura relações curvilíneas com seleção automática de grau e controle de overfitting.</p>
         </div>
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="5">
           <div class="model-card-top">
             <span class="model-emoji">📅</span>
             <span class="model-name">Séries Temporais</span>
           </div>
           <p class="model-desc">Previsão com modelos ARIMA, decomposição de tendência e sazonalidade.</p>
         </div>
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="6">
           <div class="model-card-top">
             <span class="model-emoji">📦</span>
             <span class="model-name">Regressão Quantílica</span>
           </div>
           <p class="model-desc">Estima qualquer quantil da distribuição condicional, robusta a outliers e assimetria.</p>
         </div>
-        <div class="model-card">
+        <div class="model-card" data-reveal data-delay="7">
           <div class="model-card-top">
             <span class="model-emoji">🎯</span>
             <span class="model-name">Regressão Regularizada</span>
@@ -1030,7 +1176,7 @@
   <!-- CTA FINAL -->
   <section id="comecar">
     <div class="container">
-      <div class="cta-box">
+      <div class="cta-box" data-reveal="scale">
         <h2>Pronto para <span style="background:linear-gradient(90deg,var(--x),var(--y));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">começar?</span></h2>
         <p>Acesse a plataforma de análise estatística agora ou explore o curso de mercado financeiro — tudo no mesmo lugar.</p>
         <div class="cta-actions">
@@ -1056,5 +1202,76 @@
     <p class="footer-copy">© 2026 Slope. Feito com <span>♥</span> no Brasil.</p>
   </footer>
 
+  <script>
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('[data-reveal]');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // SVG chart animation on scroll into view
+    const chartSection = document.querySelector('#sobre');
+    const regressionLine = document.querySelector('.regression-line');
+    const chartFillArea = document.querySelector('.chart-fill-area');
+    const scatterDots = document.querySelectorAll('.scatter-dot');
+    let chartDone = false;
+
+    const chartObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !chartDone) {
+          chartDone = true;
+          scatterDots.forEach((dot, i) => {
+            setTimeout(() => { dot.style.opacity = '.7'; }, i * 70);
+          });
+          const delay = scatterDots.length * 70 + 80;
+          setTimeout(() => {
+            regressionLine.classList.add('chart-animate');
+            chartFillArea.classList.add('chart-animate');
+          }, delay);
+          chartObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    if (chartSection) chartObs.observe(chartSection);
+
+    // Counter animation for hero stats
+    const statValues = document.querySelectorAll('.stat-value');
+    let statsDone = false;
+
+    const statsObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !statsDone) {
+          statsDone = true;
+          statValues.forEach(el => {
+            const raw = el.textContent.trim();
+            const numMatch = raw.match(/^(\d+)/);
+            if (!numMatch) return;
+            const target = parseInt(numMatch[1], 10);
+            const suffix = raw.slice(numMatch[1].length);
+            const duration = 1200;
+            const startTime = performance.now();
+            const tick = (now) => {
+              const p = Math.min((now - startTime) / duration, 1);
+              const ease = 1 - Math.pow(1 - p, 3);
+              el.textContent = Math.round(target * ease) + suffix;
+              if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          });
+          statsObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) statsObs.observe(heroStats);
+  </script>
 </body>
 </html>
