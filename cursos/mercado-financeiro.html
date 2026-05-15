@@ -369,6 +369,22 @@ body {
 /* ── Module Panels ── */
 .module-panel { display: none; }
 .module-panel.active { display: block; }
+.module-panel.mod-leaving {
+  display: block;
+  animation: modLeave 0.22s ease forwards;
+  pointer-events: none;
+}
+.module-panel.mod-entering {
+  animation: modEnter 0.38s cubic-bezier(.22,.68,0,1.2) forwards;
+}
+@keyframes modLeave {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-18px); }
+}
+@keyframes modEnter {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Module Navigation ── */
 .module-nav {
@@ -3343,23 +3359,46 @@ const MODULE_LABELS = [
   'Módulo Extra · Slope',
 ];
 
-function showModule(n, skipScroll) {
-  const total = MODULE_LABELS.length;
-  if (n < 0 || n >= total) return;
-
-  document.querySelectorAll('.module-panel').forEach(p => p.classList.remove('active'));
-  document.querySelector('.module-panel[data-module="' + n + '"]').classList.add('active');
-
-  document.querySelectorAll('.toc-group').forEach(li => {
+function updateDotsAndToc(n) {
+  document.querySelectorAll('.toc-group').forEach(function(li) {
     li.style.display = (parseInt(li.dataset.forModule) === n) ? '' : 'none';
   });
-
-  document.querySelectorAll('.module-dot').forEach((dot, i) => {
+  document.querySelectorAll('.module-dot').forEach(function(dot, i) {
     dot.classList.toggle('active', i === n);
     dot.classList.toggle('visited', i < n);
   });
+}
 
-  if (!skipScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+function showModule(n, skipAnim) {
+  const total = MODULE_LABELS.length;
+  if (n < 0 || n >= total) return;
+
+  const current = document.querySelector('.module-panel.active');
+  const next = document.querySelector('.module-panel[data-module="' + n + '"]');
+  if (!next || current === next) return;
+
+  updateDotsAndToc(n);
+
+  if (skipAnim || !current) {
+    if (current) current.classList.remove('active');
+    next.classList.add('active');
+    return;
+  }
+
+  // Fase 1: fade-out do painel atual (220ms)
+  current.classList.add('mod-leaving');
+  setTimeout(function() {
+    current.classList.remove('active', 'mod-leaving');
+
+    // Scroll instantâneo enquanto tela está "apagada"
+    window.scrollTo({ top: 0 });
+
+    // Fase 2: fade-in do novo painel (380ms)
+    next.classList.add('active', 'mod-entering');
+    setTimeout(function() {
+      next.classList.remove('mod-entering');
+    }, 400);
+  }, 230);
 }
 
 // Init progress dots in every panel, then show panel 0
