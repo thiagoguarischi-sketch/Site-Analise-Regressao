@@ -4137,6 +4137,86 @@
         </div>
       </div><!-- /mf-bcb-section -->
 
+      <!-- ── Combinador de Fontes (sempre visível) ──────────────────── -->
+      <div id="mf-cross-section" style="margin-top:16px">
+        <div class="card" style="padding:20px">
+          <div class="card-title" style="font-size:14px;margin-bottom:10px">
+            <div class="card-title-icon" style="background:rgba(255,193,7,.13);font-size:14px">🔀</div>
+            Combinador de Fontes
+            <span style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Misture dados do BCB e do Yahoo Finance no mesmo modelo</span>
+          </div>
+          <p style="font-size:12px;color:var(--txt3);margin-bottom:12px;line-height:1.5">
+            Carregue séries em qualquer aba acima e combine-as aqui como variáveis X e Y para qualquer modelo de regressão.
+          </p>
+
+          <div id="cross-no-data" style="font-size:13px;color:var(--txt3);text-align:center;padding:20px 0;border:1px dashed var(--brd2);border-radius:8px">
+            Carregue ao menos 2 séries (em qualquer fonte acima) para usar o combinador.
+          </div>
+
+          <div id="cross-selectors" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+
+              <!-- Variável X -->
+              <div>
+                <div style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Variável X — independente</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <select class="yf-select" id="cross-x-src" onchange="crossUpdateSeries('x')">
+                    <option value="yf">📈 Yahoo Finance</option>
+                    <option value="bcb">🏛️ BCB</option>
+                  </select>
+                  <select class="yf-select" id="cross-x-id"></select>
+                  <div id="cross-x-col-wrap">
+                    <select class="yf-select" id="cross-x-col">
+                      <option value="close">Fechamento</option>
+                      <option value="adjclose">Adj. Close</option>
+                      <option value="open">Abertura</option>
+                      <option value="high">Máxima</option>
+                      <option value="low">Mínima</option>
+                      <option value="volume">Volume</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Variável Y -->
+              <div>
+                <div style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Variável Y — dependente</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <select class="yf-select" id="cross-y-src" onchange="crossUpdateSeries('y')">
+                    <option value="yf">📈 Yahoo Finance</option>
+                    <option value="bcb">🏛️ BCB</option>
+                  </select>
+                  <select class="yf-select" id="cross-y-id"></select>
+                  <div id="cross-y-col-wrap">
+                    <select class="yf-select" id="cross-y-col">
+                      <option value="close">Fechamento</option>
+                      <option value="adjclose">Adj. Close</option>
+                      <option value="open">Abertura</option>
+                      <option value="high">Máxima</option>
+                      <option value="low">Mínima</option>
+                      <option value="volume">Volume</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <select class="yf-select" id="cross-model" style="flex:1;min-width:160px;font-size:12px">
+                <option value="nova">Reg. Linear</option>
+                <option value="polinomial">Reg. Polinomial</option>
+                <option value="quantilica">Reg. Quantílica</option>
+                <option value="regularizada">Reg. Regularizada</option>
+              </select>
+              <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px;white-space:nowrap"
+                onclick="crossImportPair()">Importar par</button>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /mf-cross-section -->
+
     </div>
 
     <!-- PANEL: Amigos -->
