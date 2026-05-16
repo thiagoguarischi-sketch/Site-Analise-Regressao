@@ -24,7 +24,7 @@ import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest
 import { loadHistory, updateProfileStats } from './ui/tables.js';
 import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair } from './ui/yahooFinance.js';
 import { bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize, bcbImportOne, bcbOnModelChange, bcbImportPair } from './ui/bcbFinance.js';
-import { crossRefresh, crossUpdateSeries, crossImportPair } from './ui/crossImport.js';
+import { crossRefresh, crossUpdateSeries, crossImportPair, crossSTModelChange, crossSTSrcChange, crossVarSrcChange, crossAddVarSeries, crossRemoveVarSeries, crossImportST } from './ui/crossImport.js';
 
 import {
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
@@ -127,6 +127,12 @@ Object.assign(window, {
   crossRefresh,
   crossUpdateSeries,
   crossImportPair: () => crossImportPair(switchTab),
+  crossSTModelChange,
+  crossSTSrcChange,
+  crossVarSrcChange,
+  crossAddVarSeries,
+  crossRemoveVarSeries,
+  crossImportST: () => crossImportST(switchTab),
 
   mfSetSource(src) {
     document.getElementById('mf-yf-section').style.display  = src === 'yf'  ? '' : 'none';
