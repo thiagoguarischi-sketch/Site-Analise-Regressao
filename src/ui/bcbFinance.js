@@ -183,6 +183,7 @@ export async function bcbLoadAll() {
     if (!n) return;
     showToast(`${n} série${n !== 1 ? 's' : ''} carregada${n !== 1 ? 's' : ''}!`, 'ok');
     _renderResults();
+    window.crossRefresh?.();
   } catch {
     showToast('Erro ao carregar dados.', 'err');
   } finally {
@@ -663,6 +664,17 @@ export function bcbImportPair(switchTabFn) {
     switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
 
   showToast(`${pairs.length} obs. importadas: ${xCod} (X) × ${yCod} (Y)`, 'ok');
+}
+
+// ── Expõe datasets carregados para o combinador cross-source ──────────────────
+export function bcbGetLoadedSeries() {
+  return Object.entries(_datasets).map(([codigo, d]) => {
+    const nome = d.nome || `BCB ${codigo}`;
+    const label = nome.length > 40
+      ? `${codigo} — ${nome.slice(0, 38)}…`
+      : `${codigo} — ${nome}`;
+    return { id: codigo, label, source: 'bcb', rows: d.rows };
+  });
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

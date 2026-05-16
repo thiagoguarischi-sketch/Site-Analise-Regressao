@@ -174,6 +174,7 @@ export async function yfLoadAll() {
     const n = Object.keys(_datasets).length;
     showToast(`${n} ativo${n !== 1 ? 's' : ''} carregado${n !== 1 ? 's' : ''}!`, 'ok');
     _renderResults();
+    window.crossRefresh?.();
   } catch {
     showToast('Erro ao carregar dados.', 'err');
   } finally {
@@ -683,6 +684,17 @@ export function yfImportPair(switchTabFn) {
     switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
 
   showToast(`${pairs.length} obs. importadas: ${xSym} (X) × ${ySym} (Y)`, 'ok');
+}
+
+// ── Expõe datasets carregados para o combinador cross-source ──────────────────
+export function yfGetLoadedSeries() {
+  return Object.entries(_datasets).map(([symbol, d]) => {
+    const name = d.name || symbol;
+    const label = name.length > 40
+      ? `${symbol} — ${name.slice(0, 38)}…`
+      : `${symbol} — ${name}`;
+    return { id: symbol, label, source: 'yf', rows: d.rows };
+  });
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
