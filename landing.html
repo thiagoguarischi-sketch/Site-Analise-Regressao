@@ -1004,6 +1004,38 @@
       box-shadow: 0 1px 24px rgba(124,131,253,.1);
     }
 
+    /* ── LANG TOGGLE ────────────────────────────────────── */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #lang-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--brd2);
+      background: var(--bg2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      overflow: hidden;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      flex-shrink: 0;
+    }
+    #lang-toggle svg {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      display: block;
+    }
+    #lang-toggle:hover {
+      border-color: var(--x);
+      transform: scale(1.1);
+      box-shadow: 0 0 14px rgba(124,131,253,.3);
+    }
+
     /* ── WARP RING PULSE ───────────────────────────────── */
     @keyframes warpRingPulse {
       0%   { transform: scale(0);   opacity: .7; }
@@ -1046,12 +1078,15 @@
     <a href="#" class="nav-logo">
       <span class="nav-logo-text">Slope</span>
     </a>
-    <ul class="nav-links">
-      <li><a href="#sobre">Sobre</a></li>
-      <li><a href="#produtos">Produtos</a></li>
-      <li><a href="#modelos">Modelos</a></li>
-      <li><a href="index.html" class="nav-cta">Acessar plataforma</a></li>
-    </ul>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#sobre" data-i18n="nav-sobre">Sobre</a></li>
+        <li><a href="#produtos" data-i18n="nav-produtos">Produtos</a></li>
+        <li><a href="#modelos" data-i18n="nav-modelos">Modelos</a></li>
+        <li><a href="index.html" class="nav-cta" data-i18n="nav-cta">Acessar plataforma</a></li>
+      </ul>
+      <button id="lang-toggle" onclick="toggleLang()" title="Switch language / Trocar idioma" aria-label="Switch language"></button>
+    </div>
   </nav>
 
   <!-- HERO -->
@@ -1063,42 +1098,42 @@
 
     <div class="hero-badge">
       <span class="hero-badge-dot"></span>
-      Análise estatística + Educação financeira
+      <span data-i18n="hero-badge">Análise estatística + Educação financeira</span>
     </div>
 
-    <h1>
+    <h1 data-i18n-html="hero-h1">
       Tudo que você precisa<br />
       para <span class="grad">dominar dados</span><br />
       e o mercado
     </h1>
 
-    <p class="hero-sub">
+    <p class="hero-sub" data-i18n="hero-sub">
       O Slope reúne uma plataforma profissional de análise de regressão e um curso completo de economia e mercado financeiro — do zero ao avançado.
     </p>
 
     <div class="hero-actions">
       <a href="index.html" class="btn btn-primary">
         <span class="btn-icon">📊</span>
-        Análise Estatística
+        <span data-i18n="hero-btn-1">Análise Estatística</span>
       </a>
       <a href="cursos/mercado-financeiro.html" class="btn btn-secondary">
         <span class="btn-icon">🎓</span>
-        Curso de Mercado Financeiro
+        <span data-i18n="hero-btn-2">Curso de Mercado Financeiro</span>
       </a>
     </div>
 
     <div class="hero-stats">
       <div class="stat">
         <div class="stat-value">7</div>
-        <div class="stat-label">Modelos de regressão</div>
+        <div class="stat-label" data-i18n="stat-label-1">Modelos de regressão</div>
       </div>
       <div class="stat">
         <div class="stat-value">100%</div>
-        <div class="stat-label">Gratuito para começar</div>
+        <div class="stat-label" data-i18n="stat-label-2">Gratuito para começar</div>
       </div>
       <div class="stat">
-        <div class="stat-value">PT-BR</div>
-        <div class="stat-label">Totalmente em português</div>
+        <div class="stat-value" data-i18n="stat-value-3">PT-BR</div>
+        <div class="stat-label" data-i18n="stat-label-3">Totalmente em português</div>
       </div>
     </div>
   </section>
@@ -1108,9 +1143,9 @@
     <div class="container">
       <div class="about-grid">
         <div>
-          <span class="section-tag" data-reveal="fade">O que é o Slope</span>
-          <h2 class="section-title" data-reveal data-delay="1">Uma plataforma feita para quem leva dados a sério</h2>
-          <p class="section-sub" data-reveal data-delay="2">
+          <span class="section-tag" data-reveal="fade" data-i18n="about-tag">O que é o Slope</span>
+          <h2 class="section-title" data-reveal data-delay="1" data-i18n="about-title">Uma plataforma feita para quem leva dados a sério</h2>
+          <p class="section-sub" data-reveal data-delay="2" data-i18n="about-sub">
             Slope nasce da ideia de que análise estatística rigorosa e educação financeira de qualidade devem estar no mesmo lugar — acessíveis, em português, sem enrolação.
           </p>
 
@@ -1118,29 +1153,29 @@
             <div class="about-feature" data-reveal data-delay="3">
               <div class="feature-icon-wrap blue">📐</div>
               <div class="feature-text">
-                <h4>Regressão com qualidade acadêmica</h4>
-                <p>Modelos testados com métricas completas: R², RMSE, coeficientes, intervalos de confiança e visualizações interativas.</p>
+                <h4 data-i18n="feat-1-h4">Regressão com qualidade acadêmica</h4>
+                <p data-i18n="feat-1-p">Modelos testados com métricas completas: R², RMSE, coeficientes, intervalos de confiança e visualizações interativas.</p>
               </div>
             </div>
             <div class="about-feature" data-reveal data-delay="4">
               <div class="feature-icon-wrap teal">📈</div>
               <div class="feature-text">
-                <h4>Dados do mercado financeiro</h4>
-                <p>Integração com cotações e séries históricas diretamente na plataforma de análise, sem copiar e colar planilhas.</p>
+                <h4 data-i18n="feat-2-h4">Dados do mercado financeiro</h4>
+                <p data-i18n="feat-2-p">Integração com cotações e séries históricas diretamente na plataforma de análise, sem copiar e colar planilhas.</p>
               </div>
             </div>
             <div class="about-feature" data-reveal data-delay="5">
               <div class="feature-icon-wrap amber">🎓</div>
               <div class="feature-text">
-                <h4>Educação financeira do zero ao avançado</h4>
-                <p>Curso estruturado cobrindo economia, renda fixa, renda variável, derivativos e muito mais — com linguagem direta.</p>
+                <h4 data-i18n="feat-3-h4">Educação financeira do zero ao avançado</h4>
+                <p data-i18n="feat-3-p">Curso estruturado cobrindo economia, renda fixa, renda variável, derivativos e muito mais — com linguagem direta.</p>
               </div>
             </div>
             <div class="about-feature" data-reveal data-delay="6">
               <div class="feature-icon-wrap pink">🔗</div>
               <div class="feature-text">
-                <h4>Colaboração e compartilhamento</h4>
-                <p>Salve, compartilhe e comente análises com colegas. Construa conhecimento em equipe.</p>
+                <h4 data-i18n="feat-4-h4">Colaboração e compartilhamento</h4>
+                <p data-i18n="feat-4-p">Salve, compartilhe e comente análises com colegas. Construa conhecimento em equipe.</p>
               </div>
             </div>
           </div>
@@ -1208,9 +1243,9 @@
   <section id="produtos">
     <div class="container">
       <div class="products-header">
-        <span class="section-tag" data-reveal="fade">Nossos produtos</span>
-        <h2 class="section-title" data-reveal data-delay="1">Dois caminhos, um objetivo</h2>
-        <p class="section-sub" data-reveal data-delay="2">Escolha por onde começar — ou explore os dois ao mesmo tempo.</p>
+        <span class="section-tag" data-reveal="fade" data-i18n="products-tag">Nossos produtos</span>
+        <h2 class="section-title" data-reveal data-delay="1" data-i18n="products-title">Dois caminhos, um objetivo</h2>
+        <p class="section-sub" data-reveal data-delay="2" data-i18n="products-sub">Escolha por onde começar — ou explore os dois ao mesmo tempo.</p>
       </div>
 
       <div class="products-grid">
@@ -1218,23 +1253,23 @@
         <!-- Plataforma de Análise -->
         <div class="product-card card-blue" data-reveal="scale" data-delay="1">
           <div class="card-glow"></div>
-          <div class="card-badge"><span class="card-badge-dot"></span>Disponível agora</div>
+          <div class="card-badge"><span class="card-badge-dot"></span><span data-i18n="card1-badge">Disponível agora</span></div>
           <div class="card-icon">📊</div>
-          <h3>Análise Estatística</h3>
-          <p>
+          <h3 data-i18n="card1-title">Análise Estatística</h3>
+          <p data-i18n="card1-desc">
             Plataforma profissional de regressão com 7 modelos, visualizações interativas, importação de dados e integração com o mercado financeiro.
           </p>
           <ul class="card-list">
-            <li>7 modelos de regressão completos</li>
-            <li>Métricas acadêmicas detalhadas</li>
-            <li>Importar CSV, Excel e dados de mercado</li>
-            <li>Compartilhar e colaborar com colegas</li>
-            <li>Histórico de análises salvo na nuvem</li>
-            <li>100% em português</li>
+            <li data-i18n="card1-li-1">7 modelos de regressão completos</li>
+            <li data-i18n="card1-li-2">Métricas acadêmicas detalhadas</li>
+            <li data-i18n="card1-li-3">Importar CSV, Excel e dados de mercado</li>
+            <li data-i18n="card1-li-4">Compartilhar e colaborar com colegas</li>
+            <li data-i18n="card1-li-5">Histórico de análises salvo na nuvem</li>
+            <li data-i18n="card1-li-6">100% em português</li>
           </ul>
           <a href="index.html" class="btn btn-primary">
             <span class="btn-icon">🚀</span>
-            Acessar plataforma
+            <span data-i18n="card1-btn">Acessar plataforma</span>
           </a>
         </div>
 
@@ -1242,21 +1277,21 @@
         <div class="product-card card-teal" data-reveal="scale" data-delay="2">
           <div class="card-glow"></div>
           <div class="card-icon">🎓</div>
-          <h3>Curso de Mercado Financeiro</h3>
-          <p>
+          <h3 data-i18n="card2-title">Curso de Mercado Financeiro</h3>
+          <p data-i18n="card2-desc">
             Do básico de economia até estratégias avançadas no mercado de capitais — um curso estruturado e objetivo, em português, sem jargão desnecessário.
           </p>
           <ul class="card-list">
-            <li>Fundamentos de economia</li>
-            <li>Renda fixa e renda variável</li>
-            <li>Análise fundamentalista e técnica</li>
-            <li>Derivativos e gestão de risco</li>
-            <li>Casos práticos com dados reais</li>
-            <li>Certificado de conclusão</li>
+            <li data-i18n="card2-li-1">Fundamentos de economia</li>
+            <li data-i18n="card2-li-2">Renda fixa e renda variável</li>
+            <li data-i18n="card2-li-3">Análise fundamentalista e técnica</li>
+            <li data-i18n="card2-li-4">Derivativos e gestão de risco</li>
+            <li data-i18n="card2-li-5">Casos práticos com dados reais</li>
+            <li data-i18n="card2-li-6">Certificado de conclusão</li>
           </ul>
           <a href="cursos/mercado-financeiro.html" class="btn btn-secondary">
             <span class="btn-icon">📚</span>
-            Ver o curso
+            <span data-i18n="card2-btn">Ver o curso</span>
           </a>
         </div>
 
@@ -1268,60 +1303,60 @@
   <section id="modelos">
     <div class="container">
       <div class="models-header">
-        <span class="section-tag" data-reveal="fade">Plataforma de análise</span>
-        <h2 class="section-title" data-reveal data-delay="1">7 modelos na ponta dos dedos</h2>
-        <p class="section-sub" data-reveal data-delay="2">De regressões simples a séries temporais e modelos regularizados — tudo no mesmo lugar.</p>
+        <span class="section-tag" data-reveal="fade" data-i18n="models-tag">Plataforma de análise</span>
+        <h2 class="section-title" data-reveal data-delay="1" data-i18n="models-title">7 modelos na ponta dos dedos</h2>
+        <p class="section-sub" data-reveal data-delay="2" data-i18n="models-sub">De regressões simples a séries temporais e modelos regularizados — tudo no mesmo lugar.</p>
       </div>
 
       <div class="models-grid">
         <div class="model-card" data-reveal data-delay="1">
           <div class="model-card-top">
             <span class="model-emoji">📏</span>
-            <span class="model-name">Regressão Linear</span>
+            <span class="model-name" data-i18n="model-1-name">Regressão Linear</span>
           </div>
-          <p class="model-desc">Relação linear entre uma variável preditora e uma resposta. Simples, interpretável e poderoso.</p>
+          <p class="model-desc" data-i18n="model-1-desc">Relação linear entre uma variável preditora e uma resposta. Simples, interpretável e poderoso.</p>
         </div>
         <div class="model-card" data-reveal data-delay="2">
           <div class="model-card-top">
             <span class="model-emoji">🔢</span>
-            <span class="model-name">Regressão Múltipla</span>
+            <span class="model-name" data-i18n="model-2-name">Regressão Múltipla</span>
           </div>
-          <p class="model-desc">Múltiplas variáveis explicativas com controle de multicolinearidade e teste de significância.</p>
+          <p class="model-desc" data-i18n="model-2-desc">Múltiplas variáveis explicativas com controle de multicolinearidade e teste de significância.</p>
         </div>
         <div class="model-card" data-reveal data-delay="3">
           <div class="model-card-top">
             <span class="model-emoji">⚖️</span>
-            <span class="model-name">Regressão Logística</span>
+            <span class="model-name" data-i18n="model-3-name">Regressão Logística</span>
           </div>
-          <p class="model-desc">Classificação binária com curva ROC, matriz de confusão e probabilidade calibrada.</p>
+          <p class="model-desc" data-i18n="model-3-desc">Classificação binária com curva ROC, matriz de confusão e probabilidade calibrada.</p>
         </div>
         <div class="model-card" data-reveal data-delay="4">
           <div class="model-card-top">
             <span class="model-emoji">〰️</span>
-            <span class="model-name">Regressão Polinomial</span>
+            <span class="model-name" data-i18n="model-4-name">Regressão Polinomial</span>
           </div>
-          <p class="model-desc">Captura relações curvilíneas com seleção automática de grau e controle de overfitting.</p>
+          <p class="model-desc" data-i18n="model-4-desc">Captura relações curvilíneas com seleção automática de grau e controle de overfitting.</p>
         </div>
         <div class="model-card" data-reveal data-delay="5">
           <div class="model-card-top">
             <span class="model-emoji">📅</span>
-            <span class="model-name">Séries Temporais</span>
+            <span class="model-name" data-i18n="model-5-name">Séries Temporais</span>
           </div>
-          <p class="model-desc">Previsão com modelos ARIMA, decomposição de tendência e sazonalidade.</p>
+          <p class="model-desc" data-i18n="model-5-desc">Previsão com modelos ARIMA, decomposição de tendência e sazonalidade.</p>
         </div>
         <div class="model-card" data-reveal data-delay="6">
           <div class="model-card-top">
             <span class="model-emoji">📦</span>
-            <span class="model-name">Regressão Quantílica</span>
+            <span class="model-name" data-i18n="model-6-name">Regressão Quantílica</span>
           </div>
-          <p class="model-desc">Estima qualquer quantil da distribuição condicional, robusta a outliers e assimetria.</p>
+          <p class="model-desc" data-i18n="model-6-desc">Estima qualquer quantil da distribuição condicional, robusta a outliers e assimetria.</p>
         </div>
         <div class="model-card" data-reveal data-delay="7">
           <div class="model-card-top">
             <span class="model-emoji">🎯</span>
-            <span class="model-name">Regressão Regularizada</span>
+            <span class="model-name" data-i18n="model-7-name">Regressão Regularizada</span>
           </div>
-          <p class="model-desc">Ridge, Lasso e Elastic Net com seleção automática de lambda via validação cruzada.</p>
+          <p class="model-desc" data-i18n="model-7-desc">Ridge, Lasso e Elastic Net com seleção automática de lambda via validação cruzada.</p>
         </div>
       </div>
     </div>
@@ -1331,16 +1366,16 @@
   <section id="comecar">
     <div class="container">
       <div class="cta-box" data-reveal="scale">
-        <h2>Pronto para <span style="background:linear-gradient(90deg,var(--x),var(--y));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">começar?</span></h2>
-        <p>Acesse a plataforma de análise estatística agora ou explore o curso de mercado financeiro — tudo no mesmo lugar.</p>
+        <h2 data-i18n-html="cta-title">Pronto para <span style="background:linear-gradient(90deg,var(--x),var(--y));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">começar?</span></h2>
+        <p data-i18n="cta-desc">Acesse a plataforma de análise estatística agora ou explore o curso de mercado financeiro — tudo no mesmo lugar.</p>
         <div class="cta-actions">
           <a href="index.html" class="btn btn-primary">
             <span class="btn-icon">📊</span>
-            Análise Estatística
+            <span data-i18n="cta-btn-1">Análise Estatística</span>
           </a>
           <a href="cursos/mercado-financeiro.html" class="btn btn-secondary">
             <span class="btn-icon">🎓</span>
-            Curso de Mercado Financeiro
+            <span data-i18n="cta-btn-2">Curso de Mercado Financeiro</span>
           </a>
         </div>
       </div>
@@ -1353,7 +1388,7 @@
       <div class="nav-logo-icon" style="width:24px;height:24px;font-size:12px;">S</div>
       <span class="nav-logo-text" style="font-size:16px;">Slope</span>
     </div>
-    <p class="footer-copy">© 2026 Slope. Feito com <span>♥</span> no Brasil.</p>
+    <p class="footer-copy" data-i18n-html="footer-copy">© 2026 Slope. Feito com <span>♥</span> no Brasil.</p>
   </footer>
 
   <script>
@@ -1636,6 +1671,207 @@
 
     const heroStats = document.querySelector('.hero-stats');
     if (heroStats) statsObs.observe(heroStats);
+  </script>
+  <script>
+  // ── I18N LANGUAGE TOGGLE ────────────────────────────────────────────────────
+  (function () {
+    const T = {
+      pt: {
+        'page-title':    'Slope — Análise e Educação Financeira',
+        'nav-sobre':     'Sobre',
+        'nav-produtos':  'Produtos',
+        'nav-modelos':   'Modelos',
+        'nav-cta':       'Acessar plataforma',
+        'hero-badge':    'Análise estatística + Educação financeira',
+        'hero-h1':       'Tudo que você precisa<br />para <span class="grad">dominar dados</span><br />e o mercado',
+        'hero-sub':      'O Slope reúne uma plataforma profissional de análise de regressão e um curso completo de economia e mercado financeiro — do zero ao avançado.',
+        'hero-btn-1':    'Análise Estatística',
+        'hero-btn-2':    'Curso de Mercado Financeiro',
+        'stat-label-1':  'Modelos de regressão',
+        'stat-label-2':  'Gratuito para começar',
+        'stat-value-3':  'PT-BR',
+        'stat-label-3':  'Totalmente em português',
+        'about-tag':     'O que é o Slope',
+        'about-title':   'Uma plataforma feita para quem leva dados a sério',
+        'about-sub':     'Slope nasce da ideia de que análise estatística rigorosa e educação financeira de qualidade devem estar no mesmo lugar — acessíveis, em português, sem enrolação.',
+        'feat-1-h4':     'Regressão com qualidade acadêmica',
+        'feat-1-p':      'Modelos testados com métricas completas: R², RMSE, coeficientes, intervalos de confiança e visualizações interativas.',
+        'feat-2-h4':     'Dados do mercado financeiro',
+        'feat-2-p':      'Integração com cotações e séries históricas diretamente na plataforma de análise, sem copiar e colar planilhas.',
+        'feat-3-h4':     'Educação financeira do zero ao avançado',
+        'feat-3-p':      'Curso estruturado cobrindo economia, renda fixa, renda variável, derivativos e muito mais — com linguagem direta.',
+        'feat-4-h4':     'Colaboração e compartilhamento',
+        'feat-4-p':      'Salve, compartilhe e comente análises com colegas. Construa conhecimento em equipe.',
+        'products-tag':  'Nossos produtos',
+        'products-title':'Dois caminhos, um objetivo',
+        'products-sub':  'Escolha por onde começar — ou explore os dois ao mesmo tempo.',
+        'card1-badge':   'Disponível agora',
+        'card1-title':   'Análise Estatística',
+        'card1-desc':    'Plataforma profissional de regressão com 7 modelos, visualizações interativas, importação de dados e integração com o mercado financeiro.',
+        'card1-li-1':    '7 modelos de regressão completos',
+        'card1-li-2':    'Métricas acadêmicas detalhadas',
+        'card1-li-3':    'Importar CSV, Excel e dados de mercado',
+        'card1-li-4':    'Compartilhar e colaborar com colegas',
+        'card1-li-5':    'Histórico de análises salvo na nuvem',
+        'card1-li-6':    '100% em português',
+        'card1-btn':     'Acessar plataforma',
+        'card2-title':   'Curso de Mercado Financeiro',
+        'card2-desc':    'Do básico de economia até estratégias avançadas no mercado de capitais — um curso estruturado e objetivo, em português, sem jargão desnecessário.',
+        'card2-li-1':    'Fundamentos de economia',
+        'card2-li-2':    'Renda fixa e renda variável',
+        'card2-li-3':    'Análise fundamentalista e técnica',
+        'card2-li-4':    'Derivativos e gestão de risco',
+        'card2-li-5':    'Casos práticos com dados reais',
+        'card2-li-6':    'Certificado de conclusão',
+        'card2-btn':     'Ver o curso',
+        'models-tag':    'Plataforma de análise',
+        'models-title':  '7 modelos na ponta dos dedos',
+        'models-sub':    'De regressões simples a séries temporais e modelos regularizados — tudo no mesmo lugar.',
+        'model-1-name':  'Regressão Linear',
+        'model-1-desc':  'Relação linear entre uma variável preditora e uma resposta. Simples, interpretável e poderoso.',
+        'model-2-name':  'Regressão Múltipla',
+        'model-2-desc':  'Múltiplas variáveis explicativas com controle de multicolinearidade e teste de significância.',
+        'model-3-name':  'Regressão Logística',
+        'model-3-desc':  'Classificação binária com curva ROC, matriz de confusão e probabilidade calibrada.',
+        'model-4-name':  'Regressão Polinomial',
+        'model-4-desc':  'Captura relações curvilíneas com seleção automática de grau e controle de overfitting.',
+        'model-5-name':  'Séries Temporais',
+        'model-5-desc':  'Previsão com modelos ARIMA, decomposição de tendência e sazonalidade.',
+        'model-6-name':  'Regressão Quantílica',
+        'model-6-desc':  'Estima qualquer quantil da distribuição condicional, robusta a outliers e assimetria.',
+        'model-7-name':  'Regressão Regularizada',
+        'model-7-desc':  'Ridge, Lasso e Elastic Net com seleção automática de lambda via validação cruzada.',
+        'cta-title':     'Pronto para <span style="background:linear-gradient(90deg,var(--x),var(--y));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">começar?</span>',
+        'cta-desc':      'Acesse a plataforma de análise estatística agora ou explore o curso de mercado financeiro — tudo no mesmo lugar.',
+        'cta-btn-1':     'Análise Estatística',
+        'cta-btn-2':     'Curso de Mercado Financeiro',
+        'footer-copy':   '© 2026 Slope. Feito com <span>♥</span> no Brasil.',
+      },
+      en: {
+        'page-title':    'Slope — Statistical Analysis & Financial Education',
+        'nav-sobre':     'About',
+        'nav-produtos':  'Products',
+        'nav-modelos':   'Models',
+        'nav-cta':       'Open platform',
+        'hero-badge':    'Statistical analysis + Financial education',
+        'hero-h1':       'Everything you need<br />to <span class="grad">master data</span><br />and the market',
+        'hero-sub':      'Slope brings together a professional regression analysis platform and a complete course on economics and financial markets — from beginner to advanced.',
+        'hero-btn-1':    'Statistical Analysis',
+        'hero-btn-2':    'Financial Markets Course',
+        'stat-label-1':  'Regression models',
+        'stat-label-2':  'Free to start',
+        'stat-value-3':  'PT/EN',
+        'stat-label-3':  'Available in PT & EN',
+        'about-tag':     'What is Slope',
+        'about-title':   'A platform built for those who take data seriously',
+        'about-sub':     'Slope was born from the idea that rigorous statistical analysis and quality financial education should be in the same place — accessible, clear, no fluff.',
+        'feat-1-h4':     'Academic-grade regression',
+        'feat-1-p':      'Tested models with complete metrics: R², RMSE, coefficients, confidence intervals, and interactive visualizations.',
+        'feat-2-h4':     'Financial market data',
+        'feat-2-p':      'Integration with quotes and historical series directly in the analysis platform — no copy-pasting spreadsheets.',
+        'feat-3-h4':     'Financial education from zero to advanced',
+        'feat-3-p':      'Structured course covering economics, fixed income, equities, derivatives, and more — with straightforward language.',
+        'feat-4-h4':     'Collaboration and sharing',
+        'feat-4-p':      'Save, share, and comment on analyses with colleagues. Build knowledge as a team.',
+        'products-tag':  'Our products',
+        'products-title':'Two paths, one goal',
+        'products-sub':  'Choose where to start — or explore both at the same time.',
+        'card1-badge':   'Available now',
+        'card1-title':   'Statistical Analysis',
+        'card1-desc':    'Professional regression platform with 7 models, interactive visualizations, data import, and financial market integration.',
+        'card1-li-1':    '7 complete regression models',
+        'card1-li-2':    'Detailed academic metrics',
+        'card1-li-3':    'Import CSV, Excel, and market data',
+        'card1-li-4':    'Share and collaborate with colleagues',
+        'card1-li-5':    'Analysis history saved in the cloud',
+        'card1-li-6':    'Now available in English',
+        'card1-btn':     'Open platform',
+        'card2-title':   'Financial Markets Course',
+        'card2-desc':    'From economics basics to advanced capital markets strategies — a structured, objective course without unnecessary jargon.',
+        'card2-li-1':    'Economics fundamentals',
+        'card2-li-2':    'Fixed income and equities',
+        'card2-li-3':    'Fundamental and technical analysis',
+        'card2-li-4':    'Derivatives and risk management',
+        'card2-li-5':    'Practical cases with real data',
+        'card2-li-6':    'Completion certificate',
+        'card2-btn':     'View course',
+        'models-tag':    'Analysis platform',
+        'models-title':  '7 models at your fingertips',
+        'models-sub':    'From simple regressions to time series and regularized models — all in one place.',
+        'model-1-name':  'Linear Regression',
+        'model-1-desc':  'Linear relationship between a predictor variable and a response. Simple, interpretable, and powerful.',
+        'model-2-name':  'Multiple Regression',
+        'model-2-desc':  'Multiple explanatory variables with multicollinearity control and significance testing.',
+        'model-3-name':  'Logistic Regression',
+        'model-3-desc':  'Binary classification with ROC curve, confusion matrix, and calibrated probability.',
+        'model-4-name':  'Polynomial Regression',
+        'model-4-desc':  'Captures curvilinear relationships with automatic degree selection and overfitting control.',
+        'model-5-name':  'Time Series',
+        'model-5-desc':  'Forecasting with ARIMA models, trend decomposition, and seasonality.',
+        'model-6-name':  'Quantile Regression',
+        'model-6-desc':  'Estimates any quantile of the conditional distribution, robust to outliers and asymmetry.',
+        'model-7-name':  'Regularized Regression',
+        'model-7-desc':  'Ridge, Lasso, and Elastic Net with automatic lambda selection via cross-validation.',
+        'cta-title':     'Ready to <span style="background:linear-gradient(90deg,var(--x),var(--y));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">get started?</span>',
+        'cta-desc':      'Access the statistical analysis platform now or explore the financial markets course — all in one place.',
+        'cta-btn-1':     'Statistical Analysis',
+        'cta-btn-2':     'Financial Markets Course',
+        'footer-copy':   '© 2026 Slope. Made with <span>♥</span> in Brazil.',
+      }
+    };
+
+    const FLAGS = {
+      pt: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14">
+        <rect width="20" height="14" fill="#009c3b"/>
+        <polygon points="10,1.4 18.6,7 10,12.6 1.4,7" fill="#ffdf00"/>
+        <circle cx="10" cy="7" r="3.6" fill="#002776"/>
+        <path d="M6.8,5.8 Q10,4.5 13.2,5.8" stroke="#fff" stroke-width="0.5" fill="none"/>
+      </svg>`,
+      en: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14">
+        <rect width="20" height="14" fill="#fff"/>
+        <rect width="20" height="1.08" y="0"     fill="#b22234"/>
+        <rect width="20" height="1.08" y="2.15"  fill="#b22234"/>
+        <rect width="20" height="1.08" y="4.31"  fill="#b22234"/>
+        <rect width="20" height="1.08" y="6.46"  fill="#b22234"/>
+        <rect width="20" height="1.08" y="8.62"  fill="#b22234"/>
+        <rect width="20" height="1.08" y="10.77" fill="#b22234"/>
+        <rect width="20" height="1.08" y="12.92" fill="#b22234"/>
+        <rect width="8" height="7.69" fill="#3c3b6e"/>
+        <g fill="#fff" font-size="1.6" text-anchor="middle">
+          <text x="1.3" y="1.9">★</text><text x="3.9" y="1.9">★</text><text x="6.5" y="1.9">★</text>
+          <text x="2.6" y="3.4">★</text><text x="5.2" y="3.4">★</text>
+          <text x="1.3" y="4.9">★</text><text x="3.9" y="4.9">★</text><text x="6.5" y="4.9">★</text>
+          <text x="2.6" y="6.4">★</text><text x="5.2" y="6.4">★</text>
+        </g>
+      </svg>`
+    };
+
+    let lang = localStorage.getItem('slope-lang') || 'pt';
+
+    function applyLang(l) {
+      const t = T[l];
+      document.title = t['page-title'];
+      document.documentElement.lang = l === 'pt' ? 'pt-BR' : 'en';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const v = t[el.getAttribute('data-i18n')];
+        if (v !== undefined) el.textContent = v;
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const v = t[el.getAttribute('data-i18n-html')];
+        if (v !== undefined) el.innerHTML = v;
+      });
+      const btn = document.getElementById('lang-toggle');
+      if (btn) btn.innerHTML = FLAGS[l];
+    }
+
+    window.toggleLang = function () {
+      lang = lang === 'pt' ? 'en' : 'pt';
+      localStorage.setItem('slope-lang', lang);
+      applyLang(lang);
+    };
+
+    applyLang(lang);
+  })();
   </script>
 </body>
 </html>
