@@ -11,6 +11,13 @@ let _searchTimer  = null;
 
 const PALETTE = ['#00D4A0','#7C83FD','#FFC254','#FF6B8A','#4FC3F7','#CE93D8','#80CBC4','#FFAB40'];
 
+const SPARK_MAX = 60;
+function _downsample(arr) {
+  if (arr.length <= SPARK_MAX) return arr;
+  const step = (arr.length - 1) / (SPARK_MAX - 1);
+  return Array.from({ length: SPARK_MAX }, (_, i) => arr[Math.round(i * step)]);
+}
+
 // ── Inicializa date pickers ───────────────────────────────────────────────────
 function _initDatePickers() {
   const yesterday = new Date();
@@ -224,7 +231,7 @@ function _renderNormal() {
     const unit  = d.unidade || s.unidade || '';
     const nome  = s.nome || `Série ${s.codigo}`;
 
-    const spark = vals.slice(-60);
+    const spark = _downsample(vals);
     const sMin  = Math.min(...spark), sMax = Math.max(...spark);
     const W = 200, H = 48;
     const pts = spark.map((v, i) => {
