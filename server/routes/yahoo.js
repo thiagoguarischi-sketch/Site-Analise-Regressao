@@ -19,6 +19,30 @@ function _yesterday() {
   return d.toISOString().slice(0, 10);
 }
 
+// fetch com timeout + 1 retry automático em caso de rate-limit (429) ou erro de rede
+async function _fetchYF(url, timeoutMs = 10000, retries = 1) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const r = await fetch(url, { headers: YF_HEADERS, signal: ctrl.signal });
+      clearTimeout(timer);
+      if (r.status === 429 && attempt < retries) {
+        await new Promise(res => setTimeout(res, 1500));
+        continue;
+      }
+      return r;
+    } catch (e) {
+      clearTimeout(timer);
+      if (attempt < retries && (e.name === 'AbortError' || e.code === 'UND_ERR_CONNECT_TIMEOUT')) {
+        await new Promise(res => setTimeout(res, 800));
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
 // GET /api/yahoo/search?q=AAPL
 router.get('/yahoo/search', async (req, res) => {
   const { q = '' } = req.query;
@@ -26,7 +50,7 @@ router.get('/yahoo/search', async (req, res) => {
 
   try {
     const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=8&newsCount=0&listsCount=0`;
-    const r = await fetch(url, { headers: YF_HEADERS });
+    const r = await _fetchYF(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
     const quotes = (data.quotes || []).filter(
@@ -35,7 +59,10 @@ router.get('/yahoo/search', async (req, res) => {
     res.json({ quotes });
   } catch (e) {
     console.error('[Yahoo search]', e.message);
-    res.status(502).json({ error: 'Erro ao buscar no Mercado Financeiro.' });
+    const msg = e.name === 'AbortError'
+      ? 'Yahoo Finance demorou demais. Tente novamente.'
+      : 'Erro ao buscar no Yahoo Finance. Tente novamente em instantes.';
+    res.status(502).json({ error: msg });
   }
 });
 
@@ -51,7 +78,7 @@ router.get('/yahoo/chart', async (req, res) => {
     const clampedTo = to > maxTo ? maxTo : to;
     if (from >= clampedTo) return res.status(400).json({ error: 'Data inicial deve ser anterior à data final.' });
     period1 = _toUnix(from);
-    period2 = _toUnix(clampedTo) + 86399; // fim do dia
+    period2 = _toUnix(clampedTo) + 86399;
   } else {
     period2 = Math.floor(Date.now() / 1000);
     const days = PERIOD_DAYS[period] || 365;
@@ -60,7 +87,7 @@ router.get('/yahoo/chart', async (req, res) => {
 
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=${interval}&events=history&includeAdjustedClose=true`;
-    const r = await fetch(url, { headers: YF_HEADERS });
+    const r = await _fetchYF(url, 15000);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
 
@@ -75,24 +102,27 @@ router.get('/yahoo/chart', async (req, res) => {
       .map((ts, i) => ({
         date: new Date(ts * 1000).toISOString().slice(0, 10),
         index: i + 1,
-        open:  q.open?.[i]  != null ? +q.open[i].toFixed(4)  : null,
-        high:  q.high?.[i]  != null ? +q.high[i].toFixed(4)  : null,
-        low:   q.low?.[i]   != null ? +q.low[i].toFixed(4)   : null,
-        close: q.close?.[i] != null ? +q.close[i].toFixed(4) : null,
+        open:     q.open?.[i]  != null ? +q.open[i].toFixed(4)  : null,
+        high:     q.high?.[i]  != null ? +q.high[i].toFixed(4)  : null,
+        low:      q.low?.[i]   != null ? +q.low[i].toFixed(4)   : null,
+        close:    q.close?.[i] != null ? +q.close[i].toFixed(4) : null,
         adjclose: adjClose?.[i] != null ? +adjClose[i].toFixed(4) : null,
-        volume: q.volume?.[i] ?? null,
+        volume:   q.volume?.[i] ?? null,
       }))
       .filter(r => r.close != null);
 
     res.json({
-      symbol: result.meta?.symbol || symbol,
-      name: result.meta?.longName || result.meta?.shortName || symbol,
+      symbol:   result.meta?.symbol   || symbol,
+      name:     result.meta?.longName || result.meta?.shortName || symbol,
       currency: result.meta?.currency || '',
       rows,
     });
   } catch (e) {
     console.error('[Yahoo chart]', e.message);
-    res.status(502).json({ error: 'Erro ao buscar dados do Mercado Financeiro.' });
+    const msg = e.name === 'AbortError'
+      ? 'Yahoo Finance demorou demais. Tente novamente.'
+      : 'Erro ao buscar dados do Yahoo Finance. Tente novamente em instantes.';
+    res.status(502).json({ error: msg });
   }
 });
 
