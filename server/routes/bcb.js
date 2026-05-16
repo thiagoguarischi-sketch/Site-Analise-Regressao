@@ -6,6 +6,20 @@ const BCB_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
 };
 
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hora
+const _cache = new Map(); // key → { data, expiresAt }
+
+function _cacheGet(key) {
+  const entry = _cache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) { _cache.delete(key); return null; }
+  return entry.data;
+}
+
+function _cacheSet(key, data) {
+  _cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+}
+
 function _fmtDate(dateStr) {
   const parts = (dateStr || '').split('-');
   if (parts.length !== 3) return '';
@@ -84,6 +98,10 @@ router.get('/bcb/serie', async (req, res) => {
     return res.status(400).json({ error: 'Parâmetro "codigo" inválido.' });
   }
 
+  const cacheKey = `serie:${codigo}:${from || ''}:${to || ''}`;
+  const cached = _cacheGet(cacheKey);
+  if (cached) return res.json(cached);
+
   try {
     let url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${codigo}/dados?formato=json`;
     const dtFrom = from ? _fmtDate(from) : '';
@@ -105,7 +123,9 @@ router.get('/bcb/serie', async (req, res) => {
       }))
       .filter(row => row.valor != null);
 
-    res.json({ codigo, rows });
+    const payload = { codigo, rows };
+    _cacheSet(cacheKey, payload);
+    res.json(payload);
   } catch (e) {
     console.error('[BCB serie]', e.message);
     res.status(502).json({ error: 'Erro ao buscar dados do Banco Central.' });
