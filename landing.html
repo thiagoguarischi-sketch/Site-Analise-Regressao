@@ -1363,13 +1363,14 @@
     const ctx = canvas.getContext('2d');
     let W, H;
 
-    const STAR_COUNT = 270;
+    const STAR_COUNT = 280;
     const stars = [];
     const shoots = [];
     let nextShoot = 3500 + Math.random() * 4000;
     let lastShootTime = 0;
 
     let mx = 0, my = 0, tmx = 0, tmy = 0;
+    let mvx = 0, mvy = 0; // smoothed mouse velocity
 
     // Warp animation state: 0=warp streaks, 1=deceleration, 2=normal
     let warpState = 0;
@@ -1377,15 +1378,14 @@
     const T_DECEL = 420;
     let tStart = 0;
 
+    const STREAK_RADIUS = 190; // px around cursor where warp streaks appear
+
     function resize() {
       W = canvas.width  = window.innerWidth;
       H = canvas.height = window.innerHeight;
     }
 
     const COLORS = ['#ffffff','#ffffff','#ffffff','#7C83FD','#A8BDFF','#FFE9D0','#00D4A0'];
-    const shockwaves = [];
-    const MOUSE_RADIUS = 140;
-    const MOUSE_FORCE  = 55;
 
     function mkStar() {
       return {
@@ -1399,8 +1399,6 @@
         col:  COLORS[Math.floor(Math.random() * COLORS.length)],
         vx:   (Math.random() - 0.5) * 0.032,
         vy:   (Math.random() - 0.5) * 0.032,
-        ox:   0,
-        oy:   0,
       };
     }
 
@@ -1419,15 +1417,8 @@
       const y = startLeft ? Math.random() * H * 0.35 : 0;
       const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.55;
       const speed = 10 + Math.random() * 8;
-      shoots.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 0,
-        maxLife: 36 + Math.random() * 22,
-        trail: [],
-        r: 1.4 + Math.random() * 0.9,
-      });
+      shoots.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed,
+        life: 0, maxLife: 36 + Math.random()*22, trail: [], r: 1.4 + Math.random()*0.9 });
     }
 
     function draw(t) {
@@ -1449,7 +1440,7 @@
       n3.addColorStop(0, 'rgba(255,107,138,0.013)'); n3.addColorStop(1, 'transparent');
       ctx.fillStyle = n3; ctx.fillRect(0, 0, W, H);
 
-      // warp phase
+      // warp intro phase
       if (warpState < 2) {
         let wp = 0, dp = 0;
         if (el < T_WARP) {
@@ -1462,34 +1453,26 @@
         }
 
         if (warpState < 2) {
-          const cx = W / 2, cy = H / 2;
+          const ccx = W / 2, ccy = H / 2;
           ctx.save();
           stars.forEach(s => {
-            const dx = s.x - cx, dy = s.y - cy;
+            const dx = s.x - ccx, dy = s.y - ccy;
             const dist = Math.sqrt(dx*dx + dy*dy);
             if (dist < 1) return;
             const nx = dx/dist, ny = dy/dist;
-
             if (warpState === 0) {
               const len = dist * 0.30 * (0.3 + 0.7 * wp);
               const g = ctx.createLinearGradient(s.x, s.y, s.x + nx*len, s.y + ny*len);
               g.addColorStop(0, 'rgba(255,255,255,0)');
               g.addColorStop(1, `rgba(200,215,255,${0.75 * wp})`);
-              ctx.beginPath();
-              ctx.moveTo(s.x, s.y);
-              ctx.lineTo(s.x + nx*len, s.y + ny*len);
-              ctx.strokeStyle = g;
-              ctx.lineWidth = s.r * 0.65;
-              ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x + nx*len, s.y + ny*len);
+              ctx.strokeStyle = g; ctx.lineWidth = s.r * 0.65; ctx.stroke();
             } else {
               const len = dist * 0.11 * (1 - dp);
               if (len > 0.3) {
-                ctx.beginPath();
-                ctx.moveTo(s.x, s.y);
-                ctx.lineTo(s.x + nx*len, s.y + ny*len);
+                ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x + nx*len, s.y + ny*len);
                 ctx.strokeStyle = `rgba(255,255,255,${0.45*(1-dp)})`;
-                ctx.lineWidth = s.r * 0.5;
-                ctx.stroke();
+                ctx.lineWidth = s.r * 0.5; ctx.stroke();
               }
               s.op = s.base * dp;
             }
@@ -1498,18 +1481,17 @@
         }
       }
 
-      // normal stars
+      // normal stars with cursor warp streaks
       if (warpState >= 1) {
         mx += (tmx - mx) * 0.06;
         my += (tmy - my) * 0.06;
 
-        // update shockwaves
-        for (let i = shockwaves.length - 1; i >= 0; i--) {
-          const sw = shockwaves[i];
-          sw.r += (sw.maxR - sw.r) * 0.10 + 3;
-          sw.life++;
-          if (sw.life > sw.maxLife) shockwaves.splice(i, 1);
-        }
+        // decay mouse velocity each frame
+        mvx *= 0.82;
+        mvy *= 0.82;
+        const mSpeed = Math.sqrt(mvx*mvx + mvy*mvy);
+
+        ctx.lineCap = 'round';
 
         stars.forEach(s => {
           s.tp += s.ts;
@@ -1518,53 +1500,52 @@
           if (s.x < -2) s.x = W+2; if (s.x > W+2) s.x = -2;
           if (s.y < -2) s.y = H+2; if (s.y > H+2) s.y = -2;
 
-          // mouse repulsion
-          const mdx = s.x - tmx, mdy = s.y - tmy;
-          const mdist = Math.sqrt(mdx*mdx + mdy*mdy);
-          if (mdist < MOUSE_RADIUS && mdist > 0.5) {
-            const force = (1 - mdist / MOUSE_RADIUS) * MOUSE_FORCE;
-            s.ox += ((mdx / mdist) * force - s.ox) * 0.14;
-            s.oy += ((mdy / mdist) * force - s.oy) * 0.14;
-          } else {
-            s.ox *= 0.86;
-            s.oy *= 0.86;
-          }
-
-          // shockwave push
-          shockwaves.forEach(sw => {
-            const sdx = s.x - sw.x, sdy = s.y - sw.y;
-            const sdist = Math.sqrt(sdx*sdx + sdy*sdy);
-            const waveDelta = 38;
-            if (Math.abs(sdist - sw.r) < waveDelta && sdist > 0.5) {
-              const intensity = (1 - Math.abs(sdist - sw.r) / waveDelta) * (1 - sw.life / sw.maxLife);
-              s.ox += (sdx / sdist) * intensity * 30;
-              s.oy += (sdy / sdist) * intensity * 30;
-            }
-          });
-
-          const px = s.x + s.ox + (mx - W*.5) * 0.006 * s.r;
-          const py = s.y + s.oy + (my - H*.5) * 0.006 * s.r;
-
-          // proximity brightness boost
-          const proximity = mdist < MOUSE_RADIUS ? (1 - mdist / MOUSE_RADIUS) * 0.55 : 0;
-          const a = Math.min(1, s.op * twinkle + proximity);
+          const px = s.x + (mx - W*.5) * 0.006 * s.r;
+          const py = s.y + (my - H*.5) * 0.006 * s.r;
+          const a  = s.op * twinkle;
           if (a < 0.02) return;
 
           const rgb = hexRgb(s.col);
-          ctx.beginPath();
-          ctx.arc(px, py, s.r, 0, Math.PI*2);
-          ctx.fillStyle = `rgba(${rgb},${a})`;
-          ctx.fill();
 
-          const glowR = s.r > 1.05 ? s.r * 3.8 : (proximity > 0.1 ? s.r * 3.2 : 0);
-          if (glowR > 0) {
-            const glow = ctx.createRadialGradient(px, py, 0, px, py, glowR);
-            glow.addColorStop(0, `rgba(${rgb},${a * (0.22 + proximity * 0.3)})`);
-            glow.addColorStop(1, 'transparent');
-            ctx.fillStyle = glow;
+          // distance to cursor
+          const cdx   = px - tmx, cdy = py - tmy;
+          const cdist = Math.sqrt(cdx*cdx + cdy*cdy);
+          const prox  = Math.max(0, 1 - cdist / STREAK_RADIUS);
+
+          if (prox > 0.02 && mSpeed > 2) {
+            // warp streak: extends opposite to mouse movement direction
+            const nm   = 1 / mSpeed;
+            const streakLen = mSpeed * prox * 3.8 * (s.r * 0.6 + 0.4);
+            const x0 = px - mvx * nm * streakLen;
+            const y0 = py - mvy * nm * streakLen;
+
+            const streakAlpha = Math.min(1, a + prox * 0.4);
+            const g = ctx.createLinearGradient(x0, y0, px, py);
+            g.addColorStop(0, `rgba(${rgb},0)`);
+            g.addColorStop(1, `rgba(${rgb},${streakAlpha})`);
+
             ctx.beginPath();
-            ctx.arc(px, py, glowR, 0, Math.PI*2);
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(px, py);
+            ctx.strokeStyle = g;
+            ctx.lineWidth = s.r * (1 + prox * 1.8);
+            ctx.stroke();
+          } else {
+            // normal dot
+            ctx.beginPath();
+            ctx.arc(px, py, s.r, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(${rgb},${a})`;
             ctx.fill();
+
+            if (s.r > 1.05) {
+              const glow = ctx.createRadialGradient(px, py, 0, px, py, s.r * 3.8);
+              glow.addColorStop(0, `rgba(${rgb},${a * 0.22})`);
+              glow.addColorStop(1, 'transparent');
+              ctx.fillStyle = glow;
+              ctx.beginPath();
+              ctx.arc(px, py, s.r * 3.8, 0, Math.PI*2);
+              ctx.fill();
+            }
           }
         });
       }
@@ -1572,9 +1553,7 @@
       // shooting stars
       if (warpState === 2) {
         if (t - lastShootTime > nextShoot) {
-          spawnShoot();
-          lastShootTime = t;
-          nextShoot = 4200 + Math.random() * 5000;
+          spawnShoot(); lastShootTime = t; nextShoot = 4200 + Math.random() * 5000;
         }
         for (let i = shoots.length - 1; i >= 0; i--) {
           const s = shoots[i];
@@ -1589,31 +1568,24 @@
             const ta = lr * (1 - j/s.trail.length) * 0.82;
             const tr = s.r  * (1 - j/s.trail.length) * 0.68;
             if (ta < 0.02 || tr < 0.05) return;
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, tr, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(200,218,255,${ta})`;
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(pt.x, pt.y, tr, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(200,218,255,${ta})`; ctx.fill();
           });
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-          ctx.fillStyle = `rgba(255,255,255,${lr * 0.92})`;
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(255,255,255,${lr * 0.92})`; ctx.fill();
           const gl = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r*5);
-          gl.addColorStop(0, `rgba(190,215,255,${lr * 0.55})`);
-          gl.addColorStop(1, 'transparent');
-          ctx.fillStyle = gl;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r*5, 0, Math.PI*2);
-          ctx.fill();
+          gl.addColorStop(0, `rgba(190,215,255,${lr * 0.55})`); gl.addColorStop(1, 'transparent');
+          ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(s.x, s.y, s.r*5, 0, Math.PI*2); ctx.fill();
         }
       }
 
       requestAnimationFrame(draw);
     }
 
-    document.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
-    document.addEventListener('click', e => {
-      if (warpState === 2) shockwaves.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 220, life: 0, maxLife: 45 });
+    document.addEventListener('mousemove', e => {
+      mvx = mvx * 0.5 + (e.clientX - tmx) * 0.5;
+      mvy = mvy * 0.5 + (e.clientY - tmy) * 0.5;
+      tmx = e.clientX; tmy = e.clientY;
     });
     window.addEventListener('resize', () => { resize(); initStars(); }, { passive: true });
     resize();
