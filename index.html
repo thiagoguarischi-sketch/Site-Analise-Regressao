@@ -2516,21 +2516,21 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(124,131,253,.15)">📊</div>
-          Configuração da análise
+          <span data-i18n="cfg-linear">Configuração da análise</span>
         </div>
         <div class="data-grid">
           <div class="field-group">
-            <label class="field-label">Nome da análise</label>
+            <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
             <input class="label-input" type="text" id="analysis-name" placeholder="Ex: Vendas vs Publicidade" value="Análise 1">
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
           <div class="field-group">
-            <label class="field-label">Variável X (independente)</label>
+            <label class="field-label" data-i18n="lbl-varx">Variável X (independente)</label>
             <input class="label-input" type="text" id="label-x" placeholder="Ex: Gastos (R$)" value="X">
           </div>
           <div class="field-group">
-            <label class="field-label">Variável Y (dependente)</label>
+            <label class="field-label" data-i18n="lbl-vary">Variável Y (dependente)</label>
             <input class="label-input" type="text" id="label-y" placeholder="Ex: Vendas (R$)" value="Y">
           </div>
         </div>
@@ -2539,12 +2539,12 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-          Dados
+          <span data-i18n="lbl-dados">Dados</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="addRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="addRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="clearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="loadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="addRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="addRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="clearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="loadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div class="data-header">
@@ -2559,17 +2559,17 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(255,179,71,.15)">⚙️</div>
-          Modo de visualização
+          <span data-i18n="lbl-viewmode">Modo de visualização</span>
         </div>
         <div class="mode-toggle">
-          <button class="mode-btn active" id="vt-padrao" onclick="setViewMode('padrao')">Padrão</button>
-          <button class="mode-btn" id="vt-avancado" onclick="setViewMode('avancado')">Avançado</button>
+          <button class="mode-btn active" id="vt-padrao" onclick="setViewMode('padrao')" data-i18n="mode-padrao">Padrão</button>
+          <button class="mode-btn" id="vt-avancado" onclick="setViewMode('avancado')" data-i18n="mode-avancado">Avançado</button>
         </div>
         <p style="font-size:12px;color:var(--txt3)" id="mode-hint">Modo padrão: gráfico + métricas básicas</p>
 
         <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
-          <button class="btn-primary" onclick="runRegression()">▶ Gerar análise</button>
-          <button class="btn-ghost" onclick="saveAnalysis()" id="btn-save" style="display:none">☁ Salvar na conta</button>
+          <button class="btn-primary" onclick="runRegression()" data-i18n="btn-gerar">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="saveAnalysis()" id="btn-save" style="display:none" data-i18n="btn-salvar-conta">☁ Salvar na conta</button>
           <div class="cloud-saving" id="cloud-saving">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -2583,7 +2583,7 @@
       <!-- Results -->
       <div id="view-padrao" style="display:none">
         <div class="card">
-          <div class="card-title">📈 Resultado — Modo Padrão</div>
+          <div class="card-title" data-i18n="nova-result-pad">📈 Resultado — Modo Padrão</div>
           <div class="metrics-grid" id="metrics-padrao"></div>
           <div class="chart-wrap">
             <canvas id="chart-padrao"></canvas>
@@ -2591,14 +2591,14 @@
           <div id="interp-padrao"></div>
         </div>
         <div class="card">
-          <div class="card-title">📋 Tabela de resíduos</div>
+          <div class="card-title" data-i18n="nova-resid-tbl">📋 Tabela de resíduos</div>
           <div class="tbl-wrap" id="resid-tbl-padrao"></div>
         </div>
       </div>
 
       <div id="view-avancado" style="display:none">
         <div class="card">
-          <div class="card-title">📊 Resultado — Modo Avançado</div>
+          <div class="card-title" data-i18n="nova-result-adv">📊 Resultado — Modo Avançado</div>
           <div class="metrics-grid" id="metrics-avancado"></div>
           <div class="chart-wrap">
             <canvas id="chart-avancado"></canvas>
@@ -2606,32 +2606,32 @@
           <div id="tests-avancado"></div>
         </div>
         <div class="card">
-          <div class="card-title">📐 Tabela ANOVA</div>
+          <div class="card-title" data-i18n="card-anova">📐 Tabela ANOVA</div>
           <div id="anova-tbl"></div>
         </div>
         <div class="card">
-          <div class="card-title">🔭 Previsão de Y</div>
+          <div class="card-title" data-i18n="nova-prev-y">🔭 Previsão de Y</div>
           <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
             <div class="field-group" style="flex:1;min-width:140px">
-              <label class="field-label">Novo valor de X</label>
+              <label class="field-label" data-i18n="lbl-novox">Novo valor de X</label>
               <input class="data-input" type="number" id="pred-x" placeholder="Ex: 50" style="width:100%">
             </div>
             <div class="field-group" style="min-width:120px">
-              <label class="field-label">Nível de confiança</label>
+              <label class="field-label" data-i18n="lbl-conf">Nível de confiança</label>
               <select class="data-input" id="pred-conf">
                 <option value="0.90">90%</option>
                 <option value="0.95" selected>95%</option>
                 <option value="0.99">99%</option>
               </select>
             </div>
-            <button class="btn-primary" onclick="runPrediction()">Prever</button>
+            <button class="btn-primary" onclick="runPrediction()" data-i18n="btn-prever">Prever</button>
           </div>
           <div id="pred-result" style="display:none"></div>
         </div>
         <div class="card">
-          <div class="card-title">🤖 Interpretação automática com IA</div>
+          <div class="card-title" data-i18n="nova-ai">🤖 Interpretação automática com IA</div>
           <div id="ai-insight-box">
-            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação automática.</p>
+            <p style="font-size:13px;color:var(--txt3)" data-i18n="ai-hint-auto">Execute uma análise para gerar interpretação automática.</p>
           </div>
         </div>
       </div>
@@ -2639,39 +2639,39 @@
       <!-- Diagnostic inline -->
       <div id="diag-inline-section" style="display:none">
         <div class="card">
-          <div class="card-title">🔬 Diagnóstico do Modelo</div>
+          <div class="card-title" data-i18n="nova-diag">🔬 Diagnóstico do Modelo</div>
           <div id="diag-tests" style="margin-bottom:16px"></div>
           <div class="diag-grid">
             <div class="diag-card">
-              <div class="diag-title">Resíduos vs Ajustados</div>
+              <div class="diag-title" data-i18n="diag-resfit">Resíduos vs Ajustados</div>
               <div class="diag-chart-wrap"><canvas id="chart-resfit"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Histograma dos Resíduos</div>
+              <div class="diag-title" data-i18n="diag-hist">Histograma dos Resíduos</div>
               <div class="diag-chart-wrap"><canvas id="chart-hist"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">QQ-Plot (Normalidade)</div>
+              <div class="diag-title" data-i18n="diag-qq">QQ-Plot (Normalidade)</div>
               <div class="diag-chart-wrap"><canvas id="chart-qq"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Distância de Cook</div>
+              <div class="diag-title" data-i18n="diag-cook">Distância de Cook</div>
               <div class="diag-chart-wrap"><canvas id="chart-cook"></canvas></div>
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">🎯 Observações Influentes</div>
+          <div class="card-title" data-i18n="nova-influentes">🎯 Observações Influentes</div>
           <div class="tbl-wrap" id="influential-tbl"></div>
         </div>
       </div>
 
       <!-- Export — sempre ao final -->
       <div id="export-section" style="display:none" class="card">
-        <div class="card-title">📥 Exportar resultados</div>
+        <div class="card-title" data-i18n="nova-export">📥 Exportar resultados</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-ghost" onclick="exportExcel()">📊 Excel BI (.xlsx)</button>
-          <button class="btn-ghost" onclick="exportCSV()">📄 CSV</button>
+          <button class="btn-ghost" onclick="exportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+          <button class="btn-ghost" onclick="exportCSV()" data-i18n="btn-csv">📄 CSV</button>
         </div>
       </div>
     </div>
@@ -2683,24 +2683,24 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(124,131,253,.15)">📊</div>
-          Configuração — Regressão Múltipla
+          <span data-i18n="cfg-multipla">Configuração — Regressão Múltipla</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="field-group">
-            <label class="field-label">Nome da análise</label>
+            <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
             <input class="label-input" type="text" id="m-analysis-name" placeholder="Ex: Preços vs Atributos" value="Regressão Múltipla 1">
           </div>
           <div class="field-group">
-            <label class="field-label">Variável dependente (Y)</label>
+            <label class="field-label" data-i18n="lbl-vary-dep">Variável dependente (Y)</label>
             <input class="label-input" type="text" id="m-label-y" placeholder="Ex: Preço (R$)" value="Y">
           </div>
         </div>
         <div style="margin-top:14px">
-          <div class="field-label" style="margin-bottom:8px">Variáveis independentes (X₁, X₂, ...)</div>
+          <div class="field-label" style="margin-bottom:8px" data-i18n="lbl-varxs">Variáveis independentes (X₁, X₂, ...)</div>
           <div id="m-var-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
           <div style="display:flex;gap:8px">
             <input class="label-input" type="text" id="m-new-var-name" placeholder="Nome da variável (ex: Tamanho)" style="flex:1">
-            <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="mAddVar()">+ Variável</button>
+            <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="mAddVar()" data-i18n="btn-variavel">+ Variável</button>
           </div>
         </div>
       </div>
@@ -2709,12 +2709,12 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-          Dados
+          <span data-i18n="lbl-dados">Dados</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mAddRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mAddRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mClearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mLoadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mAddRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mClearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="mLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div id="m-table-wrap" style="overflow-x:auto">
@@ -2727,8 +2727,8 @@
       <!-- Rodar -->
       <div class="card">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="btn-primary" onclick="runMultiple()">▶ Gerar análise</button>
-          <button class="btn-ghost" onclick="mSaveAnalysis()" id="m-btn-save" style="display:none">☁ Salvar</button>
+          <button class="btn-primary" onclick="runMultiple()" data-i18n="btn-gerar">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="mSaveAnalysis()" id="m-btn-save" style="display:none" data-i18n="btn-salvar">☁ Salvar</button>
           <div class="cloud-saving" id="m-cloud-saving" style="display:none">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -2744,7 +2744,7 @@
 
         <!-- Equação + métricas globais -->
         <div class="card">
-          <div class="card-title">📈 Equação e Ajuste Global</div>
+          <div class="card-title" data-i18n="mult-eq">📈 Equação e Ajuste Global</div>
           <div id="m-equation" class="interp-box" style="margin-bottom:16px;font-family:var(--font-mono);font-size:13px"></div>
           <div class="metrics-grid" id="m-metrics"></div>
           <div id="m-global-tests" style="margin-top:12px"></div>
@@ -2752,13 +2752,13 @@
 
         <!-- Coeficientes -->
         <div class="card">
-          <div class="card-title">📐 Coeficientes, Testes t e IC 95%</div>
+          <div class="card-title" data-i18n="mult-coef">📐 Coeficientes, Testes t e IC 95%</div>
           <div class="tbl-wrap" id="m-coef-tbl"></div>
         </div>
 
         <!-- VIF -->
         <div class="card">
-          <div class="card-title">🔍 Diagnóstico de Multicolinearidade (VIF)</div>
+          <div class="card-title" data-i18n="mult-vif">🔍 Diagnóstico de Multicolinearidade (VIF)</div>
           <div id="m-vif-section"></div>
         </div>
 
@@ -2770,33 +2770,33 @@
 
         <!-- Diagnóstico das Suposições -->
         <div class="card">
-          <div class="card-title">🔬 Diagnóstico das Suposições</div>
+          <div class="card-title" data-i18n="mult-diag-sup">🔬 Diagnóstico das Suposições</div>
           <div id="m-diag-alerts" style="margin-bottom:12px"></div>
           <div id="m-diag-tests"></div>
         </div>
 
         <!-- Gráficos -->
         <div class="card">
-          <div class="card-title">📊 Gráficos Diagnósticos</div>
+          <div class="card-title" data-i18n="card-grafdiag">📊 Gráficos Diagnósticos</div>
           <div class="diag-grid">
             <div class="diag-card">
-              <div class="diag-title">Y Observado vs Y Ajustado</div>
+              <div class="diag-title" data-i18n="diag-obsfit">Y Observado vs Y Ajustado</div>
               <div class="diag-chart-wrap"><canvas id="m-chart-obs-fit"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Resíduos vs Valores Ajustados</div>
+              <div class="diag-title" data-i18n="diag-resfit-m">Resíduos vs Valores Ajustados</div>
               <div class="diag-chart-wrap"><canvas id="m-chart-resfit"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Histograma dos Resíduos</div>
+              <div class="diag-title" data-i18n="diag-hist">Histograma dos Resíduos</div>
               <div class="diag-chart-wrap"><canvas id="m-chart-hist"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">QQ-Plot (Normalidade)</div>
+              <div class="diag-title" data-i18n="diag-qq">QQ-Plot (Normalidade)</div>
               <div class="diag-chart-wrap"><canvas id="m-chart-qq"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Distância de Cook</div>
+              <div class="diag-title" data-i18n="diag-cook">Distância de Cook</div>
               <div class="diag-chart-wrap"><canvas id="m-chart-cook"></canvas></div>
             </div>
           </div>
@@ -2804,48 +2804,48 @@
 
         <!-- Outliers e Observações Influentes -->
         <div class="card">
-          <div class="card-title">🚨 Outliers e Observações Influentes</div>
+          <div class="card-title" data-i18n="mult-outliers">🚨 Outliers e Observações Influentes</div>
           <div class="tbl-wrap" id="m-influential-tbl"></div>
         </div>
 
         <!-- Gráficos de efeito parcial por variável -->
         <div class="card">
-          <div class="card-title">🎯 Efeitos Parciais (Y vs cada Xᵢ)</div>
+          <div class="card-title" data-i18n="mult-partial">🎯 Efeitos Parciais (Y vs cada Xᵢ)</div>
           <div id="m-partial-charts" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
         </div>
 
         <!-- Previsão -->
         <div class="card">
-          <div class="card-title">🔭 Previsão</div>
+          <div class="card-title" data-i18n="card-prev">🔭 Previsão</div>
           <div id="m-pred-inputs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px"></div>
           <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
             <div>
-              <label class="field-label">Nível de confiança</label>
+              <label class="field-label" data-i18n="lbl-conf">Nível de confiança</label>
               <select class="data-input" id="m-pred-conf">
                 <option value="0.90">90%</option>
                 <option value="0.95" selected>95%</option>
                 <option value="0.99">99%</option>
               </select>
             </div>
-            <button class="btn-primary" onclick="runMultiplePrediction()">Prever</button>
+            <button class="btn-primary" onclick="runMultiplePrediction()" data-i18n="btn-prever">Prever</button>
           </div>
           <div id="m-pred-result" style="display:none"></div>
         </div>
 
         <!-- AI -->
         <div class="card">
-          <div class="card-title">🤖 Interpretação com IA</div>
+          <div class="card-title" data-i18n="card-ai">🤖 Interpretação com IA</div>
           <div id="m-ai-box">
-            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+            <p style="font-size:13px;color:var(--txt3)" data-i18n="ai-hint">Execute uma análise para gerar interpretação.</p>
           </div>
         </div>
 
         <!-- Export -->
         <div class="card">
-          <div class="card-title">📥 Exportar</div>
+          <div class="card-title" data-i18n="card-export">📥 Exportar</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-ghost" onclick="mExportExcel()">📊 Excel BI (.xlsx)</button>
-            <button class="btn-ghost" onclick="mExportCSV()">📄 CSV</button>
+            <button class="btn-ghost" onclick="mExportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="mExportCSV()" data-i18n="btn-csv">📄 CSV</button>
           </div>
         </div>
       </div>
@@ -2859,24 +2859,24 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(255,107,138,.15)">🎯</div>
-          Configuração — Regressão Logística
+          <span data-i18n="cfg-logistica">Configuração — Regressão Logística</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="field-group">
-            <label class="field-label">Nome da análise</label>
+            <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
             <input class="label-input" type="text" id="lg-analysis-name" placeholder="Ex: Classificação Clientes" value="Regressão Logística 1">
           </div>
           <div class="field-group">
-            <label class="field-label">Variável dependente Y (0 ou 1)</label>
+            <label class="field-label" data-i18n="lbl-vary-01">Variável dependente Y (0 ou 1)</label>
             <input class="label-input" type="text" id="lg-label-y" placeholder="Ex: Comprou (0/1)" value="Y (0/1)">
           </div>
         </div>
         <div style="margin-top:14px">
-          <div class="field-label" style="margin-bottom:8px">Variáveis independentes (X₁, X₂, ...)</div>
+          <div class="field-label" style="margin-bottom:8px" data-i18n="lbl-varxs">Variáveis independentes (X₁, X₂, ...)</div>
           <div id="lg-var-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
           <div style="display:flex;gap:8px">
             <input class="label-input" type="text" id="lg-new-var-name" placeholder="Nome da variável (ex: Idade)" style="flex:1">
-            <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="lgAddVar()">+ Variável</button>
+            <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="lgAddVar()" data-i18n="btn-variavel">+ Variável</button>
           </div>
         </div>
       </div>
@@ -2885,12 +2885,12 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-          Dados
+          <span data-i18n="lbl-dados">Dados</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgAddRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgAddRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgClearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgLoadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgAddRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgClearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="lgLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div id="lg-table-wrap" style="overflow-x:auto">
@@ -2903,8 +2903,8 @@
       <!-- Rodar -->
       <div class="card">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="btn-primary" onclick="runLogistic()">▶ Gerar análise</button>
-          <button class="btn-ghost" onclick="lgSaveAnalysis()" id="lg-btn-save" style="display:none">☁ Salvar</button>
+          <button class="btn-primary" onclick="runLogistic()" data-i18n="btn-gerar">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="lgSaveAnalysis()" id="lg-btn-save" style="display:none" data-i18n="btn-salvar">☁ Salvar</button>
           <div class="cloud-saving" id="lg-cloud-saving" style="display:none">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -2920,20 +2920,20 @@
 
         <!-- Métricas globais -->
         <div class="card">
-          <div class="card-title">📈 Ajuste do Modelo</div>
+          <div class="card-title" data-i18n="log-ajuste">📈 Ajuste do Modelo</div>
           <div class="metrics-grid" id="lg-metrics"></div>
           <div id="lg-global-tests" style="margin-top:12px"></div>
         </div>
 
         <!-- Coeficientes -->
         <div class="card">
-          <div class="card-title">📐 Coeficientes e Odds Ratios</div>
+          <div class="card-title" data-i18n="log-coef-odds">📐 Coeficientes e Odds Ratios</div>
           <div class="tbl-wrap" id="lg-coef-tbl"></div>
         </div>
 
         <!-- Matriz de confusão -->
         <div class="card">
-          <div class="card-title">🎯 Matriz de Confusão e Métricas de Classificação</div>
+          <div class="card-title" data-i18n="log-matriz">🎯 Matriz de Confusão e Métricas de Classificação</div>
           <div id="lg-confusion" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
             <div id="lg-confusion-matrix"></div>
             <div id="lg-class-metrics"></div>
@@ -2942,22 +2942,22 @@
 
         <!-- Gráficos -->
         <div class="card">
-          <div class="card-title">📊 Gráficos Diagnósticos</div>
+          <div class="card-title" data-i18n="card-grafdiag">📊 Gráficos Diagnósticos</div>
           <div class="diag-grid">
             <div class="diag-card">
-              <div class="diag-title">Curva ROC</div>
+              <div class="diag-title" data-i18n="diag-roc">Curva ROC</div>
               <div class="diag-chart-wrap"><canvas id="lg-chart-roc"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Probabilidades Preditas</div>
+              <div class="diag-title" data-i18n="diag-prob">Probabilidades Preditas</div>
               <div class="diag-chart-wrap"><canvas id="lg-chart-prob"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Resíduos de Deviance</div>
+              <div class="diag-title" data-i18n="diag-deviance">Resíduos de Deviance</div>
               <div class="diag-chart-wrap"><canvas id="lg-chart-resid"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Calibração (Observed vs Predicted)</div>
+              <div class="diag-title" data-i18n="diag-calib">Calibração (Observed vs Predicted)</div>
               <div class="diag-chart-wrap"><canvas id="lg-chart-calib"></canvas></div>
             </div>
           </div>
@@ -2965,11 +2965,11 @@
 
         <!-- Previsão -->
         <div class="card">
-          <div class="card-title">🔭 Previsão de Probabilidade</div>
+          <div class="card-title" data-i18n="log-prev-prob">🔭 Previsão de Probabilidade</div>
           <div id="lg-pred-inputs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px"></div>
           <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
             <div>
-              <label class="field-label">Limiar de classificação</label>
+              <label class="field-label" data-i18n="lbl-limiar">Limiar de classificação</label>
               <select class="data-input" id="lg-threshold">
                 <option value="0.3">0.30</option>
                 <option value="0.4">0.40</option>
@@ -2978,25 +2978,25 @@
                 <option value="0.7">0.70</option>
               </select>
             </div>
-            <button class="btn-primary" onclick="runLogisticPrediction()">Prever</button>
+            <button class="btn-primary" onclick="runLogisticPrediction()" data-i18n="btn-prever">Prever</button>
           </div>
           <div id="lg-pred-result" style="display:none"></div>
         </div>
 
         <!-- AI -->
         <div class="card">
-          <div class="card-title">🤖 Interpretação com IA</div>
+          <div class="card-title" data-i18n="card-ai">🤖 Interpretação com IA</div>
           <div id="lg-ai-box">
-            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+            <p style="font-size:13px;color:var(--txt3)" data-i18n="ai-hint">Execute uma análise para gerar interpretação.</p>
           </div>
         </div>
 
         <!-- Export — sempre ao final -->
         <div class="card">
-          <div class="card-title">📥 Exportar</div>
+          <div class="card-title" data-i18n="card-export">📥 Exportar</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-ghost" onclick="lgExportExcel()">📊 Excel BI (.xlsx)</button>
-            <button class="btn-ghost" onclick="lgExportCSV()">📄 CSV</button>
+            <button class="btn-ghost" onclick="lgExportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="lgExportCSV()" data-i18n="btn-csv">📄 CSV</button>
           </div>
         </div>
       </div>
@@ -3009,26 +3009,26 @@
   <div class="card">
     <div class="card-title">
       <div class="card-title-icon" style="background:rgba(255,179,71,.15)">📐</div>
-      Configuração — Regressão Polinomial
+      <span data-i18n="cfg-polinomial">Configuração — Regressão Polinomial</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="field-group">
-        <label class="field-label">Nome da análise</label>
+        <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
         <input class="label-input" type="text" id="po-analysis-name" placeholder="Ex: Curva de Crescimento" value="Regressão Polinomial 1">
       </div>
       <div class="field-group">
-        <label class="field-label">Variável X (independente)</label>
+        <label class="field-label" data-i18n="lbl-varx">Variável X (independente)</label>
         <input class="label-input" type="text" id="po-label-x" placeholder="Ex: Tempo" value="X">
       </div>
     </div>
     <div style="margin-top:12px">
       <div class="field-group">
-        <label class="field-label">Variável Y (dependente)</label>
+        <label class="field-label" data-i18n="lbl-vary">Variável Y (dependente)</label>
         <input class="label-input" type="text" id="po-label-y" placeholder="Ex: Produção" value="Y">
       </div>
     </div>
     <div style="margin-top:16px">
-      <div class="field-label" style="margin-bottom:8px">Grau do polinômio</div>
+      <div class="field-label" style="margin-bottom:8px" data-i18n="lbl-grau">Grau do polinômio</div>
       <div class="poly-degree-selector">
         <div id="po-degree-btns" style="display:flex;gap:6px">
           <button class="degree-btn active" onclick="poSetDegree(1,this)">1</button>
@@ -3038,7 +3038,7 @@
           <button class="degree-btn" onclick="poSetDegree(5,this)">5</button>
           <button class="degree-btn" onclick="poSetDegree(6,this)">6</button>
         </div>
-        <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="poAutoSelectDegree()">⚡ Selecionar melhor grau</button>
+        <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="poAutoSelectDegree()" data-i18n="btn-selgrau">⚡ Selecionar melhor grau</button>
       </div>
       <div id="po-degree-hint" style="font-size:12px;color:var(--txt3)">Grau 1 = regressão linear simples</div>
     </div>
@@ -3048,12 +3048,12 @@
   <div class="card">
     <div class="card-title">
       <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-      Dados
+      <span data-i18n="lbl-dados">Dados</span>
       <div style="margin-left:auto;display:flex;gap:8px">
-        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poAddRowTop()">↑ Topo</button>
-        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poAddRow()">+ Linha</button>
-        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poClearRows()">Limpar</button>
-        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poLoadExample()">Exemplo</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poAddRow()" data-i18n="btn-linha">+ Linha</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poClearRows()" data-i18n="btn-limpar">Limpar</button>
+        <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="poLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
       </div>
     </div>
     <div class="data-header">
@@ -3068,8 +3068,8 @@
   <!-- Rodar -->
   <div class="card">
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-      <button class="btn-primary" onclick="runPolynomial()">▶ Gerar análise</button>
-      <button class="btn-ghost" onclick="poSaveAnalysis()" id="po-btn-save" style="display:none">☁ Salvar</button>
+      <button class="btn-primary" onclick="runPolynomial()" data-i18n="btn-gerar">▶ Gerar análise</button>
+      <button class="btn-ghost" onclick="poSaveAnalysis()" id="po-btn-save" style="display:none" data-i18n="btn-salvar">☁ Salvar</button>
       <div class="cloud-saving" id="po-cloud-saving" style="display:none">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="23 4 23 10 17 10"></polyline>
@@ -3085,14 +3085,14 @@
 
     <!-- Comparação de graus -->
     <div class="card">
-      <div class="card-title">📊 Comparação entre Graus</div>
+      <div class="card-title" data-i18n="poly-comp">📊 Comparação entre Graus</div>
       <div class="degree-compare-grid" id="po-degree-compare"></div>
       <div id="po-best-degree-alert" style="margin-top:12px"></div>
     </div>
 
     <!-- Equação + métricas -->
     <div class="card">
-      <div class="card-title">📈 Equação e Ajuste</div>
+      <div class="card-title" data-i18n="poly-eq">📈 Equação e Ajuste</div>
       <div id="po-equation" class="interp-box" style="margin-bottom:16px;font-family:var(--font-mono);font-size:13px"></div>
       <div class="metrics-grid" id="po-metrics"></div>
       <div id="po-global-tests" style="margin-top:12px"></div>
@@ -3100,7 +3100,7 @@
 
     <!-- Coeficientes -->
     <div class="card">
-      <div class="card-title">📐 Coeficientes</div>
+      <div class="card-title" data-i18n="poly-coef">📐 Coeficientes</div>
       <div class="tbl-wrap" id="po-coef-tbl"></div>
     </div>
 
@@ -3112,7 +3112,7 @@
 
     <!-- Gráfico -->
     <div class="card">
-      <div class="card-title">📊 Curva Ajustada</div>
+      <div class="card-title" data-i18n="poly-curva">📊 Curva Ajustada</div>
       <div class="chart-wrap">
         <canvas id="po-chart-main"></canvas>
       </div>
@@ -3120,22 +3120,22 @@
 
     <!-- Diagnóstico -->
     <div class="card">
-      <div class="card-title">🔬 Diagnóstico Residual</div>
+      <div class="card-title" data-i18n="poly-diag-res">🔬 Diagnóstico Residual</div>
       <div class="diag-grid">
         <div class="diag-card">
-          <div class="diag-title">Resíduos vs Ajustados</div>
+          <div class="diag-title" data-i18n="diag-resfit">Resíduos vs Ajustados</div>
           <div class="diag-chart-wrap"><canvas id="po-chart-resfit"></canvas></div>
         </div>
         <div class="diag-card">
-          <div class="diag-title">Histograma dos Resíduos</div>
+          <div class="diag-title" data-i18n="diag-hist">Histograma dos Resíduos</div>
           <div class="diag-chart-wrap"><canvas id="po-chart-hist"></canvas></div>
         </div>
         <div class="diag-card">
-          <div class="diag-title">QQ-Plot (Normalidade)</div>
+          <div class="diag-title" data-i18n="diag-qq">QQ-Plot (Normalidade)</div>
           <div class="diag-chart-wrap"><canvas id="po-chart-qq"></canvas></div>
         </div>
         <div class="diag-card">
-          <div class="diag-title">Tabela de Resíduos</div>
+          <div class="diag-title" data-i18n="diag-tabresid">Tabela de Resíduos</div>
           <div style="max-height:180px;overflow-y:auto" id="po-resid-mini"></div>
         </div>
       </div>
@@ -3143,31 +3143,31 @@
 
     <!-- Previsão -->
     <div class="card">
-      <div class="card-title">🔭 Previsão</div>
+      <div class="card-title" data-i18n="card-prev">🔭 Previsão</div>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
         <div class="field-group" style="flex:1;min-width:140px">
-          <label class="field-label">Novo valor de X</label>
+          <label class="field-label" data-i18n="lbl-novox">Novo valor de X</label>
           <input class="data-input" type="number" id="po-pred-x" placeholder="Ex: 5.5" style="width:100%" step="any">
         </div>
-        <button class="btn-primary" onclick="poRunPrediction()">Prever</button>
+        <button class="btn-primary" onclick="poRunPrediction()" data-i18n="btn-prever">Prever</button>
       </div>
       <div id="po-pred-result" style="display:none;margin-top:12px"></div>
     </div>
 
     <!-- AI -->
     <div class="card">
-      <div class="card-title">🤖 Interpretação com IA</div>
+      <div class="card-title" data-i18n="card-ai">🤖 Interpretação com IA</div>
       <div id="po-ai-box">
-        <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+        <p style="font-size:13px;color:var(--txt3)" data-i18n="ai-hint">Execute uma análise para gerar interpretação.</p>
       </div>
     </div>
 
     <!-- Export -->
     <div class="card">
-      <div class="card-title">📥 Exportar</div>
+      <div class="card-title" data-i18n="card-export">📥 Exportar</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-ghost" onclick="poExportExcel()">📊 Excel BI (.xlsx)</button>
-        <button class="btn-ghost" onclick="poExportCSV()">📄 CSV</button>
+        <button class="btn-ghost" onclick="poExportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+        <button class="btn-ghost" onclick="poExportCSV()" data-i18n="btn-csv">📄 CSV</button>
       </div>
     </div>
   </div>
@@ -3179,21 +3179,21 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,200,255,.15)">📉</div>
-          Configuração — Séries Temporais
+          <span data-i18n="cfg-serie">Configuração — Séries Temporais</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="field-group">
-            <label class="field-label">Nome da análise</label>
+            <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
             <input class="label-input" type="text" id="st-analysis-name" value="Série Temporal 1" placeholder="Ex: Vendas Mensais">
           </div>
           <div class="field-group">
-            <label class="field-label">Rótulo da variável</label>
+            <label class="field-label" data-i18n="lbl-rotuloy">Rótulo da variável</label>
             <input class="label-input" type="text" id="st-label-y" value="Valor" placeholder="Ex: Vendas (R$)">
           </div>
         </div>
         <!-- Seletor de modelo -->
         <div style="margin-top:14px">
-          <label class="field-label" style="margin-bottom:6px;display:block">Modelo</label>
+          <label class="field-label" style="margin-bottom:6px;display:block" data-i18n="lbl-modelo">Modelo</label>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn-ghost st-model-btn" data-model="classic" onclick="stSetModel('classic')"
               style="flex:1;font-size:12px;min-width:120px;background:var(--y);color:#fff;border-color:var(--y)">
@@ -3223,11 +3223,11 @@
         <!-- Sempre visíveis: períodos futuros e rótulo do eixo X -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
           <div class="field-group">
-            <label class="field-label">Períodos futuros</label>
+            <label class="field-label" data-i18n="lbl-periodos">Períodos futuros</label>
             <input class="data-input" type="number" id="st-future" value="6" min="1" max="36" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">Rótulo do período</label>
+            <label class="field-label" data-i18n="lbl-rotulox">Rótulo do período</label>
             <input class="label-input" type="text" id="st-label-x" value="Período" placeholder="Ex: Mês">
           </div>
         </div>
@@ -3235,7 +3235,7 @@
         <!-- Parâmetros: Decomposição Clássica (janela MM) -->
         <div id="st-classic-params" style="display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-top:10px">
           <div class="field-group">
-            <label class="field-label">Janela média móvel</label>
+            <label class="field-label" data-i18n="lbl-janela">Janela média móvel</label>
             <input class="data-input" type="number" id="st-window" value="3" min="2" max="20" style="width:100%">
           </div>
           <div style="align-self:end;font-size:11px;color:var(--txt3);padding-bottom:4px">
@@ -3246,15 +3246,15 @@
         <!-- Parâmetros: ARIMA (p, d, q) -->
         <div id="st-arima-params" style="display:none;gap:12px;margin-top:10px;grid-template-columns:1fr 1fr 1fr 2fr">
           <div class="field-group">
-            <label class="field-label">p — ordem AR</label>
+            <label class="field-label" data-i18n="lbl-arima-p">p — ordem AR</label>
             <input class="data-input" type="number" id="st-arima-p" value="1" min="0" max="5" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">d — diferenciação</label>
+            <label class="field-label" data-i18n="lbl-arima-d">d — diferenciação</label>
             <input class="data-input" type="number" id="st-arima-d" value="1" min="0" max="2" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">q — ordem MA</label>
+            <label class="field-label" data-i18n="lbl-arima-q">q — ordem MA</label>
             <input class="data-input" type="number" id="st-arima-q" value="1" min="0" max="5" style="width:100%">
           </div>
           <div style="align-self:end;font-size:11px;color:var(--txt3);padding-bottom:4px">
@@ -3265,7 +3265,7 @@
         <!-- Parâmetros: VAR(p) -->
         <div id="st-var-params" style="display:none;gap:12px;margin-top:10px;grid-template-columns:auto 1fr 2fr">
           <div class="field-group">
-            <label class="field-label">p — defasagens VAR</label>
+            <label class="field-label" data-i18n="lbl-var-p">p — defasagens VAR</label>
             <input class="data-input" type="number" id="st-var-p" value="1" min="1" max="6" style="width:100%">
           </div>
           <div style="align-self:end;font-size:11px;color:var(--txt3);padding-bottom:4px">
@@ -3278,12 +3278,12 @@
       <div class="card" id="st-scalar-data-card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-          Dados
+          <span data-i18n="lbl-dados">Dados</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stAddRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stAddRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stClearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stLoadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stAddRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stClearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="stLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div class="data-header">
@@ -3299,7 +3299,7 @@
       <div class="card" id="st-var-data-card" style="display:none">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(123,111,255,.15)">🔗</div>
-          Dados — VAR Multivariado
+          <span data-i18n="ts-var-dados">Dados — VAR Multivariado</span>
           <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
             <div style="display:flex;align-items:center;gap:4px;border:1px solid var(--border);border-radius:6px;padding:2px 6px">
               <button class="btn-ghost" id="var-btn-minus" onclick="varRemoveVariable()"
@@ -3310,10 +3310,10 @@
               <button class="btn-ghost" onclick="varAddVariable()"
                 style="font-size:14px;padding:1px 6px;border:none;line-height:1">+</button>
             </div>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varAddRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varAddRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varClearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varLoadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varAddRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varClearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="varLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">
@@ -3328,8 +3328,8 @@
 
       <div class="card">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="btn-primary" onclick="runSerie()">▶ Gerar análise</button>
-          <button class="btn-ghost" onclick="stSaveAnalysis()" id="st-btn-save" style="display:none">☁ Salvar</button>
+          <button class="btn-primary" onclick="runSerie()" data-i18n="btn-gerar">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="stSaveAnalysis()" id="st-btn-save" style="display:none" data-i18n="btn-salvar">☁ Salvar</button>
           <div class="cloud-saving" id="st-cloud-saving" style="display:none">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -3343,12 +3343,12 @@
       <div id="st-results" style="display:none">
 
         <div class="card">
-          <div class="card-title">📊 Estatísticas Resumo</div>
+          <div class="card-title" data-i18n="ts-stats">📊 Estatísticas Resumo</div>
           <div class="metrics-grid" id="st-metrics"></div>
         </div>
 
         <div class="card">
-          <div class="card-title" id="st-main-chart-title">📈 Série + Tendência + Média Móvel + Projeção</div>
+          <div class="card-title" id="st-main-chart-title" data-i18n="ts-main">📈 Série + Tendência + Média Móvel + Projeção</div>
           <div class="chart-wrap" style="height:360px">
             <canvas id="st-chart-main"></canvas>
           </div>
@@ -3356,22 +3356,22 @@
 
         <!-- Seção: Decomposição Clássica -->
         <div class="card" id="st-classic-section">
-          <div class="card-title">🔬 Decomposição Aditiva</div>
+          <div class="card-title" data-i18n="ts-decomp">🔬 Decomposição Aditiva</div>
           <div class="diag-grid">
             <div class="diag-card">
-              <div class="diag-title">Tendência</div>
+              <div class="diag-title" data-i18n="diag-trend">Tendência</div>
               <div class="diag-chart-wrap"><canvas id="st-chart-trend"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Sazonalidade</div>
+              <div class="diag-title" data-i18n="diag-season">Sazonalidade</div>
               <div class="diag-chart-wrap"><canvas id="st-chart-season"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Resíduo</div>
+              <div class="diag-title" data-i18n="diag-resid">Resíduo</div>
               <div class="diag-chart-wrap"><canvas id="st-chart-resid"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">Volatilidade (desvio móvel)</div>
+              <div class="diag-title" data-i18n="diag-vol">Volatilidade (desvio móvel)</div>
               <div class="diag-chart-wrap"><canvas id="st-chart-vol"></canvas></div>
             </div>
           </div>
@@ -3379,18 +3379,18 @@
 
         <!-- Seção: Diagnósticos ARIMA -->
         <div class="card" id="st-arima-section" style="display:none">
-          <div class="card-title">🔬 Diagnósticos ARIMA — Resíduos</div>
+          <div class="card-title" data-i18n="ts-arima-diag">🔬 Diagnósticos ARIMA — Resíduos</div>
           <div style="font-size:11px;color:var(--txt3);margin-bottom:10px">
             Barras <span style="color:rgba(255,107,107,.9)">vermelhas</span> ultrapassam o IC 95% (±1.96/√n) — indicam autocorrelação residual significativa.
             Idealmente todas as barras devem ficar dentro das linhas pontilhadas.
           </div>
           <div class="diag-grid">
             <div class="diag-card">
-              <div class="diag-title">ACF dos Resíduos — Função de Autocorrelação</div>
+              <div class="diag-title" data-i18n="diag-acf">ACF dos Resíduos — Função de Autocorrelação</div>
               <div class="diag-chart-wrap"><canvas id="st-chart-arima-acf"></canvas></div>
             </div>
             <div class="diag-card">
-              <div class="diag-title">PACF dos Resíduos — Autocorrelação Parcial</div>
+              <div class="diag-title" data-i18n="diag-pacf">PACF dos Resíduos — Autocorrelação Parcial</div>
               <div class="diag-chart-wrap"><canvas id="st-chart-arima-pacf"></canvas></div>
             </div>
           </div>
@@ -3398,7 +3398,7 @@
 
         <!-- Seção: Diagnósticos GARCH -->
         <div class="card" id="st-garch-section" style="display:none">
-          <div class="card-title">🔬 Diagnósticos GARCH — Volatilidade Condicional</div>
+          <div class="card-title" data-i18n="ts-garch-diag">🔬 Diagnósticos GARCH — Volatilidade Condicional</div>
           <div style="font-size:11px;color:var(--txt3);margin-bottom:10px">
             A variância condicional σ²<sub>t</sub> captura o <em>clustering</em> de volatilidade.
             ACF de z²<sub>t</sub> testa efeitos ARCH residuais: barras fora do IC indicam que o modelo pode precisar de ordem maior.
@@ -3417,14 +3417,14 @@
 
         <!-- Seção: VAR — IRF e Causalidade de Granger -->
         <div class="card" id="st-var-section" style="display:none">
-          <div class="card-title">🔬 VAR — Funções de Resposta ao Impulso (IRF)</div>
+          <div class="card-title" data-i18n="ts-var-irf">🔬 VAR — Funções de Resposta ao Impulso (IRF)</div>
           <div style="font-size:11px;color:var(--txt3);margin-bottom:10px">
             Cada painel mostra a resposta da variável indicada a um impulso unitário na variável-causa ao longo do horizonte h.
             Choques que decaem rapidamente indicam baixa persistência; choques que crescem sinalizam instabilidade do VAR.
           </div>
           <div class="diag-grid" id="st-var-irf-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></div>
 
-          <div class="card-title" style="margin-top:20px">📊 Causalidade de Granger</div>
+          <div class="card-title" style="margin-top:20px" data-i18n="ts-granger">📊 Causalidade de Granger</div>
           <div style="font-size:11px;color:var(--txt3);margin-bottom:8px">
             H₀: variável-causa não Granger-causa a variável-efeito. Rejeitar H₀ (p &lt; 0.05) indica precedência temporal.
           </div>
@@ -3432,22 +3432,22 @@
         </div>
 
         <div class="card">
-          <div class="card-title">🔭 Projeções</div>
+          <div class="card-title" data-i18n="ts-prev">🔭 Projeções</div>
           <div class="tbl-wrap" id="st-proj-tbl"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">🤖 Interpretação com IA</div>
+          <div class="card-title" data-i18n="card-ai">🤖 Interpretação com IA</div>
           <div id="st-ai-box">
-            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+            <p style="font-size:13px;color:var(--txt3)" data-i18n="ai-hint">Execute uma análise para gerar interpretação.</p>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">📥 Exportar</div>
+          <div class="card-title" data-i18n="card-export">📥 Exportar</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-ghost" onclick="stExportExcel()">📊 Excel BI (.xlsx)</button>
-            <button class="btn-ghost" onclick="stExportCSV()">📄 CSV</button>
+            <button class="btn-ghost" onclick="stExportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="stExportCSV()" data-i18n="btn-csv">📄 CSV</button>
           </div>
         </div>
 
@@ -3460,23 +3460,23 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(200,100,255,.15)">📊</div>
-          Configuração — Regressão Quantílica Avançada
+          <span data-i18n="cfg-quantilica">Configuração — Regressão Quantílica Avançada</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
           <div class="field-group">
-            <label class="field-label">Nome da análise</label>
+            <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
             <input class="label-input" type="text" id="qr-analysis-name" value="Regressão Quantílica 1" placeholder="Ex: Quantis de Renda">
           </div>
           <div class="field-group">
-            <label class="field-label">Variável X (independente)</label>
+            <label class="field-label" data-i18n="lbl-varx">Variável X (independente)</label>
             <input class="label-input" type="text" id="qr-label-x" value="X" placeholder="Ex: Idade">
           </div>
         </div>
         <div class="field-group" style="margin-bottom:16px">
-          <label class="field-label">Variável Y (dependente)</label>
+          <label class="field-label" data-i18n="lbl-vary">Variável Y (dependente)</label>
           <input class="label-input" type="text" id="qr-label-y" value="Y" placeholder="Ex: Salário">
         </div>
-        <div class="field-label" style="margin-bottom:8px">Quantis ativos</div>
+        <div class="field-label" style="margin-bottom:8px" data-i18n="lbl-quantis">Quantis ativos</div>
         <div class="quantile-chips" id="qr-chips">
           <span class="quantile-chip active" data-q="0.1" onclick="qrToggleChip(this)">τ = 0.10</span>
           <span class="quantile-chip active" data-q="0.25" onclick="qrToggleChip(this)">τ = 0.25</span>
@@ -3486,15 +3486,15 @@
         </div>
         <div class="quantile-config">
           <div class="field-group">
-            <label class="field-label">Learning rate</label>
+            <label class="field-label" data-i18n="lbl-lr">Learning rate</label>
             <input class="data-input" type="number" id="qr-lr" value="0.001" step="0.0001" min="0.00001" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">Iterações máx.</label>
+            <label class="field-label" data-i18n="lbl-iters">Iterações máx.</label>
             <input class="data-input" type="number" id="qr-iters" value="5000" step="100" min="100" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">Tolerância</label>
+            <label class="field-label" data-i18n="lbl-tol">Tolerância</label>
             <input class="data-input" type="number" id="qr-tol" value="0.0000001" step="0.00000001" min="0.0000000001" style="width:100%">
           </div>
         </div>
@@ -3503,12 +3503,12 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-          Dados
+          <span data-i18n="lbl-dados">Dados</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrAddRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrAddRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrClearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrLoadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrAddRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrClearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="qrLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div class="data-header">
@@ -3522,8 +3522,8 @@
 
       <div class="card">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="btn-primary" id="qr-run-btn" onclick="runQuantile()">▶ Gerar análise</button>
-          <button class="btn-ghost" onclick="qrSaveAnalysis()" id="qr-btn-save" style="display:none">☁ Salvar</button>
+          <button class="btn-primary" id="qr-run-btn" onclick="runQuantile()" data-i18n="btn-gerar">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="qrSaveAnalysis()" id="qr-btn-save" style="display:none" data-i18n="btn-salvar">☁ Salvar</button>
           <div class="cloud-saving" id="qr-cloud-saving" style="display:none">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -3537,7 +3537,7 @@
       <div id="qr-results" style="display:none">
 
         <div class="card">
-          <div class="card-title">📈 Curvas Quantílicas</div>
+          <div class="card-title" data-i18n="q-curvas">📈 Curvas Quantílicas</div>
           <div class="chart-wrap" style="height:380px">
             <canvas id="qr-chart-main"></canvas>
           </div>
@@ -3545,39 +3545,39 @@
         </div>
 
         <div class="card">
-          <div class="card-title">📐 Coeficientes por Quantil</div>
+          <div class="card-title" data-i18n="q-coef">📐 Coeficientes por Quantil</div>
           <div class="tbl-wrap" id="qr-coef-tbl"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">📊 Métricas por Quantil</div>
+          <div class="card-title" data-i18n="q-metricas">📊 Métricas por Quantil</div>
           <div id="qr-metrics-grid"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">🔭 Previsão por Quantil</div>
+          <div class="card-title" data-i18n="q-prev">🔭 Previsão por Quantil</div>
           <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
             <div class="field-group" style="flex:1;min-width:140px">
-              <label class="field-label">Novo valor de X</label>
+              <label class="field-label" data-i18n="lbl-novox">Novo valor de X</label>
               <input class="data-input" type="number" id="qr-pred-x" placeholder="Ex: 50" style="width:100%" step="any">
             </div>
-            <button class="btn-primary" onclick="qrRunPrediction()">Prever</button>
+            <button class="btn-primary" onclick="qrRunPrediction()" data-i18n="btn-prever">Prever</button>
           </div>
           <div id="qr-pred-result" style="display:none;margin-top:12px"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">🤖 Interpretação com IA</div>
+          <div class="card-title" data-i18n="card-ai">🤖 Interpretação com IA</div>
           <div id="qr-ai-box">
-            <p style="font-size:13px;color:var(--txt3)">Execute uma análise para gerar interpretação.</p>
+            <p style="font-size:13px;color:var(--txt3)" data-i18n="ai-hint">Execute uma análise para gerar interpretação.</p>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">📥 Exportar</div>
+          <div class="card-title" data-i18n="card-export">📥 Exportar</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-ghost" onclick="qrExportExcel()">📊 Excel BI (.xlsx)</button>
-            <button class="btn-ghost" onclick="qrExportCSV()">📄 CSV</button>
+            <button class="btn-ghost" onclick="qrExportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="qrExportCSV()" data-i18n="btn-csv">📄 CSV</button>
           </div>
         </div>
 
@@ -3591,25 +3591,25 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(255,140,85,.15)">🔧</div>
-          Configuração — Regressão Regularizada
+          <span data-i18n="cfg-regularizada">Configuração — Regressão Regularizada</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
           <div class="field-group">
-            <label class="field-label">Nome da análise</label>
+            <label class="field-label" data-i18n="lbl-nome">Nome da análise</label>
             <input class="label-input" type="text" id="rr-analysis-name" value="Regressão Regularizada 1" placeholder="Ex: Ridge Preços">
           </div>
           <div class="field-group">
-            <label class="field-label">Variável X (independente)</label>
+            <label class="field-label" data-i18n="lbl-varx">Variável X (independente)</label>
             <input class="label-input" type="text" id="rr-label-x" value="X" placeholder="Ex: Área">
           </div>
         </div>
         <div class="field-group" style="margin-bottom:16px">
-          <label class="field-label">Variável Y (dependente)</label>
+          <label class="field-label" data-i18n="lbl-vary">Variável Y (dependente)</label>
           <input class="label-input" type="text" id="rr-label-y" value="Y" placeholder="Ex: Preço">
         </div>
 
         <!-- Toggle Ridge / Lasso -->
-        <div class="field-label" style="margin-bottom:8px">Tipo de regularização</div>
+        <div class="field-label" style="margin-bottom:8px" data-i18n="lbl-tiporeg">Tipo de regularização</div>
         <div class="mode-toggle" style="margin-bottom:16px">
           <button class="mode-btn active" id="rr-btn-ridge" onclick="rrSetType('ridge')">Ridge (L2)</button>
           <button class="mode-btn" id="rr-btn-lasso" onclick="rrSetType('lasso')">Lasso (L1)</button>
@@ -3618,19 +3618,19 @@
 
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
           <div class="field-group">
-            <label class="field-label">λ (lambda)</label>
+            <label class="field-label" data-i18n="lbl-lambda">λ (lambda)</label>
             <input class="data-input" type="number" id="rr-lambda" value="0.1" step="0.01" min="0" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">Learning rate</label>
+            <label class="field-label" data-i18n="lbl-lr">Learning rate</label>
             <input class="data-input" type="number" id="rr-lr" value="0.001" step="0.0001" min="0.000001" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">Iterações máx.</label>
+            <label class="field-label" data-i18n="lbl-iters">Iterações máx.</label>
             <input class="data-input" type="number" id="rr-iters" value="5000" step="100" min="100" style="width:100%">
           </div>
           <div class="field-group">
-            <label class="field-label">Tolerância</label>
+            <label class="field-label" data-i18n="lbl-tol">Tolerância</label>
             <input class="data-input" type="number" id="rr-tol" value="0.0000001" step="0.00000001" min="0.000000001" style="width:100%">
           </div>
         </div>
@@ -3640,12 +3640,12 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.15)">🔢</div>
-          Dados
+          <span data-i18n="lbl-dados">Dados</span>
           <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrAddRowTop()">↑ Topo</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrAddRow()">+ Linha</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrClearRows()">Limpar</button>
-            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrLoadExample()">Exemplo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrAddRowTop()" data-i18n="btn-topo">↑ Topo</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrAddRow()" data-i18n="btn-linha">+ Linha</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrClearRows()" data-i18n="btn-limpar">Limpar</button>
+            <button class="btn-ghost" style="font-size:12px;padding:5px 10px" onclick="rrLoadExample()" data-i18n="btn-exemplo">Exemplo</button>
           </div>
         </div>
         <div class="data-header">
@@ -3660,8 +3660,8 @@
       <!-- Executar -->
       <div class="card">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="btn-primary" id="rr-run-btn" onclick="runRegularized()">▶ Gerar análise</button>
-          <button class="btn-ghost" onclick="rrSaveAnalysis()" id="rr-btn-save" style="display:none">☁ Salvar</button>
+          <button class="btn-primary" id="rr-run-btn" onclick="runRegularized()" data-i18n="btn-gerar">▶ Gerar análise</button>
+          <button class="btn-ghost" onclick="rrSaveAnalysis()" id="rr-btn-save" style="display:none" data-i18n="btn-salvar">☁ Salvar</button>
           <div class="cloud-saving" id="rr-cloud-saving" style="display:none">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -3677,14 +3677,14 @@
 
         <!-- Métricas -->
         <div class="card">
-          <div class="card-title">📈 Coeficientes e Ajuste</div>
+          <div class="card-title" data-i18n="reg-coef">📈 Coeficientes e Ajuste</div>
           <div id="rr-coef-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px"></div>
           <div id="rr-global-tests" style="margin-top:8px"></div>
         </div>
 
         <!-- Gráfico -->
         <div class="card">
-          <div class="card-title">📊 Dispersão + Linhas Ajustadas</div>
+          <div class="card-title" data-i18n="reg-disp">📊 Dispersão + Linhas Ajustadas</div>
           <div class="chart-wrap" style="height:360px">
             <canvas id="rr-chart-main"></canvas>
           </div>
@@ -3693,23 +3693,23 @@
 
         <!-- Tabela de coeficientes -->
         <div class="card">
-          <div class="card-title">📐 Tabela de Resultados</div>
+          <div class="card-title" data-i18n="reg-tbl">📐 Tabela de Resultados</div>
           <div class="tbl-wrap" id="rr-coef-tbl"></div>
         </div>
 
         <!-- Comparação λ -->
         <div class="card">
-          <div class="card-title">🔬 Efeito do λ nos Coeficientes</div>
+          <div class="card-title" data-i18n="reg-lambda">🔬 Efeito do λ nos Coeficientes</div>
           <div id="rr-lambda-hint" class="interp-box" style="margin-bottom:12px"></div>
           <div class="chart-wrap" style="height:260px"><canvas id="rr-chart-lambda"></canvas></div>
         </div>
 
         <!-- Exportar -->
         <div class="card">
-          <div class="card-title">📥 Exportar</div>
+          <div class="card-title" data-i18n="card-export">📥 Exportar</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn-ghost" onclick="rrExportExcel()">📊 Excel BI (.xlsx)</button>
-            <button class="btn-ghost" onclick="rrExportCSV()">📄 CSV</button>
+            <button class="btn-ghost" onclick="rrExportExcel()" data-i18n="btn-excel">📊 Excel BI (.xlsx)</button>
+            <button class="btn-ghost" onclick="rrExportCSV()" data-i18n="btn-csv">📄 CSV</button>
           </div>
         </div>
 
@@ -3719,7 +3719,7 @@
     <!-- PANEL: Importar -->
     <div class="panel" id="panel-importar">
       <div class="card">
-        <div class="card-title">📂 Importar Dados</div>
+        <div class="card-title" data-i18n="imp-dados">📂 Importar Dados</div>
         <div class="drop-zone" id="drop-zone"
           ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
           onclick="document.getElementById('file-input').click()">
@@ -4398,15 +4398,15 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
     <div class="panel" id="panel-guia">
 
       <div class="guide-hero">
-        <div class="guide-hero-title">Guia de Modelos de Regressão</div>
-        <div class="guide-hero-sub">
+        <div class="guide-hero-title" data-i18n="guide-hero-title">Guia de Modelos de Regressão</div>
+        <div class="guide-hero-sub" data-i18n="guide-hero-sub">
           Entenda quando e como usar cada modelo disponível na plataforma. Escolha o modelo certo para o seu problema e obtenha análises mais precisas e interpretáveis.
         </div>
         <div class="guide-hero-badges">
-          <span class="guide-hero-badge">7 modelos disponíveis</span>
-          <span class="guide-hero-badge" style="background:rgba(0,212,160,.12);color:var(--y);border-color:rgba(0,212,160,.25)">Regressão Contínua</span>
-          <span class="guide-hero-badge" style="background:rgba(255,107,138,.1);color:var(--acc);border-color:rgba(255,107,138,.25)">Classificação</span>
-          <span class="guide-hero-badge" style="background:rgba(255,179,71,.1);color:var(--acc2);border-color:rgba(255,179,71,.25)">Séries Temporais</span>
+          <span class="guide-hero-badge" data-i18n="guide-badge-count">7 modelos disponíveis</span>
+          <span class="guide-hero-badge" style="background:rgba(0,212,160,.12);color:var(--y);border-color:rgba(0,212,160,.25)" data-i18n="guide-badge-continua">Regressão Contínua</span>
+          <span class="guide-hero-badge" style="background:rgba(255,107,138,.1);color:var(--acc);border-color:rgba(255,107,138,.25)" data-i18n="guide-badge-classif">Classificação</span>
+          <span class="guide-hero-badge" style="background:rgba(255,179,71,.1);color:var(--acc2);border-color:rgba(255,179,71,.25)" data-i18n="guide-badge-ts">Séries Temporais</span>
         </div>
       </div>
 
@@ -4417,23 +4417,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(124,131,253,.15)">📈</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('linear');return false">Regressão Linear Simples ↗</a>
-              <span class="guide-card-tag" style="background:rgba(124,131,253,.12);color:var(--x);border:1px solid rgba(124,131,253,.25)">Regressão contínua · 1 variável</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('linear');return false" data-i18n="gcard-name-linear">Regressão Linear Simples ↗</a>
+              <span class="guide-card-tag" style="background:rgba(124,131,253,.12);color:var(--x);border:1px solid rgba(124,131,253,.25)" data-i18n="gcard-tag-linear">Regressão contínua · 1 variável</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 O modelo mais fundamental da estatística. Estima a relação linear entre uma variável independente (X) e uma variável resposta contínua (Y) usando o método dos <strong style="color:var(--txt)">Mínimos Quadrados Ordinários (OLS)</strong>, minimizando a soma dos quadrados dos resíduos.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">Ŷ = β₀ + β₁·X + ε<br>β₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Prever o salário de um profissional com base em anos de experiência</div>
                 <div class="guide-use-item">Estimar o consumo de energia a partir da temperatura</div>
@@ -4441,7 +4441,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">R²</span>
                 <span class="guide-metric-chip">R² Ajustado</span>
@@ -4455,9 +4455,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#4CAF50"></div>
-              Nível: Iniciante
+              <span data-i18n="glvl-iniciante">Nível: Iniciante</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('nova', document.querySelector('[onclick*=\'nova\']'))">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('nova', document.querySelector('[onclick*=\'nova\']'))" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4466,23 +4466,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(0,212,160,.12)">📊</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('multipla');return false">Regressão Múltipla ↗</a>
-              <span class="guide-card-tag" style="background:rgba(0,212,160,.1);color:var(--y);border:1px solid rgba(0,212,160,.25)">Regressão contínua · N variáveis</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('multipla');return false" data-i18n="gcard-name-multipla">Regressão Múltipla ↗</a>
+              <span class="guide-card-tag" style="background:rgba(0,212,160,.1);color:var(--y);border:1px solid rgba(0,212,160,.25)" data-i18n="gcard-tag-multipla">Regressão contínua · N variáveis</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 Extensão da regressão linear para múltiplos preditores. Usa <strong style="color:var(--txt)">álgebra matricial (OLS)</strong> para estimar o efeito individual de cada variável controlando as demais. Inclui diagnóstico de multicolinearidade via <strong style="color:var(--txt)">VIF</strong>.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ<br>β = (XᵀX)⁻¹Xᵀy</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Prever o preço de imóveis usando área, quartos e localização</div>
                 <div class="guide-use-item">Modelar a produtividade com fatores climáticos, solo e insumos</div>
@@ -4490,7 +4490,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">VIF</span>
                 <span class="guide-metric-chip">R² Ajustado</span>
@@ -4503,9 +4503,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#8BC34A"></div>
-              Nível: Básico
+              <span data-i18n="glvl-basico">Nível: Básico</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('multipla', document.querySelector('[onclick*=\'multipla\']'))">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('multipla', document.querySelector('[onclick*=\'multipla\']'))" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4514,23 +4514,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(255,107,138,.12)">🎯</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('logistica');return false">Regressão Logística ↗</a>
-              <span class="guide-card-tag" style="background:rgba(255,107,138,.1);color:var(--acc);border:1px solid rgba(255,107,138,.25)">Classificação binária · 0 ou 1</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('logistica');return false" data-i18n="gcard-name-logistica">Regressão Logística ↗</a>
+              <span class="guide-card-tag" style="background:rgba(255,107,138,.1);color:var(--acc);border:1px solid rgba(255,107,138,.25)" data-i18n="gcard-tag-logistica">Classificação binária · 0 ou 1</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 Modela a <strong style="color:var(--txt)">probabilidade</strong> de um evento binário ocorrer. Usa a <strong style="color:var(--txt)">função sigmoide</strong> para restringir a saída entre 0 e 1. Os parâmetros são estimados por <strong style="color:var(--txt)">descida do gradiente</strong> maximizando a verossimilhança.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">P(Y=1) = 1 / (1 + e^−(β₀ + β₁X₁ + … + βₙXₙ))<br>Limiar: P ≥ 0.5 → Classe 1</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Prever se um cliente vai comprar ou não (Y = 0 ou 1)</div>
                 <div class="guide-use-item">Diagnóstico médico: paciente tem ou não tem a doença</div>
@@ -4538,7 +4538,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">AUC-ROC</span>
                 <span class="guide-metric-chip">McFadden R²</span>
@@ -4551,9 +4551,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#FF9800"></div>
-              Nível: Intermediário
+              <span data-i18n="glvl-intermediario">Nível: Intermediário</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('logistica', document.querySelector('[onclick*=\'logistica\']'))" style="border-color:rgba(255,107,138,.4);background:rgba(255,107,138,.1);color:var(--acc)">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('logistica', document.querySelector('[onclick*=\'logistica\']'))" style="border-color:rgba(255,107,138,.4);background:rgba(255,107,138,.1);color:var(--acc)" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4562,23 +4562,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(255,179,71,.12)">〰️</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('polinomial');return false">Regressão Polinomial ↗</a>
-              <span class="guide-card-tag" style="background:rgba(255,179,71,.1);color:var(--acc2);border:1px solid rgba(255,179,71,.25)">Relações não-lineares · Grau 1–6</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('polinomial');return false" data-i18n="gcard-name-polinomial">Regressão Polinomial ↗</a>
+              <span class="guide-card-tag" style="background:rgba(255,179,71,.1);color:var(--acc2);border:1px solid rgba(255,179,71,.25)" data-i18n="gcard-tag-polinomial">Relações não-lineares · Grau 1–6</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 Generaliza a regressão linear para capturar relações curvilíneas. Transforma X em potências (X², X³…) via <strong style="color:var(--txt)">matriz de Vandermonde</strong> e aplica OLS. O grau ideal é selecionado automaticamente pelo maior <strong style="color:var(--txt)">R² ajustado</strong>.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">Ŷ = β₀ + β₁X + β₂X² + … + βₙXⁿ<br>Grau ótimo: max(R²_adj) sobre graus 1..6</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Crescimento de plantas ao longo do tempo (curva sigmoide)</div>
                 <div class="guide-use-item">Consumo de combustível vs. velocidade (curva em U)</div>
@@ -4586,7 +4586,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">R² por grau</span>
                 <span class="guide-metric-chip">R² Ajustado</span>
@@ -4598,9 +4598,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#8BC34A"></div>
-              Nível: Básico
+              <span data-i18n="glvl-basico">Nível: Básico</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('polinomial', document.querySelector('[onclick*=\'polinomial\']'))" style="border-color:rgba(255,179,71,.4);background:rgba(255,179,71,.08);color:var(--acc2)">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('polinomial', document.querySelector('[onclick*=\'polinomial\']'))" style="border-color:rgba(255,179,71,.4);background:rgba(255,179,71,.08);color:var(--acc2)" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4609,23 +4609,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(79,195,247,.12)">📅</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('serie');return false">Séries Temporais ↗</a>
-              <span class="guide-card-tag" style="background:rgba(79,195,247,.1);color:#4FC3F7;border:1px solid rgba(79,195,247,.25)">Dados ordenados no tempo · Previsão</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('serie');return false" data-i18n="gcard-name-serie">Séries Temporais ↗</a>
+              <span class="guide-card-tag" style="background:rgba(79,195,247,.1);color:#4FC3F7;border:1px solid rgba(79,195,247,.25)" data-i18n="gcard-tag-serie">Dados ordenados no tempo · Previsão</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 Decompõe uma série temporal em três componentes aditivos: <strong style="color:var(--txt)">Tendência</strong> (direção de longo prazo), <strong style="color:var(--txt)">Sazonalidade</strong> (padrão periódico) e <strong style="color:var(--txt)">Resíduo</strong> (ruído). Permite projetar valores futuros com média móvel e componentes detectados.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">Yₜ = Tendência + Sazonalidade + Resíduo<br>Projeção: Ŷₜ₊ₖ = Trend(t+k) + Sazonal(t+k)</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Projetar vendas mensais para o próximo trimestre</div>
                 <div class="guide-use-item">Analisar temperatura ou precipitação ao longo do ano</div>
@@ -4633,7 +4633,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">Tendência</span>
                 <span class="guide-metric-chip">Amplitude sazonal</span>
@@ -4646,9 +4646,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#FF9800"></div>
-              Nível: Intermediário
+              <span data-i18n="glvl-intermediario">Nível: Intermediário</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('serie', document.querySelector('[onclick*=\'serie\']'))" style="border-color:rgba(79,195,247,.4);background:rgba(79,195,247,.08);color:#4FC3F7">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('serie', document.querySelector('[onclick*=\'serie\']'))" style="border-color:rgba(79,195,247,.4);background:rgba(79,195,247,.08);color:#4FC3F7" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4657,23 +4657,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(186,104,200,.15)">🎻</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('quantilica');return false">Regressão Quantílica ↗</a>
-              <span class="guide-card-tag" style="background:rgba(186,104,200,.12);color:#CE93D8;border:1px solid rgba(186,104,200,.3)">Distribuição completa · Robusta a outliers</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('quantilica');return false" data-i18n="gcard-name-quantilica">Regressão Quantílica ↗</a>
+              <span class="guide-card-tag" style="background:rgba(186,104,200,.12);color:#CE93D8;border:1px solid rgba(186,104,200,.3)" data-i18n="gcard-tag-quantilica">Distribuição completa · Robusta a outliers</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 Em vez de estimar apenas a média condicional, modela <strong style="color:var(--txt)">quantis específicos</strong> da distribuição de Y. Usa a <strong style="color:var(--txt)">função de perda pinball</strong> com descida do gradiente adaptativa. Ideal quando outliers distorcem a média ou quando o interesse é nos extremos da distribuição.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">L(u,τ) = u·(τ − 𝟙[u &lt; 0])<br>τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Analisar salários no percentil 90 (profissionais de alta renda)</div>
                 <div class="guide-use-item">Modelar riscos extremos em finanças ou seguros (VaR)</div>
@@ -4681,7 +4681,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">Cobertura (%)</span>
                 <span class="guide-metric-chip">Perda pinball</span>
@@ -4693,9 +4693,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#F44336"></div>
-              Nível: Avançado
+              <span data-i18n="glvl-avancado">Nível: Avançado</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('quantilica', document.querySelector('[onclick*=\'quantilica\']'))" style="border-color:rgba(186,104,200,.4);background:rgba(186,104,200,.1);color:#CE93D8">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('quantilica', document.querySelector('[onclick*=\'quantilica\']'))" style="border-color:rgba(186,104,200,.4);background:rgba(186,104,200,.1);color:#CE93D8" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4704,23 +4704,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-header">
             <div class="guide-card-icon" style="background:rgba(38,198,218,.12)">⚖️</div>
             <div>
-              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('regularizada');return false">Regressão Regularizada ↗</a>
-              <span class="guide-card-tag" style="background:rgba(38,198,218,.1);color:#4DD0E1;border:1px solid rgba(38,198,218,.25)">Ridge (L2) · Lasso (L1) · Anti-overfitting</span>
+              <a class="guide-card-name guide-card-link" href="#" onclick="openCurso('regularizada');return false" data-i18n="gcard-name-regularizada">Regressão Regularizada ↗</a>
+              <span class="guide-card-tag" style="background:rgba(38,198,218,.1);color:#4DD0E1;border:1px solid rgba(38,198,218,.25)" data-i18n="gcard-tag-regularizada">Ridge (L2) · Lasso (L1) · Anti-overfitting</span>
             </div>
           </div>
           <div class="guide-card-body">
             <div>
-              <div class="guide-section-label">O que é</div>
+              <div class="guide-section-label" data-i18n="guide-what">O que é</div>
               <div class="guide-desc">
                 Adiciona uma <strong style="color:var(--txt)">penalidade</strong> à função de custo do OLS para controlar overfitting com muitas variáveis. <strong style="color:var(--txt)">Ridge (L2)</strong> encolhe coeficientes uniformemente. <strong style="color:var(--txt)">Lasso (L1)</strong> pode zerar coeficientes irrelevantes, fazendo seleção automática de variáveis.
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Fórmula</div>
+              <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
               <div class="guide-formula">Ridge: β = (XᵀX + λI)⁻¹Xᵀy<br>Lasso: min ‖Xβ−y‖² + λ‖β‖₁</div>
             </div>
             <div>
-              <div class="guide-section-label">Quando usar</div>
+              <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
                 <div class="guide-use-item">Muitas variáveis correlacionadas entre si (multicolinearidade)</div>
                 <div class="guide-use-item">Lasso para descobrir quais variáveis realmente importam</div>
@@ -4728,7 +4728,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               </div>
             </div>
             <div>
-              <div class="guide-section-label">Métricas principais</div>
+              <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">λ ótimo</span>
                 <span class="guide-metric-chip">RMSE por λ</span>
@@ -4741,9 +4741,9 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-footer">
             <div class="guide-diff">
               <div class="guide-diff-dot" style="background:#F44336"></div>
-              Nível: Avançado
+              <span data-i18n="glvl-avancado">Nível: Avançado</span>
             </div>
-            <button class="btn-guide-use" onclick="switchTab('regularizada', document.querySelector('[onclick*=\'regularizada\']'))" style="border-color:rgba(38,198,218,.4);background:rgba(38,198,218,.08);color:#4DD0E1">Usar agora →</button>
+            <button class="btn-guide-use" onclick="switchTab('regularizada', document.querySelector('[onclick*=\'regularizada\']'))" style="border-color:rgba(38,198,218,.4);background:rgba(38,198,218,.08);color:#4DD0E1" data-i18n="guide-btn-usar">Usar agora →</button>
           </div>
         </div>
 
@@ -4753,7 +4753,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
       <div class="card" style="margin-top:20px">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.12)">💡</div>
-          Como escolher o modelo certo?
+          <span data-i18n="guide-choose-title">Como escolher o modelo certo?</span>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:4px">
           <div class="interp-box">
@@ -6006,6 +6006,7 @@ window.openCurso = openCurso;
 
   const T = {
     pt: {
+      /* tabs */
       'tab-linear':     'Regressão Linear',
       'tab-multipla':   'Regressão Múltipla',
       'tab-logistica':  'Regressão Logística',
@@ -6013,6 +6014,7 @@ window.openCurso = openCurso;
       'tab-serie':      'Séries Temporais',
       'tab-quantilica': 'Reg. Quantílica',
       'tab-regularizada':'Reg. Regularizada',
+      /* sidebar tooltips */
       'tip-guia':       'Guia de Modelos',
       'tip-importar':   'Importar',
       'tip-mercado':    'Mercado Financeiro',
@@ -6020,8 +6022,170 @@ window.openCurso = openCurso;
       'tip-compartilhar':'Compartilhar',
       'tip-amigos':     'Amigos',
       'tip-sobre':      'Quem Somos',
+      /* guide section labels */
+      'guide-what':     'O que é',
+      'guide-formula':  'Fórmula',
+      'guide-when':     'Quando usar',
+      'guide-metrics-lbl':'Métricas principais',
+      'guide-btn-usar': 'Usar agora →',
+      /* buttons */
+      'btn-topo':       '↑ Topo',
+      'btn-linha':      '+ Linha',
+      'btn-limpar':     'Limpar',
+      'btn-exemplo':    'Exemplo',
+      'btn-gerar':      '▶ Gerar análise',
+      'btn-prever':     'Prever',
+      'btn-salvar-conta':'☁ Salvar na conta',
+      'btn-salvar':     '☁ Salvar',
+      'btn-excel':      '📊 Excel BI (.xlsx)',
+      'btn-csv':        '📄 CSV',
+      'btn-variavel':   '+ Variável',
+      'btn-selgrau':    '⚡ Selecionar melhor grau',
+      /* field labels */
+      'lbl-nome':       'Nome da análise',
+      'lbl-varx':       'Variável X (independente)',
+      'lbl-vary':       'Variável Y (dependente)',
+      'lbl-vary-dep':   'Variável dependente Y',
+      'lbl-vary-01':    'Variável dependente Y (0 ou 1)',
+      'lbl-varxs':      'Variáveis independentes (X₁, X₂, ...)',
+      'lbl-conf':       'Nível de confiança',
+      'lbl-limiar':     'Limiar de classificação',
+      'lbl-grau':       'Grau do polinômio',
+      'lbl-rotuloy':    'Rótulo do eixo Y',
+      'lbl-modelo':     'Modelo',
+      'lbl-periodos':   'Períodos a projetar',
+      'lbl-rotulox':    'Rótulo do eixo X (período)',
+      'lbl-janela':     'Janela da média móvel',
+      'lbl-arima-p':    'ARIMA p (AR)',
+      'lbl-arima-d':    'ARIMA d (diff)',
+      'lbl-arima-q':    'ARIMA q (MA)',
+      'lbl-var-p':      'VAR p (defasagens)',
+      'lbl-quantis':    'Quantis (separados por vírgula)',
+      'lbl-lr':         'Taxa de aprendizado',
+      'lbl-iters':      'Iterações',
+      'lbl-tol':        'Tolerância',
+      'lbl-tiporeg':    'Tipo de regularização',
+      'lbl-lambda':     'Lambda (λ)',
+      'lbl-novox':      'Novo valor de X',
+      'lbl-dados':      'Dados',
+      'lbl-viewmode':   'Modo de visualização',
+      /* common card titles */
+      'card-ai':        '🤖 Interpretação automática com IA',
+      'card-export':    '📥 Exportar',
+      'card-grafdiag':  '📊 Gráficos Diagnósticos',
+      /* diagnostic chart titles */
+      'diag-resfit':    '📉 Resíduos vs Ajustados',
+      'diag-hist':      '📊 Histograma dos Resíduos',
+      'diag-qq':        '📈 QQ-Plot dos Resíduos',
+      'diag-cook':      '🎯 Distância de Cook',
+      'diag-obsfit':    '🔭 Observado vs Ajustado',
+      'diag-resfit-m':  '📉 Resíduos vs Ajustados',
+      'diag-tabresid':  '📋 Tabela de Resíduos',
+      'diag-roc':       '📈 Curva ROC',
+      'diag-prob':      '📊 Probabilidades Calibradas',
+      'diag-deviance':  '📐 Deviance e Verossimilhança',
+      'diag-calib':     '🎯 Calibração do Modelo',
+      'diag-trend':     '📈 Tendência',
+      'diag-season':    '📅 Sazonalidade',
+      'diag-resid':     '📉 Resíduos',
+      'diag-vol':       '📊 Volatilidade Condicional',
+      'diag-acf':       '📊 ACF dos Resíduos',
+      'diag-pacf':      '📊 PACF dos Resíduos',
+      /* linear regression cards */
+      'nova-result-pad':'📈 Resultado — Modo Padrão',
+      'nova-resid-tbl': '📋 Tabela de resíduos',
+      'nova-result-adv':'📊 Resultado — Modo Avançado',
+      'card-anova':     '📐 Tabela ANOVA',
+      'nova-prev-y':    '🔭 Previsão de Y',
+      'nova-ai':        '🤖 Interpretação automática com IA',
+      'nova-diag':      '🔬 Diagnóstico do Modelo',
+      'nova-influentes':'🚨 Outliers e Observações Influentes',
+      'nova-export':    '📥 Exportar',
+      /* multiple regression cards */
+      'mult-eq':        '📈 Equação e Ajuste Global',
+      'mult-coef':      '📐 Coeficientes, Testes t e IC 95%',
+      'mult-vif':       '🔍 Diagnóstico de Multicolinearidade (VIF)',
+      'mult-diag-sup':  '🔬 Diagnóstico das Suposições',
+      'mult-outliers':  '🚨 Outliers e Observações Influentes',
+      'mult-partial':   '🎯 Efeitos Parciais (Y vs cada Xᵢ)',
+      /* shared forecast */
+      'card-prev':      '🔭 Previsão',
+      /* logistic regression cards */
+      'log-ajuste':     '📈 Ajuste do Modelo',
+      'log-coef-odds':  '📐 Coeficientes e Odds Ratios',
+      'log-matriz':     '🎯 Matriz de Confusão e Métricas de Classificação',
+      'log-prev-prob':  '🔭 Previsão de Probabilidade',
+      /* polynomial regression cards */
+      'poly-comp':      '📊 Comparação entre Graus',
+      'poly-eq':        '📈 Equação e Ajuste',
+      'poly-coef':      '📐 Coeficientes',
+      'poly-curva':     '📊 Curva Ajustada',
+      'poly-diag-res':  '🔬 Diagnóstico Residual',
+      /* time series cards */
+      'ts-stats':       '📊 Estatísticas Resumo',
+      'ts-main':        '📈 Série + Tendência + Média Móvel + Projeção',
+      'ts-decomp':      '🔬 Decomposição Aditiva',
+      'ts-arima-diag':  '🔬 Diagnósticos ARIMA — Resíduos',
+      'ts-garch-diag':  '🔬 Diagnósticos GARCH — Volatilidade Condicional',
+      'ts-var-irf':     '🔬 VAR — Funções de Resposta ao Impulso (IRF)',
+      'ts-granger':     '📊 Causalidade de Granger',
+      'ts-prev':        '🔭 Projeções',
+      'ts-var-dados':   'Dados — VAR Multivariado',
+      /* quantile regression cards */
+      'q-curvas':       '📈 Curvas Quantílicas',
+      'q-coef':         '📐 Coeficientes por Quantil',
+      'q-metricas':     '📊 Métricas por Quantil',
+      'q-prev':         '🔭 Previsão por Quantil',
+      /* regularized regression cards */
+      'reg-coef':       '📈 Coeficientes e Ajuste',
+      'reg-disp':       '📊 Dispersão + Linhas Ajustadas',
+      'reg-tbl':        '📐 Tabela de Resultados',
+      'reg-lambda':     '🔬 Efeito do λ nos Coeficientes',
+      /* import */
+      'imp-dados':      '📂 Importar Dados',
+      /* config titles */
+      'cfg-linear':     'Configuração da análise',
+      'cfg-multipla':   'Configuração — Regressão Múltipla',
+      'cfg-logistica':  'Configuração — Regressão Logística',
+      'cfg-polinomial': 'Configuração — Regressão Polinomial',
+      'cfg-serie':      'Configuração — Séries Temporais',
+      'cfg-quantilica': 'Configuração — Regressão Quantílica Avançada',
+      'cfg-regularizada':'Configuração — Regressão Regularizada',
+      /* guide panel */
+      'guide-hero-title':'Guia de Modelos de Regressão',
+      'guide-hero-sub': 'Entenda quando e como usar cada modelo disponível na plataforma. Escolha o modelo certo para o seu problema e obtenha análises mais precisas e interpretáveis.',
+      'guide-badge-count':'7 modelos disponíveis',
+      'guide-badge-continua':'Regressão Contínua',
+      'guide-badge-classif':'Classificação',
+      'guide-badge-ts': 'Séries Temporais',
+      'gcard-name-linear':'Regressão Linear Simples ↗',
+      'gcard-name-multipla':'Regressão Múltipla ↗',
+      'gcard-name-logistica':'Regressão Logística ↗',
+      'gcard-name-polinomial':'Regressão Polinomial ↗',
+      'gcard-name-serie':'Séries Temporais ↗',
+      'gcard-name-quantilica':'Regressão Quantílica ↗',
+      'gcard-name-regularizada':'Regressão Regularizada ↗',
+      'gcard-tag-linear':'Regressão contínua · 1 variável',
+      'gcard-tag-multipla':'Regressão contínua · N variáveis',
+      'gcard-tag-logistica':'Classificação binária · 0 ou 1',
+      'gcard-tag-polinomial':'Relações não-lineares · Grau 1–6',
+      'gcard-tag-serie':'Dados ordenados no tempo · Previsão',
+      'gcard-tag-quantilica':'Distribuição completa · Robusta a outliers',
+      'gcard-tag-regularizada':'Ridge (L2) · Lasso (L1) · Anti-overfitting',
+      'glvl-iniciante': 'Nível: Iniciante',
+      'glvl-basico':    'Nível: Básico',
+      'glvl-intermediario':'Nível: Intermediário',
+      'glvl-avancado':  'Nível: Avançado',
+      'guide-choose-title':'Como escolher o modelo certo?',
+      /* view mode */
+      'mode-padrao':    'Padrão',
+      'mode-avancado':  'Avançado',
+      /* AI hints */
+      'ai-hint-auto':   'Execute uma análise para gerar interpretação automática.',
+      'ai-hint':        'Execute uma análise para gerar interpretação.',
     },
     en: {
+      /* tabs */
       'tab-linear':     'Linear Regression',
       'tab-multipla':   'Multiple Regression',
       'tab-logistica':  'Logistic Regression',
@@ -6029,6 +6193,7 @@ window.openCurso = openCurso;
       'tab-serie':      'Time Series',
       'tab-quantilica': 'Quantile Reg.',
       'tab-regularizada':'Regularized Reg.',
+      /* sidebar tooltips */
       'tip-guia':       'Model Guide',
       'tip-importar':   'Import',
       'tip-mercado':    'Financial Market',
@@ -6036,6 +6201,167 @@ window.openCurso = openCurso;
       'tip-compartilhar':'Share',
       'tip-amigos':     'Friends',
       'tip-sobre':      'About Us',
+      /* guide section labels */
+      'guide-what':     'What is it',
+      'guide-formula':  'Formula',
+      'guide-when':     'When to use',
+      'guide-metrics-lbl':'Key metrics',
+      'guide-btn-usar': 'Use now →',
+      /* buttons */
+      'btn-topo':       '↑ Top',
+      'btn-linha':      '+ Row',
+      'btn-limpar':     'Clear',
+      'btn-exemplo':    'Example',
+      'btn-gerar':      '▶ Run analysis',
+      'btn-prever':     'Predict',
+      'btn-salvar-conta':'☁ Save to account',
+      'btn-salvar':     '☁ Save',
+      'btn-excel':      '📊 Excel BI (.xlsx)',
+      'btn-csv':        '📄 CSV',
+      'btn-variavel':   '+ Variable',
+      'btn-selgrau':    '⚡ Select best degree',
+      /* field labels */
+      'lbl-nome':       'Analysis name',
+      'lbl-varx':       'Variable X (independent)',
+      'lbl-vary':       'Variable Y (dependent)',
+      'lbl-vary-dep':   'Dependent variable Y',
+      'lbl-vary-01':    'Dependent variable Y (0 or 1)',
+      'lbl-varxs':      'Independent variables (X₁, X₂, ...)',
+      'lbl-conf':       'Confidence level',
+      'lbl-limiar':     'Classification threshold',
+      'lbl-grau':       'Polynomial degree',
+      'lbl-rotuloy':    'Y-axis label',
+      'lbl-modelo':     'Model',
+      'lbl-periodos':   'Periods to forecast',
+      'lbl-rotulox':    'X-axis label (period)',
+      'lbl-janela':     'Moving average window',
+      'lbl-arima-p':    'ARIMA p (AR)',
+      'lbl-arima-d':    'ARIMA d (diff)',
+      'lbl-arima-q':    'ARIMA q (MA)',
+      'lbl-var-p':      'VAR p (lags)',
+      'lbl-quantis':    'Quantiles (comma-separated)',
+      'lbl-lr':         'Learning rate',
+      'lbl-iters':      'Iterations',
+      'lbl-tol':        'Tolerance',
+      'lbl-tiporeg':    'Regularization type',
+      'lbl-lambda':     'Lambda (λ)',
+      'lbl-novox':      'New X value',
+      'lbl-dados':      'Data',
+      'lbl-viewmode':   'View mode',
+      /* common card titles */
+      'card-ai':        '🤖 AI automatic interpretation',
+      'card-export':    '📥 Export',
+      'card-grafdiag':  '📊 Diagnostic Charts',
+      /* diagnostic chart titles */
+      'diag-resfit':    '📉 Residuals vs Fitted',
+      'diag-hist':      '📊 Residual Histogram',
+      'diag-qq':        '📈 Residual QQ-Plot',
+      'diag-cook':      "🎯 Cook's Distance",
+      'diag-obsfit':    '🔭 Observed vs Fitted',
+      'diag-resfit-m':  '📉 Residuals vs Fitted',
+      'diag-tabresid':  '📋 Residuals Table',
+      'diag-roc':       '📈 ROC Curve',
+      'diag-prob':      '📊 Calibrated Probabilities',
+      'diag-deviance':  '📐 Deviance & Likelihood',
+      'diag-calib':     '🎯 Model Calibration',
+      'diag-trend':     '📈 Trend',
+      'diag-season':    '📅 Seasonality',
+      'diag-resid':     '📉 Residuals',
+      'diag-vol':       '📊 Conditional Volatility',
+      'diag-acf':       '📊 Residual ACF',
+      'diag-pacf':      '📊 Residual PACF',
+      /* linear regression cards */
+      'nova-result-pad':'📈 Result — Standard Mode',
+      'nova-resid-tbl': '📋 Residuals table',
+      'nova-result-adv':'📊 Result — Advanced Mode',
+      'card-anova':     '📐 ANOVA Table',
+      'nova-prev-y':    '🔭 Y Forecast',
+      'nova-ai':        '🤖 AI automatic interpretation',
+      'nova-diag':      '🔬 Model Diagnostics',
+      'nova-influentes':'🚨 Outliers & Influential Observations',
+      'nova-export':    '📥 Export',
+      /* multiple regression cards */
+      'mult-eq':        '📈 Equation & Global Fit',
+      'mult-coef':      '📐 Coefficients, t-tests & 95% CI',
+      'mult-vif':       '🔍 Multicollinearity Diagnostics (VIF)',
+      'mult-diag-sup':  '🔬 Assumption Diagnostics',
+      'mult-outliers':  '🚨 Outliers & Influential Observations',
+      'mult-partial':   '🎯 Partial Effects (Y vs each Xᵢ)',
+      /* shared forecast */
+      'card-prev':      '🔭 Forecast',
+      /* logistic regression cards */
+      'log-ajuste':     '📈 Model Fit',
+      'log-coef-odds':  '📐 Coefficients & Odds Ratios',
+      'log-matriz':     '🎯 Confusion Matrix & Classification Metrics',
+      'log-prev-prob':  '🔭 Probability Forecast',
+      /* polynomial regression cards */
+      'poly-comp':      '📊 Degree Comparison',
+      'poly-eq':        '📈 Equation & Fit',
+      'poly-coef':      '📐 Coefficients',
+      'poly-curva':     '📊 Fitted Curve',
+      'poly-diag-res':  '🔬 Residual Diagnostics',
+      /* time series cards */
+      'ts-stats':       '📊 Summary Statistics',
+      'ts-main':        '📈 Series + Trend + Moving Avg + Forecast',
+      'ts-decomp':      '🔬 Additive Decomposition',
+      'ts-arima-diag':  '🔬 ARIMA Diagnostics — Residuals',
+      'ts-garch-diag':  '🔬 GARCH Diagnostics — Conditional Volatility',
+      'ts-var-irf':     '🔬 VAR — Impulse Response Functions (IRF)',
+      'ts-granger':     '📊 Granger Causality',
+      'ts-prev':        '🔭 Projections',
+      'ts-var-dados':   'Data — Multivariate VAR',
+      /* quantile regression cards */
+      'q-curvas':       '📈 Quantile Curves',
+      'q-coef':         '📐 Coefficients by Quantile',
+      'q-metricas':     '📊 Metrics by Quantile',
+      'q-prev':         '🔭 Quantile Forecast',
+      /* regularized regression cards */
+      'reg-coef':       '📈 Coefficients & Fit',
+      'reg-disp':       '📊 Scatter + Fitted Lines',
+      'reg-tbl':        '📐 Results Table',
+      'reg-lambda':     '🔬 λ Effect on Coefficients',
+      /* import */
+      'imp-dados':      '📂 Import Data',
+      /* config titles */
+      'cfg-linear':     'Analysis configuration',
+      'cfg-multipla':   'Configuration — Multiple Regression',
+      'cfg-logistica':  'Configuration — Logistic Regression',
+      'cfg-polinomial': 'Configuration — Polynomial Regression',
+      'cfg-serie':      'Configuration — Time Series',
+      'cfg-quantilica': 'Configuration — Advanced Quantile Regression',
+      'cfg-regularizada':'Configuration — Regularized Regression',
+      /* guide panel */
+      'guide-hero-title':'Regression Models Guide',
+      'guide-hero-sub': 'Understand when and how to use each model available on the platform. Choose the right model for your problem and get more accurate and interpretable analyses.',
+      'guide-badge-count':'7 available models',
+      'guide-badge-continua':'Continuous Regression',
+      'guide-badge-classif':'Classification',
+      'guide-badge-ts': 'Time Series',
+      'gcard-name-linear':'Simple Linear Regression ↗',
+      'gcard-name-multipla':'Multiple Regression ↗',
+      'gcard-name-logistica':'Logistic Regression ↗',
+      'gcard-name-polinomial':'Polynomial Regression ↗',
+      'gcard-name-serie':'Time Series ↗',
+      'gcard-name-quantilica':'Quantile Regression ↗',
+      'gcard-name-regularizada':'Regularized Regression ↗',
+      'gcard-tag-linear':'Continuous regression · 1 variable',
+      'gcard-tag-multipla':'Continuous regression · N variables',
+      'gcard-tag-logistica':'Binary classification · 0 or 1',
+      'gcard-tag-polinomial':'Non-linear relations · Degree 1–6',
+      'gcard-tag-serie':'Time-ordered data · Forecasting',
+      'gcard-tag-quantilica':'Full distribution · Robust to outliers',
+      'gcard-tag-regularizada':'Ridge (L2) · Lasso (L1) · Anti-overfitting',
+      'glvl-iniciante': 'Level: Beginner',
+      'glvl-basico':    'Level: Basic',
+      'glvl-intermediario':'Level: Intermediate',
+      'glvl-avancado':  'Level: Advanced',
+      'guide-choose-title':'How to choose the right model?',
+      /* view mode */
+      'mode-padrao':    'Standard',
+      'mode-avancado':  'Advanced',
+      /* AI hints */
+      'ai-hint-auto':   'Run an analysis to generate automatic interpretation.',
+      'ai-hint':        'Run an analysis to generate interpretation.',
     }
   };
 
