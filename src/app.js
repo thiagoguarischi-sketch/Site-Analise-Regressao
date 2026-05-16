@@ -23,6 +23,7 @@ import { loadShareList, copyShareLink, copyShareText, previewShareCard, copyOver
 import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
 import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair } from './ui/yahooFinance.js';
+import { bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize, bcbImportOne, bcbOnModelChange, bcbImportPair } from './ui/bcbFinance.js';
 
 import {
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
@@ -109,11 +110,24 @@ Object.assign(window, {
   // Chat
   openChat, closeChat, sendMessage,
 
-  // Mercado Financeiro
+  // Mercado Financeiro — Yahoo Finance
   yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize,
   yfOnModelChange,
   yfImportOne: sym => yfImportOne(sym, switchTab),
   yfImportPair: () => yfImportPair(switchTab),
+
+  // Mercado Financeiro — Banco Central do Brasil
+  bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize,
+  bcbOnModelChange,
+  bcbImportOne: cod => bcbImportOne(cod, switchTab),
+  bcbImportPair: () => bcbImportPair(switchTab),
+  mfSetSource(src) {
+    document.getElementById('mf-yf-section').style.display  = src === 'yf'  ? '' : 'none';
+    document.getElementById('mf-bcb-section').style.display = src === 'bcb' ? '' : 'none';
+    document.querySelectorAll('.mf-src-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.src === src)
+    );
+  },
 
   // Linear simples + múltipla
   runRegression, runPrediction, hideResults, setViewMode, saveAnalysis,
