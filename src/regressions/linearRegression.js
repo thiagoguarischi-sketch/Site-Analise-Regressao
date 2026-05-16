@@ -2,6 +2,7 @@
 // previsão, save/load Supabase e exportações Excel BI / CSV.
 
 import { mean, sum, fmt, fmtP, esc, rmse, mae, mape, qualLabel, sigStars } from '../core/utils.js';
+import { tQ } from '../core/statistics.js';
 import { showToast, showCloudSaving } from '../ui/notifications.js';
 import { saveAnalysisRequest } from '../services/analysisService.js';
 import { analyze } from '../services/computeService.js';
@@ -226,27 +227,30 @@ Seja direto e use linguagem acessível.`;
   }
 }
 
-export async function runPrediction() {
+export function runPrediction() {
   if (!lastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
   const xNew = parseFloat(document.getElementById('pred-x').value);
   const conf = parseFloat(document.getElementById('pred-conf').value);
   if (isNaN(xNew)) { showToast('Digite um valor de X.', 'err'); return; }
 
   const res = lastResult;
-  let pred;
-  try {
-    pred = await analyze('linear_pred', { xNew, conf, b0: res.b0, b1: res.b1, se: res.se, n: res.n, xm: res.xm, Sxx: res.Sxx }, {});
-  } catch (e) { showToast('Erro na previsão: ' + e.message, 'err'); return; }
+  const alpha = 1 - conf;
+  const tVal = tQ(1 - alpha / 2, res.n - 2);
+  const yhat = res.b0 + res.b1 * xNew;
+  const seIC = res.se * Math.sqrt(1 / res.n + (xNew - res.xm) ** 2 / res.Sxx);
+  const seIP = res.se * Math.sqrt(1 + 1 / res.n + (xNew - res.xm) ** 2 / res.Sxx);
+  const icLo = yhat - tVal * seIC, icHi = yhat + tVal * seIC;
+  const ipLo = yhat - tVal * seIP, ipHi = yhat + tVal * seIP;
 
   const box = document.getElementById('pred-result');
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
       <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Previsão para ${res.labelX} = ${xNew}</div>
-      <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
+      <div class="pred-val">${res.labelY} ≈ ${yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IC ${(conf * 100).toFixed(0)}% (média): [${pred.icLo.toFixed(4)}, ${pred.icHi.toFixed(4)}]<br>
-        IP ${(conf * 100).toFixed(0)}% (individual): [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]
+        IC ${(conf * 100).toFixed(0)}% (média): [${icLo.toFixed(4)}, ${icHi.toFixed(4)}]<br>
+        IP ${(conf * 100).toFixed(0)}% (individual): [${ipLo.toFixed(4)}, ${ipHi.toFixed(4)}]
       </div>
     </div>`;
 }
