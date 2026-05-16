@@ -3079,13 +3079,13 @@ Valor Temporal = prêmio − valor intrínseco
     <section class="section" id="slope-beta">
       <div class="section-title"><span class="section-icon">📈</span> Exemplo 1 — Calculando o Beta de um Ativo</div>
       <div class="section-body">
-        <p>O Beta é o coeficiente angular da regressão dos retornos do ativo contra os retornos do mercado. Em vez de calcular manualmente, o Slope faz isso em segundos com dados reais do Yahoo Finance.</p>
+        <p>O Beta é o coeficiente angular da regressão dos retornos do ativo contra os retornos do mercado. Em vez de calcular manualmente, o Slope faz isso em segundos com dados reais do mercado financeiro.</p>
 
         <div class="concept-box">
           <div class="concept-title">📌 Passo a passo: Beta do PETR4 contra o IBOVESPA</div>
           <ul class="hl-list">
             <li><strong>1. Abra a plataforma</strong> e selecione <em>Análise de Regressão Linear</em>.</li>
-            <li><strong>2. Fonte de dados:</strong> clique em "Importar do Yahoo Finance". Digite <code>PETR4.SA</code> no campo de ticker e selecione o período desejado (ex.: últimos 2 anos, frequência diária).</li>
+            <li><strong>2. Fonte de dados:</strong> clique em "Importar do mercado financeiro". Digite <code>PETR4.SA</code> no campo de ticker e selecione o período desejado (ex.: últimos 2 anos, frequência diária).</li>
             <li><strong>3. Adicione o índice:</strong> repita para <code>^BVSP</code> (IBOVESPA). Agora você tem dois ativos importados.</li>
             <li><strong>4. Configure:</strong> defina Y = retornos diários do PETR4 e X = retornos diários do IBOV. Clique em "Calcular Retornos" se a plataforma usar preços brutos.</li>
             <li><strong>5. Execute a regressão.</strong></li>
@@ -3150,7 +3150,7 @@ Valor Temporal = prêmio − valor intrínseco
         <div class="concept-box">
           <div class="concept-title">📌 Exemplo: quanto o dólar explica o índice de exportadoras?</div>
           <ul class="hl-list">
-            <li><strong>Y:</strong> retorno diário de uma cesta de exportadoras (Vale, Petrobras, Suzano, JBS) — importe cada ticker via Yahoo Finance.</li>
+            <li><strong>Y:</strong> retorno diário de uma cesta de exportadoras (Vale, Petrobras, Suzano, JBS) — importe cada ticker via mercado financeiro.</li>
             <li><strong>X:</strong> variação diária do USDBRL (dólar vs. real).</li>
             <li><strong>Modelo:</strong> Regressão Linear Simples.</li>
           </ul>
@@ -3230,7 +3230,7 @@ Valor Temporal = prêmio − valor intrínseco
         <div class="concept-box">
           <div class="concept-title">📌 Aplicação: VaR dinâmico com GARCH</div>
           <ul class="hl-list">
-            <li><strong>1.</strong> Importe os retornos diários de sua carteira (ou de um ativo) via Yahoo Finance.</li>
+            <li><strong>1.</strong> Importe os retornos diários de sua carteira (ou de um ativo) via mercado financeiro.</li>
             <li><strong>2.</strong> Execute o modelo GARCH(1,1) no Slope.</li>
             <li><strong>3.</strong> O gráfico de volatilidade condicional mostra períodos de alta (crise de 2020, eleições) e baixa volatilidade.</li>
             <li><strong>4.</strong> A projeção de volatilidade para os próximos dias permite calcular um <strong>VaR dinâmico</strong> — muito mais preciso que o VaR estático com σ fixo.</li>
@@ -3286,7 +3286,7 @@ Valor Temporal = prêmio − valor intrínseco
         <div class="cards-grid">
           <div class="use-item">
             <div class="use-label">1. Coleta de dados</div>
-            <div class="use-desc">Use a integração com Yahoo Finance para importar preços históricos diretamente (tickers como PETR4.SA, ^BVSP, USDBRL=X). Para dados macroeconômicos (IPCA, Selic), importe via CSV do site do Banco Central ou IBGE.</div>
+            <div class="use-desc">Use a integração com mercado financeiro para importar preços históricos diretamente (tickers como PETR4.SA, ^BVSP, USDBRL=X). Para dados macroeconômicos (IPCA, Selic), importe via CSV do site do Banco Central ou IBGE.</div>
           </div>
           <div class="use-item">
             <div class="use-label">2. Análise exploratória</div>
