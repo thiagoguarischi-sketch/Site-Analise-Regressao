@@ -1383,6 +1383,10 @@
     }
 
     const COLORS = ['#ffffff','#ffffff','#ffffff','#7C83FD','#A8BDFF','#FFE9D0','#00D4A0'];
+    const shockwaves = [];
+    const MOUSE_RADIUS = 140;
+    const MOUSE_FORCE  = 55;
+
     function mkStar() {
       return {
         x:    Math.random() * W,
@@ -1395,6 +1399,8 @@
         col:  COLORS[Math.floor(Math.random() * COLORS.length)],
         vx:   (Math.random() - 0.5) * 0.032,
         vy:   (Math.random() - 0.5) * 0.032,
+        ox:   0,
+        oy:   0,
       };
     }
 
@@ -1497,6 +1503,14 @@
         mx += (tmx - mx) * 0.06;
         my += (tmy - my) * 0.06;
 
+        // update shockwaves
+        for (let i = shockwaves.length - 1; i >= 0; i--) {
+          const sw = shockwaves[i];
+          sw.r += (sw.maxR - sw.r) * 0.10 + 3;
+          sw.life++;
+          if (sw.life > sw.maxLife) shockwaves.splice(i, 1);
+        }
+
         stars.forEach(s => {
           s.tp += s.ts;
           const twinkle = 0.62 + 0.38 * Math.sin(s.tp);
@@ -1504,9 +1518,36 @@
           if (s.x < -2) s.x = W+2; if (s.x > W+2) s.x = -2;
           if (s.y < -2) s.y = H+2; if (s.y > H+2) s.y = -2;
 
-          const px = s.x + (mx - W*.5) * 0.006 * s.r;
-          const py = s.y + (my - H*.5) * 0.006 * s.r;
-          const a  = s.op * twinkle;
+          // mouse repulsion
+          const mdx = s.x - tmx, mdy = s.y - tmy;
+          const mdist = Math.sqrt(mdx*mdx + mdy*mdy);
+          if (mdist < MOUSE_RADIUS && mdist > 0.5) {
+            const force = (1 - mdist / MOUSE_RADIUS) * MOUSE_FORCE;
+            s.ox += ((mdx / mdist) * force - s.ox) * 0.14;
+            s.oy += ((mdy / mdist) * force - s.oy) * 0.14;
+          } else {
+            s.ox *= 0.86;
+            s.oy *= 0.86;
+          }
+
+          // shockwave push
+          shockwaves.forEach(sw => {
+            const sdx = s.x - sw.x, sdy = s.y - sw.y;
+            const sdist = Math.sqrt(sdx*sdx + sdy*sdy);
+            const waveDelta = 38;
+            if (Math.abs(sdist - sw.r) < waveDelta && sdist > 0.5) {
+              const intensity = (1 - Math.abs(sdist - sw.r) / waveDelta) * (1 - sw.life / sw.maxLife);
+              s.ox += (sdx / sdist) * intensity * 30;
+              s.oy += (sdy / sdist) * intensity * 30;
+            }
+          });
+
+          const px = s.x + s.ox + (mx - W*.5) * 0.006 * s.r;
+          const py = s.y + s.oy + (my - H*.5) * 0.006 * s.r;
+
+          // proximity brightness boost
+          const proximity = mdist < MOUSE_RADIUS ? (1 - mdist / MOUSE_RADIUS) * 0.55 : 0;
+          const a = Math.min(1, s.op * twinkle + proximity);
           if (a < 0.02) return;
 
           const rgb = hexRgb(s.col);
@@ -1515,13 +1556,14 @@
           ctx.fillStyle = `rgba(${rgb},${a})`;
           ctx.fill();
 
-          if (s.r > 1.05) {
-            const glow = ctx.createRadialGradient(px, py, 0, px, py, s.r * 3.8);
-            glow.addColorStop(0, `rgba(${rgb},${a * 0.22})`);
+          const glowR = s.r > 1.05 ? s.r * 3.8 : (proximity > 0.1 ? s.r * 3.2 : 0);
+          if (glowR > 0) {
+            const glow = ctx.createRadialGradient(px, py, 0, px, py, glowR);
+            glow.addColorStop(0, `rgba(${rgb},${a * (0.22 + proximity * 0.3)})`);
             glow.addColorStop(1, 'transparent');
             ctx.fillStyle = glow;
             ctx.beginPath();
-            ctx.arc(px, py, s.r * 3.8, 0, Math.PI*2);
+            ctx.arc(px, py, glowR, 0, Math.PI*2);
             ctx.fill();
           }
         });
@@ -1570,6 +1612,9 @@
     }
 
     document.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
+    document.addEventListener('click', e => {
+      if (warpState === 2) shockwaves.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 220, life: 0, maxLife: 45 });
+    });
     window.addEventListener('resize', () => { resize(); initStars(); }, { passive: true });
     resize();
     initStars();
