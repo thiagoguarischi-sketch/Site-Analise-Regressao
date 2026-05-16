@@ -1363,22 +1363,19 @@
     const ctx = canvas.getContext('2d');
     let W, H;
 
-    const STAR_COUNT = 280;
+    const STAR_COUNT = 270;
     const stars = [];
     const shoots = [];
     let nextShoot = 3500 + Math.random() * 4000;
     let lastShootTime = 0;
 
     let mx = 0, my = 0, tmx = 0, tmy = 0;
-    let mvx = 0, mvy = 0; // smoothed mouse velocity
 
     // Warp animation state: 0=warp streaks, 1=deceleration, 2=normal
     let warpState = 0;
     const T_WARP  = 520;
     const T_DECEL = 420;
     let tStart = 0;
-
-    const STREAK_RADIUS = 190; // px around cursor where warp streaks appear
 
     function resize() {
       W = canvas.width  = window.innerWidth;
@@ -1481,17 +1478,10 @@
         }
       }
 
-      // normal stars with cursor warp streaks
+      // normal stars
       if (warpState >= 1) {
         mx += (tmx - mx) * 0.06;
         my += (tmy - my) * 0.06;
-
-        // decay mouse velocity each frame
-        mvx *= 0.82;
-        mvy *= 0.82;
-        const mSpeed = Math.sqrt(mvx*mvx + mvy*mvy);
-
-        ctx.lineCap = 'round';
 
         stars.forEach(s => {
           s.tp += s.ts;
@@ -1506,46 +1496,19 @@
           if (a < 0.02) return;
 
           const rgb = hexRgb(s.col);
+          ctx.beginPath();
+          ctx.arc(px, py, s.r, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(${rgb},${a})`;
+          ctx.fill();
 
-          // distance to cursor
-          const cdx   = px - tmx, cdy = py - tmy;
-          const cdist = Math.sqrt(cdx*cdx + cdy*cdy);
-          const prox  = Math.max(0, 1 - cdist / STREAK_RADIUS);
-
-          if (prox > 0.02 && mSpeed > 2) {
-            // warp streak: extends opposite to mouse movement direction
-            const nm   = 1 / mSpeed;
-            const streakLen = mSpeed * prox * 3.8 * (s.r * 0.6 + 0.4);
-            const x0 = px - mvx * nm * streakLen;
-            const y0 = py - mvy * nm * streakLen;
-
-            const streakAlpha = Math.min(1, a + prox * 0.4);
-            const g = ctx.createLinearGradient(x0, y0, px, py);
-            g.addColorStop(0, `rgba(${rgb},0)`);
-            g.addColorStop(1, `rgba(${rgb},${streakAlpha})`);
-
+          if (s.r > 1.05) {
+            const glow = ctx.createRadialGradient(px, py, 0, px, py, s.r * 3.8);
+            glow.addColorStop(0, `rgba(${rgb},${a * 0.22})`);
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
             ctx.beginPath();
-            ctx.moveTo(x0, y0);
-            ctx.lineTo(px, py);
-            ctx.strokeStyle = g;
-            ctx.lineWidth = s.r * (1 + prox * 1.8);
-            ctx.stroke();
-          } else {
-            // normal dot
-            ctx.beginPath();
-            ctx.arc(px, py, s.r, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(${rgb},${a})`;
+            ctx.arc(px, py, s.r * 3.8, 0, Math.PI*2);
             ctx.fill();
-
-            if (s.r > 1.05) {
-              const glow = ctx.createRadialGradient(px, py, 0, px, py, s.r * 3.8);
-              glow.addColorStop(0, `rgba(${rgb},${a * 0.22})`);
-              glow.addColorStop(1, 'transparent');
-              ctx.fillStyle = glow;
-              ctx.beginPath();
-              ctx.arc(px, py, s.r * 3.8, 0, Math.PI*2);
-              ctx.fill();
-            }
           }
         });
       }
@@ -1582,11 +1545,7 @@
       requestAnimationFrame(draw);
     }
 
-    document.addEventListener('mousemove', e => {
-      mvx = mvx * 0.5 + (e.clientX - tmx) * 0.5;
-      mvy = mvy * 0.5 + (e.clientY - tmy) * 0.5;
-      tmx = e.clientX; tmy = e.clientY;
-    });
+    document.addEventListener('mousemove', e => { tmx = e.clientX; tmy = e.clientY; });
     window.addEventListener('resize', () => { resize(); initStars(); }, { passive: true });
     resize();
     initStars();
