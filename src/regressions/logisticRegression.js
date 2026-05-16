@@ -498,7 +498,7 @@ export function lgExportExcel() {
       { label: '❌ Falsos Negativos', value: res.cm.fn, good: res.cm.fn === 0 },
       { label: '📊 R² McFadden', value: res.mcFaddenR2.toFixed(4), good: res.mcFaddenR2 >= 0.2 },
     ],
-    name, 'Logística', null, null,
+    name, 'Logística', null,
     ['→ PREDICTION_ANALYSIS: P(Y=1) por ID → curva ROC manual', '→ CONFUSION_MATRIX: visualizar VP/VN/FP/FN', '→ COEFICIENTES: OR > 1 = fator de risco, OR < 1 = fator protetor', '→ MODEL_COMPARISON: comparar AUC entre modelos']
   ), 'DASHBOARD');
 

@@ -393,6 +393,9 @@ export function exportExcel() {
   const _rmse = rmse(res.resid);
   const _mae  = mae(res.resid);
   const _mape = mape(res.ys, res.yhat);
+  const nOutliers   = res.resid_std.filter(r => Math.abs(r) > 2).length;
+  const nInfluentes = res.cooks_d ? res.cooks_d.filter(c => c > 4 / res.n).length : 0;
+  const isSignif    = res.pF < 0.05;
 
   const rawRows = res.xs.map((x, i) => [i + 1, x, res.ys[i], 'Linear Simples', name]);
   XLSX.utils.book_append_sheet(wb, buildRawSheet('ID', [res.labelX], res.labelY, rawRows, name), 'RAW_DATA');
@@ -406,40 +409,39 @@ export function exportExcel() {
 
   const residRows = res.xs.map((x, i) => {
     const flags = [];
-    if (Math.abs(res.resid_std[i]) > 2.5) flags.push('OUTLIER');
+    if (Math.abs(res.resid_std[i]) > 2) flags.push('OUTLIER');
     if (res.cooks_d && res.cooks_d[i] > 4 / res.n) flags.push('INFLUENTE');
     return [i + 1, res.resid[i], res.resid_std[i], res.resid[i] ** 2, res.hi ? res.hi[i] : '', res.cooks_d ? res.cooks_d[i] : '', flags.join(' | ') || 'OK'];
   });
   XLSX.utils.book_append_sheet(wb, buildResidSheet(residRows, name), 'RESIDUALS');
 
-  const isSignif = res.pF < 0.05;
-  const kpiRows = [
+  XLSX.utils.book_append_sheet(wb, buildKPISheet([
     { section: '📌 MODELO' },
     { label: '🏷️ Nome', value: name },
     { label: '🤖 Tipo', value: 'Regressão Linear Simples' },
     { section: '📊 QUALIDADE DO AJUSTE' },
-    { label: '📈 R²', value: typeof res.r2 === 'number' ? res.r2.toFixed(6) : res.r2, note: 'Variância explicada (0–1)', good: res.r2 >= 0.7 ? true : res.r2 < 0.4 ? false : null },
-    { label: '📉 R² Ajustado', value: typeof res.r2adj === 'number' ? res.r2adj.toFixed(6) : res.r2adj, note: qualLabel(res.r2adj), good: res.r2adj >= 0.7 ? true : res.r2adj < 0.4 ? false : null },
-    { label: '🔗 r de Pearson', value: typeof res.r === 'number' ? res.r.toFixed(4) : res.r, note: Math.abs(res.r) >= 0.8 ? '💪 Correlação forte' : '📊 Correlação moderada' },
+    { label: '📈 R²', value: res.r2.toFixed(6), note: 'Variância explicada (0–1)', good: res.r2 >= 0.7 ? true : res.r2 < 0.4 ? false : null },
+    { label: '📉 R² Ajustado', value: res.r2adj.toFixed(6), note: qualLabel(res.r2adj), good: res.r2adj >= 0.7 ? true : res.r2adj < 0.4 ? false : null },
+    { label: '🔗 r de Pearson', value: res.r.toFixed(4), note: Math.abs(res.r) >= 0.8 ? '💪 Correlação forte' : '📊 Correlação moderada' },
     { section: '📏 ERROS' },
     { label: '📐 MAE', value: _mae.toFixed(6), note: 'Erro médio absoluto' },
     { label: '📐 RMSE', value: _rmse.toFixed(6), note: 'Raiz do erro quadrático médio' },
     { label: '📊 MAPE (%)', value: _mape != null ? _mape.toFixed(2) + '%' : 'N/A', note: 'Erro percentual médio' },
-    { label: '🔧 Erro Padrão', value: typeof res.se === 'number' ? res.se.toFixed(6) : '' },
+    { label: '🔧 Erro Padrão', value: res.se.toFixed(6) },
     { section: '⚗️ SIGNIFICÂNCIA' },
-    { label: '📊 F-estatístico', value: typeof res.Fstat === 'number' ? res.Fstat.toFixed(4) : '' },
-    { label: '🎯 p-valor F', value: res.pF < 0.0001 ? '<0.0001' : res.pF.toFixed(4), note: 'p < 0.05 = significativo', good: isSignif ? true : false },
+    { label: '📊 F-estatístico', value: res.Fstat.toFixed(4) },
+    { label: '🎯 p-valor F', value: res.pF < 0.0001 ? '<0.0001' : res.pF.toFixed(4), note: 'p < 0.05 = significativo', good: isSignif },
     { label: '✅ Significativo?', value: isSignif ? '✅ SIM' : '❌ NÃO', good: isSignif },
     { section: '📐 COEFICIENTES' },
-    { label: '🔢 β₀ (Intercepto)', value: typeof res.b0 === 'number' ? res.b0.toFixed(6) : '' },
-    { label: '📈 β₁ (Inclinação)', value: typeof res.b1 === 'number' ? res.b1.toFixed(6) : '', note: res.b1 >= 0 ? '↑ Relação positiva' : '↓ Relação negativa' },
+    { label: '🔢 β₀ (Intercepto)', value: res.b0.toFixed(6) },
+    { label: '📈 β₁ (Inclinação)', value: res.b1.toFixed(6), note: res.b1 >= 0 ? '↑ Relação positiva' : '↓ Relação negativa' },
     { section: '🔍 AMOSTRA' },
     { label: '🔢 n (observações)', value: res.n },
-    { label: '🚨 Outliers (|std|>2)', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0 ? true : null },
-  ];
-  XLSX.utils.book_append_sheet(wb, buildKPISheet(kpiRows, name), 'MODEL_KPIs');
+    { label: '🚨 Outliers (|std|>2)', value: nOutliers, good: nOutliers === 0 ? true : null },
+    { label: '🍳 Influentes (Cook>4/n)', value: nInfluentes, good: nInfluentes === 0 ? true : null },
+  ], name), 'MODEL_KPIs');
 
-  const compRows = [
+  XLSX.utils.book_append_sheet(wb, buildCompSheet([
     [name, 'Linear Simples', '📈 R²', res.r2],
     [name, 'Linear Simples', '📉 R² Ajustado', res.r2adj],
     [name, 'Linear Simples', '📐 MAE', _mae],
@@ -451,8 +453,7 @@ export function exportExcel() {
     [name, 'Linear Simples', '🔢 n', res.n],
     [name, 'Linear Simples', '📈 β₀', res.b0],
     [name, 'Linear Simples', '📈 β₁', res.b1],
-  ];
-  XLSX.utils.book_append_sheet(wb, buildCompSheet(compRows, name), 'MODEL_COMPARISON');
+  ], name), 'MODEL_COMPARISON');
 
   const wsAnova = buildWS([
     [cell('📊 ANOVA — ' + name, S.title)],
@@ -472,7 +473,7 @@ export function exportExcel() {
       { label: '📐 RMSE', value: _rmse.toFixed(4), note: 'Quanto menor, melhor' },
       { label: '📊 MAPE', value: _mape != null ? _mape.toFixed(2) + '%' : 'N/A', note: 'Erro percentual médio' },
       { label: '✅ Significativo?', value: isSignif ? '✅ SIM' : '❌ NÃO', good: isSignif },
-      { label: '🚨 Outliers', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0 },
+      { label: '🚨 Outliers', value: nOutliers, good: nOutliers === 0 },
     ],
     name, 'Linear Simples',
     [['📐 Equação', `Ŷ = ${res.b0.toFixed(4)} + ${res.b1.toFixed(4)} × ${res.labelX}`]],
@@ -492,14 +493,14 @@ export function exportExcel() {
     { label: `Efeito de ${res.labelX}`, value: `Para cada +1 unidade → ${res.labelY} ${res.b1 >= 0 ? 'aumenta' : 'diminui'} ${Math.abs(res.b1).toFixed(4)}` },
     { label: 'Força da correlação', value: Math.abs(res.r) >= 0.8 ? '💪 Forte' : Math.abs(res.r) >= 0.5 ? '📊 Moderada' : '⚠️ Fraca', note: `r = ${res.r.toFixed(4)}` },
     { section: '🚨 OUTLIERS & INFLUÊNCIA' },
-    { label: 'Outliers detectados', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0, note: '|resíduo std| > 2' },
-    { label: 'Observações influentes', value: res.cooks_d ? res.cooks_d.filter(c => c > 4 / res.n).length : 'N/A', note: "Cook's D > 4/n" },
+    { label: 'Outliers detectados', value: nOutliers, good: nOutliers === 0, note: '|resíduo std| > 2' },
+    { label: 'Observações influentes', value: nInfluentes, good: nInfluentes === 0, note: "Cook's D > 4/n" },
     { section: '📏 ERROS' },
     { label: 'MAE', value: _mae.toFixed(4) },
     { label: 'RMSE', value: _rmse.toFixed(4) },
     { label: 'MAPE', value: _mape != null ? _mape.toFixed(2) + '%' : 'N/A' },
     { section: '💡 RECOMENDAÇÃO' },
-    { label: 'Próximo passo', value: res.r2adj < 0.5 ? '⚠️ Considerar variáveis adicionais ou modelo não-linear' : res.resid_std.filter(r => Math.abs(r) > 2).length > 2 ? '🔍 Investigar outliers antes de usar o modelo' : '✅ Modelo adequado para uso' },
+    { label: 'Próximo passo', value: res.r2adj < 0.5 ? '⚠️ Considerar variáveis adicionais ou modelo não-linear' : nOutliers > 2 ? '🔍 Investigar outliers antes de usar o modelo' : '✅ Modelo adequado para uso' },
   ], name), 'INSIGHTS');
 
   XLSX.writeFile(wb, name.replace(/[^a-zA-Z0-9_-]/g, '_') + '_BI.xlsx');
@@ -1008,10 +1009,14 @@ export function mExportExcel() {
   const res = mLastResult;
   const name = document.getElementById('m-analysis-name').value || 'Regressão Múltipla';
   const wb = XLSX.utils.book_new();
-  const _rmse = rmse(res.resid);
-  const _mae  = mae(res.resid);
-  const _mape = mape(res.Y, res.yhat);
+  const _rmse    = rmse(res.resid);
+  const _mae     = mae(res.resid);
+  const _mape    = mape(res.Y, res.yhat);
   const isSignif = res.pF < 0.05;
+  const nOutliers = res.resid_std.filter(r => Math.abs(r) > 2).length;
+  const sigVars   = res.varNames.filter((_, j) => res.p_beta[j + 1] < 0.05);
+  const highVIF   = res.vif.filter(v => v > 10).length;
+  const modVIF    = res.vif.filter(v => v > 5).length;
 
   const rawRows = res.Y.map((y, i) => [i + 1, ...res.Xs.map(x => x[i]), y, 'Múltipla', name]);
   XLSX.utils.book_append_sheet(wb, buildRawSheet('ID', res.varNames, res.labelY, rawRows, name), 'RAW_DATA');
@@ -1023,11 +1028,14 @@ export function mExportExcel() {
   });
   XLSX.utils.book_append_sheet(wb, buildPredSheet(predRows, name), 'PREDICTION_ANALYSIS');
 
-  const residRows = res.resid.map((r, i) => [i + 1, r, res.resid_std[i], r * r, res.hi ? res.hi[i] : '', '', Math.abs(res.resid_std[i]) > 2.5 ? 'OUTLIER' : 'OK']);
+  const residRows = res.resid.map((r, i) => {
+    const flags = [];
+    if (Math.abs(res.resid_std[i]) > 2) flags.push('OUTLIER');
+    if (res.cooks_d && res.cooks_d[i] > 4 / res.n) flags.push('INFLUENTE');
+    return [i + 1, r, res.resid_std[i], r * r, res.hi ? res.hi[i] : '', res.cooks_d ? res.cooks_d[i] : '', flags.join(' | ') || 'OK'];
+  });
   XLSX.utils.book_append_sheet(wb, buildResidSheet(residRows, name), 'RESIDUALS');
 
-  const sigVars = res.varNames.filter((_, j) => res.p_beta[j + 1] < 0.05);
-  const highVIF = res.vif.filter(v => v > 10).length;
   XLSX.utils.book_append_sheet(wb, buildKPISheet([
     { section: '📌 MODELO' },
     { label: '🏷️ Nome', value: name }, { label: '🤖 Tipo', value: 'Regressão Múltipla' },
@@ -1044,9 +1052,9 @@ export function mExportExcel() {
     { label: '📋 Vars significativas', value: sigVars.join(', ') || 'nenhuma', good: sigVars.length > 0 },
     { section: '⚠️ MULTICOLINEARIDADE' },
     { label: '🔴 VIF > 10 (crítico)', value: highVIF, good: highVIF === 0, note: highVIF > 0 ? 'Verificar COEFICIENTES' : 'OK' },
-    { label: '🟡 VIF > 5 (moderado)', value: res.vif.filter(v => v > 5).length },
+    { label: '🟡 VIF > 5 (moderado)', value: modVIF, good: modVIF === 0 },
     { section: '🚨 OUTLIERS' },
-    { label: '🚨 Outliers (|std|>2)', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0 },
+    { label: '🚨 Outliers (|std|>2)', value: nOutliers, good: nOutliers === 0 },
   ], name), 'MODEL_KPIs');
 
   const coefRows = [
@@ -1096,9 +1104,9 @@ export function mExportExcel() {
       { label: '✅ Significativo?', value: isSignif ? '✅ SIM' : '❌ NÃO', good: isSignif },
       { label: '📋 Vars signif.', value: sigVars.join(', ') || 'nenhuma', good: sigVars.length > 0 },
       { label: '⚠️ VIF crítico (>10)', value: highVIF, good: highVIF === 0 },
-      { label: '🚨 Outliers', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0 },
+      { label: '🚨 Outliers', value: nOutliers, good: nOutliers === 0 },
     ],
-    name, 'Regressão Múltipla', null, null,
+    name, 'Regressão Múltipla', null,
     ['→ PREDICTION_ANALYSIS: Real vs Previsto → Dispersão', '→ COEFICIENTES: ordenar p-valor para variáveis-chave', '→ MODEL_COMPARISON: Tabela Dinâmica Métrica por Modelo', '→ Slicer em VIF para identificar multicolinearidade']
   ), 'DASHBOARD');
 
@@ -1112,7 +1120,7 @@ export function mExportExcel() {
     { label: 'Maior impacto absoluto |β|', value: majorVar },
     { section: '⚠️ DIAGNÓSTICO' },
     { label: 'Multicolinearidade', value: highVIF > 0 ? '❌ VIF crítico em ' + highVIF + ' var(s)' : '✅ VIF OK', good: highVIF === 0 },
-    { label: 'Outliers', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0 },
+    { label: 'Outliers', value: nOutliers, good: nOutliers === 0 },
     { section: '💡 RECOMENDAÇÃO' },
     { label: 'Próximo passo', value: highVIF > 0 ? '⚠️ Remover/combinar vars com VIF > 10' : res.r2adj < 0.5 ? '⚠️ Adicionar mais preditores ou checar não-linearidade' : '✅ Modelo adequado' },
   ], name), 'INSIGHTS');

@@ -359,7 +359,7 @@ export function rrExportExcel() {
       { label: '📉 Ridge Shrinkage', value: shrinkR + '%' },
       { label: '📉 Lasso Shrinkage', value: shrinkL + '%', note: res.lasso.b1 === 0 ? '✅ Feature removida' : '' },
     ],
-    name, 'Regularizada', null, null,
+    name, 'Regularizada', null,
     ['→ MODEL_COMPARISON: R² e RMSE lado a lado por modelo', '→ LAMBDA_SWEEP: gráfico β₁ vs λ → visualizar shrinkage', '→ PREDICTION_ANALYSIS: Ŷ dos 3 modelos por observação', '→ Slicer por Tipo para isolar OLS / Ridge / Lasso']
   ), 'DASHBOARD');
 

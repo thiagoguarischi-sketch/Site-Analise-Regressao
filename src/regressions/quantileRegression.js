@@ -374,7 +374,7 @@ export function qrExportExcel() {
       { label: '📏 Spread β₁ (max-min)', value: slopeSpread.toFixed(4), note: slopeSpread > 0.5 * Math.abs(slopes[Math.floor(slopes.length / 2)]) ? '⚠️ Alta heterogeneidade' : '✅ Efeito uniforme' },
       ...taus.map(t => ({ label: `🎯 τ=${t} Pinball Loss`, value: quantileResults[t].pinballLoss.toFixed(4), good: quantileResults[t].pinballLoss < 1 })),
     ],
-    name, 'Quantílica', null, null,
+    name, 'Quantílica', null,
     ['→ QUANTIL_COMPARISON: β₁ por τ → gráfico de linha para ver heterogeneidade', '→ MODEL_COMPARISON: Slicer por Quantil', '→ PREDICTION_ANALYSIS: múltiplas séries para curvas quantílicas']
   ), 'DASHBOARD');
 

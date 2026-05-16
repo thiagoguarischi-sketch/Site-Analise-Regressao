@@ -391,10 +391,11 @@ export async function poExportExcel() {
   const res = poLastResult;
   const name = document.getElementById('po-analysis-name').value || 'Polinomial';
   const wb = XLSX.utils.book_new();
-  const _rmse = rmse(res.resid);
-  const _mae  = mae(res.resid);
-  const _mape = mape(res.ys, res.yhat);
+  const _rmse    = rmse(res.resid);
+  const _mae     = mae(res.resid);
+  const _mape    = mape(res.ys, res.yhat);
   const isSignif = res.pF < 0.05;
+  const nOutliers = res.resid_std.filter(r => Math.abs(r) > 2).length;
   const tipo = `Polinomial Grau ${res.degree}`;
 
   XLSX.utils.book_append_sheet(wb, buildRawSheet('ID', [res.labelX], res.labelY,
@@ -407,7 +408,7 @@ export async function poExportExcel() {
   });
   XLSX.utils.book_append_sheet(wb, buildPredSheet(predRows, name), 'PREDICTION_ANALYSIS');
 
-  const residRows = res.resid.map((r, i) => [i + 1, r, res.resid_std[i], r * r, res.hi ? res.hi[i] : '', '', Math.abs(res.resid_std[i]) > 2.5 ? 'OUTLIER' : 'OK']);
+  const residRows = res.resid.map((r, i) => [i + 1, r, res.resid_std[i], r * r, res.hi ? res.hi[i] : '', '', Math.abs(res.resid_std[i]) > 2 ? 'OUTLIER' : 'OK']);
   XLSX.utils.book_append_sheet(wb, buildResidSheet(residRows, name), 'RESIDUALS');
 
   XLSX.utils.book_append_sheet(wb, buildKPISheet([
@@ -458,7 +459,6 @@ export async function poExportExcel() {
     ],
     name, tipo,
     [['📐 Equação', res.beta.map((b, j) => j === 0 ? b.toFixed(4) : ` + ${b.toFixed(4)}·X^${j}`).join('')]],
-    null,
     ['→ DEGREE_COMPARISON: R²adj por grau → escolher o melhor grau', '→ PREDICTION_ANALYSIS: Real vs Previsto → gráfico de linha', '→ MODEL_COMPARISON: Slicer por Grau para comparar']
   ), 'DASHBOARD');
 
@@ -471,7 +471,7 @@ export async function poExportExcel() {
     { label: 'Alinhado?', value: res.degree === bestDeg ? '✅ SIM' : `❌ NÃO — recomendado grau ${bestDeg}`, good: res.degree === bestDeg },
     { label: 'Risco overfitting', value: res.degree >= 5 ? '🔴 ALTO' : res.degree >= 4 ? '🟡 MODERADO' : '🟢 BAIXO', good: res.degree < 4 },
     { section: '🚨 OUTLIERS' },
-    { label: 'Outliers', value: res.resid_std.filter(r => Math.abs(r) > 2).length, good: res.resid_std.filter(r => Math.abs(r) > 2).length === 0 },
+    { label: 'Outliers', value: nOutliers, good: nOutliers === 0 },
     { section: '💡 RECOMENDAÇÃO' },
     { label: 'Próximo passo', value: res.degree !== bestDeg ? `⚠️ Testar grau ${bestDeg}` : res.degree >= 5 ? '⚠️ Validar com cross-validation' : '✅ Modelo adequado' },
   ], name), 'INSIGHTS');
