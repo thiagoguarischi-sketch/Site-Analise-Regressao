@@ -104,6 +104,13 @@ body {
   color: var(--txt3); text-transform: uppercase;
   padding: 12px 10px 4px; margin-top: 4px;
 }
+li[data-toc-nav] .toc-module {
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+li[data-toc-nav]:hover .toc-module {
+  color: var(--txt); background: var(--bg3);
+}
 
 /* ── Content ── */
 .content { min-width: 0; }
@@ -3361,7 +3368,23 @@ const MODULE_LABELS = [
 
 function updateDotsAndToc(n) {
   document.querySelectorAll('.toc-group').forEach(function(li) {
-    li.style.display = (parseInt(li.dataset.forModule) === n) ? '' : 'none';
+    var moduleN = parseInt(li.dataset.forModule);
+    var isHeader = li.querySelector('.toc-module') !== null;
+    if (n === 0) {
+      // Na Introdução: mostra todos os cabeçalhos de módulo + links da própria Introdução
+      li.style.display = (isHeader || moduleN === 0) ? '' : 'none';
+      if (isHeader && moduleN > 0) {
+        li.style.cursor = 'pointer';
+        li.dataset.tocNav = moduleN;
+      } else {
+        li.style.cursor = '';
+        delete li.dataset.tocNav;
+      }
+    } else {
+      li.style.display = (moduleN === n) ? '' : 'none';
+      li.style.cursor = '';
+      delete li.dataset.tocNav;
+    }
   });
   document.querySelectorAll('.module-dot').forEach(function(dot, i) {
     dot.classList.toggle('active', i === n);
@@ -3410,6 +3433,12 @@ function showModule(n, skipAnim) {
   });
   showModule(0, true);
 })();
+
+// Navegação pelos cabeçalhos de módulo na Introdução
+document.getElementById('toc-list').addEventListener('click', function(e) {
+  var li = e.target.closest('li[data-toc-nav]');
+  if (li) showModule(parseInt(li.dataset.tocNav));
+});
 
 // TOC link active state within a module
 const tocLinks = document.querySelectorAll('.toc-list a');
