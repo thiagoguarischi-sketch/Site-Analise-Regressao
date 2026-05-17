@@ -11,16 +11,13 @@ let _chatUid        = null;
 let _chatSub        = null;
 let _profileCache   = {}; // friendId → { full_name, email }
 
-// ── Entrada principal ──
+// ── Cache para re-render ao trocar idioma ──
+let _pendingCache = null; // { received, sent, profileMap, uid }
+let _friendsCache = null; // { friends, profileMap, unreadMap, uid }
 
-export async function loadFriendsPanel() {
-  await Promise.all([
-    _loadFriendsList(),
-    _loadPendingRequests(),
-  ]);
-}
+// ── Helpers ──
 
-// ── Utilitários ──
+const _locale = () => document.documentElement.lang === 'en' ? 'en-US' : 'pt-BR';
 
 async function _uid() {
   const { data: { user } } = await db.auth.getUser();
@@ -42,11 +39,20 @@ function _updateSidebarBadge(count) {
   badge.style.display = count ? 'inline' : 'none';
 }
 
+// ── Entrada principal ──
+
+export async function loadFriendsPanel() {
+  await Promise.all([
+    _loadFriendsList(),
+    _loadPendingRequests(),
+  ]);
+}
+
 // ── Busca de usuários ──
 
 export async function searchFriends() {
   const q = document.getElementById('friends-search-input').value.trim();
-  if (q.length < 2) { showToast('Digite pelo menos 2 caracteres.', 'err'); return; }
+  if (q.length < 2) { showToast(window.t('frnd-toast-min2'), 'err'); return; }
 
   const uid = await _uid();
   const btn = document.getElementById('friends-search-btn');
@@ -76,25 +82,25 @@ export async function searchFriends() {
 
     const container = document.getElementById('friends-search-results');
     if (!users?.length) {
-      container.innerHTML = '<p style="color:var(--txt3);font-size:13px;padding:8px 0">Nenhum usuário encontrado.</p>';
+      container.innerHTML = `<p style="color:var(--txt3);font-size:13px;padding:8px 0">${window.t('frnd-not-found')}</p>`;
       return;
     }
 
     container.innerHTML = users.map(u => {
       const rel = relMap[u.id];
-      let action = `<button class="share-btn" onclick="sendFriendRequest('${u.id}')">➕ Adicionar</button>`;
+      let action = `<button class="share-btn" onclick="sendFriendRequest('${u.id}')">${window.t('frnd-btn-add')}</button>`;
       if (rel?.status === 'accepted')
-        action = `<span style="font-size:12px;color:var(--y);font-weight:600">✓ Amigos</span>`;
+        action = `<span style="font-size:12px;color:var(--y);font-weight:600">${window.t('frnd-st-friends')}</span>`;
       else if (rel?.status === 'pending' && rel.isMine)
-        action = `<span style="font-size:12px;color:var(--txt3)">⏳ Aguardando</span>`;
+        action = `<span style="font-size:12px;color:var(--txt3)">${window.t('frnd-st-waiting')}</span>`;
       else if (rel?.status === 'pending' && !rel.isMine)
-        action = `<button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${rel.id}')">✓ Aceitar</button>`;
+        action = `<button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${rel.id}')">${window.t('frnd-btn-accept')}</button>`;
 
       return `
         <div class="friend-card">
           <div class="friend-avatar">${_initials(u.full_name, u.email)}</div>
           <div style="flex:1;min-width:0">
-            <div class="friend-name">${esc(u.full_name || 'Usuário')}</div>
+            <div class="friend-name">${esc(u.full_name || window.t('frnd-default-user'))}</div>
             <div class="friend-email">${esc(u.email || '')}</div>
           </div>
           ${action}
@@ -103,7 +109,7 @@ export async function searchFriends() {
 
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Buscar';
+    btn.textContent = window.t('frnd-search-btn');
   }
 }
 
@@ -117,34 +123,34 @@ export async function sendFriendRequest(addresseeId) {
     status: 'pending',
   });
   if (error) {
-    showToast(error.code === '23505' ? 'Pedido já enviado anteriormente.' : 'Erro ao enviar pedido.', 'err');
+    showToast(error.code === '23505' ? window.t('frnd-toast-dup') : window.t('frnd-toast-req-err'), 'err');
     return;
   }
-  showToast('Pedido de amizade enviado! 🤝', 'ok');
+  showToast(window.t('frnd-toast-sent'), 'ok');
   await searchFriends();
   await _loadPendingRequests();
 }
 
 export async function acceptFriendRequest(friendshipId) {
   const { error } = await db.from('friendships').update({ status: 'accepted' }).eq('id', friendshipId);
-  if (error) { showToast('Erro ao aceitar pedido.', 'err'); return; }
-  showToast('Amizade aceita! 🎉', 'ok');
+  if (error) { showToast(window.t('frnd-toast-acc-err'), 'err'); return; }
+  showToast(window.t('frnd-toast-accepted'), 'ok');
   await loadFriendsPanel();
 }
 
 export async function rejectFriendRequest(friendshipId) {
-  if (!confirm('Recusar este pedido de amizade?')) return;
+  if (!confirm(window.t('frnd-confirm-reject'))) return;
   const { error } = await db.from('friendships').delete().eq('id', friendshipId);
-  if (error) { showToast('Erro ao recusar pedido.', 'err'); return; }
-  showToast('Pedido recusado.', 'info');
+  if (error) { showToast(window.t('frnd-toast-rej-err'), 'err'); return; }
+  showToast(window.t('frnd-toast-rejected'), 'info');
   await _loadPendingRequests();
 }
 
 export async function removeFriend(friendshipId, name) {
-  if (!confirm(`Remover "${name}" da sua lista de amigos?`)) return;
+  if (!confirm(window.t('frnd-confirm-remove').replace('%s', name))) return;
   const { error } = await db.from('friendships').delete().eq('id', friendshipId);
-  if (error) { showToast('Erro ao remover amigo.', 'err'); return; }
-  showToast('Amigo removido.', 'info');
+  if (error) { showToast(window.t('frnd-toast-rem-err'), 'err'); return; }
+  showToast(window.t('frnd-toast-removed'), 'info');
   await _loadFriendsList();
 }
 
@@ -171,7 +177,6 @@ async function _loadPendingRequests() {
   const received = pending.filter(f => f.addressee_id === uid);
   const sent     = pending.filter(f => f.requester_id === uid);
 
-  // Busca também mensagens não lidas para o badge combinado
   const { count: unreadCount } = await db
     .from('messages')
     .select('id', { count: 'exact', head: true })
@@ -180,27 +185,34 @@ async function _loadPendingRequests() {
 
   _updateSidebarBadge(received.length + (unreadCount || 0));
 
+  _pendingCache = { received, sent, profileMap, uid };
+  _renderPending(_pendingCache);
+}
+
+function _renderPending({ received, sent, profileMap }) {
   const container = document.getElementById('friends-pending');
+  if (!container) return;
+
   if (!received.length && !sent.length) {
-    container.innerHTML = '<p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Sem pedidos pendentes.</p>';
+    container.innerHTML = `<p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">${window.t('frnd-no-pending')}</p>`;
     return;
   }
 
   let html = '';
 
   if (received.length) {
-    html += `<div class="import-section-label" style="margin-top:0">Pedidos recebidos (${received.length})</div>`;
+    html += `<div class="import-section-label" style="margin-top:0">${window.t('frnd-received')} (${received.length})</div>`;
     html += received.map(f => {
       const u = profileMap[f.requester_id] || {};
       return `
         <div class="friend-card">
           <div class="friend-avatar" style="background:linear-gradient(135deg,var(--acc),var(--acc2))">${_initials(u.full_name, u.email)}</div>
           <div style="flex:1;min-width:0">
-            <div class="friend-name">${esc(u.full_name || 'Usuário')}</div>
+            <div class="friend-name">${esc(u.full_name || window.t('frnd-default-user'))}</div>
             <div class="friend-email">${esc(u.email || '')}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0">
-            <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${f.id}')">✓ Aceitar</button>
+            <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${f.id}')">${window.t('frnd-btn-accept')}</button>
             <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="rejectFriendRequest('${f.id}')">✕</button>
           </div>
         </div>`;
@@ -208,17 +220,17 @@ async function _loadPendingRequests() {
   }
 
   if (sent.length) {
-    html += `<div class="import-section-label" style="margin-top:${received.length ? '16px' : '0'}">Enviados por mim (${sent.length})</div>`;
+    html += `<div class="import-section-label" style="margin-top:${received.length ? '16px' : '0'}">${window.t('frnd-sent')} (${sent.length})</div>`;
     html += sent.map(f => {
       const u = profileMap[f.addressee_id] || {};
       return `
         <div class="friend-card">
           <div class="friend-avatar" style="background:var(--bg4);border:1px solid var(--brd2)">${_initials(u.full_name, u.email)}</div>
           <div style="flex:1;min-width:0">
-            <div class="friend-name">${esc(u.full_name || 'Usuário')}</div>
+            <div class="friend-name">${esc(u.full_name || window.t('frnd-default-user'))}</div>
             <div class="friend-email">${esc(u.email || '')}</div>
           </div>
-          <span style="font-size:11px;color:var(--txt3);white-space:nowrap">⏳ Aguardando</span>
+          <span style="font-size:11px;color:var(--txt3);white-space:nowrap">${window.t('frnd-st-waiting')}</span>
         </div>`;
     }).join('');
   }
@@ -243,7 +255,6 @@ async function _loadFriendsList() {
 
   if (error) { _showSetup(); return; }
 
-  // Contagem de não lidas por remetente
   const unreadMap = {};
   (unreadRows || []).forEach(m => {
     unreadMap[m.sender_id] = (unreadMap[m.sender_id] || 0) + 1;
@@ -256,20 +267,30 @@ async function _loadFriendsList() {
   if (friendIds.length) {
     const { data: profiles } = await db.from('profiles').select('id, full_name, email').in('id', friendIds);
     profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
-    // Atualiza cache global para uso no chat
     Object.assign(_profileCache, profileMap);
   }
 
+  _friendsCache = { friends, profileMap, unreadMap, uid };
+  _renderFriendsList(_friendsCache);
+}
+
+function _renderFriendsList({ friends, profileMap, unreadMap, uid }) {
   const container = document.getElementById('friends-list');
   const countEl   = document.getElementById('friends-count');
-  if (countEl) countEl.textContent = friends.length ? `${friends.length} amigo${friends.length !== 1 ? 's' : ''}` : '';
+  if (!container) return;
+
+  if (countEl) {
+    countEl.textContent = friends.length
+      ? `${friends.length} ${window.t(friends.length !== 1 ? 'frnd-friends' : 'frnd-friend')}`
+      : '';
+  }
 
   if (!friends.length) {
     container.innerHTML = `
       <div style="text-align:center;padding:32px 16px;color:var(--txt3)">
         <div style="font-size:36px;margin-bottom:10px">👥</div>
-        <div style="font-size:13px;font-weight:600;margin-bottom:4px">Ainda sem amigos por aqui</div>
-        <div style="font-size:12px">Use a busca acima para encontrar e adicionar usuários.</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">${window.t('frnd-empty-title')}</div>
+        <div style="font-size:12px">${window.t('frnd-empty-desc')}</div>
       </div>`;
     return;
   }
@@ -277,7 +298,7 @@ async function _loadFriendsList() {
   container.innerHTML = friends.map(f => {
     const otherId = f.requester_id === uid ? f.addressee_id : f.requester_id;
     const u = profileMap[otherId] || {};
-    const since = new Date(f.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
+    const since = new Date(f.created_at).toLocaleDateString(_locale(), { day: '2-digit', month: 'short', year: '2-digit' });
     const unread = unreadMap[otherId] || 0;
     const unreadBadge = unread
       ? `<span style="background:var(--acc);color:#fff;border-radius:999px;font-size:10px;font-weight:700;padding:2px 6px;margin-left:4px">${unread}</span>`
@@ -287,17 +308,24 @@ async function _loadFriendsList() {
       <div class="friend-card">
         <div class="friend-avatar">${_initials(u.full_name, u.email)}</div>
         <div style="flex:1;min-width:0">
-          <div class="friend-name">${esc(u.full_name || 'Usuário')} ${unreadBadge}</div>
-          <div class="friend-email">${esc(u.email || '')} &nbsp;·&nbsp; amigos desde ${since}</div>
+          <div class="friend-name">${esc(u.full_name || window.t('frnd-default-user'))} ${unreadBadge}</div>
+          <div class="friend-email">${esc(u.email || '')} &nbsp;·&nbsp; ${window.t('frnd-since')} ${since}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="share-btn" style="color:var(--x);border-color:rgba(123,111,255,.3);white-space:nowrap"
-            onclick="openChat('${otherId}')">💬 Mensagem</button>
+            onclick="openChat('${otherId}')">${window.t('frnd-btn-msg')}</button>
           <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3);font-size:11px;white-space:nowrap"
-            onclick="removeFriend('${f.id}','${esc(u.full_name || 'usuário')}')">✕</button>
+            onclick="removeFriend('${f.id}','${esc(u.full_name || window.t('frnd-default-user'))}')">✕</button>
         </div>
       </div>`;
   }).join('');
+}
+
+// ── Re-renderiza ao trocar idioma ──
+
+export function friendsRerender() {
+  if (_pendingCache) _renderPending(_pendingCache);
+  if (_friendsCache) _renderFriendsList(_friendsCache);
 }
 
 // ── Chat ──
@@ -306,26 +334,22 @@ export async function openChat(friendId) {
   _chatFriendId   = friendId;
   _chatUid        = await _uid();
   const friend    = _profileCache[friendId] || {};
-  _chatFriendName = friend.full_name || friend.email || 'Amigo';
+  _chatFriendName = friend.full_name || friend.email || window.t('frnd-default-friend');
 
-  // Monta o overlay
   const overlay = document.getElementById('chat-overlay');
   document.getElementById('chat-friend-name').textContent    = _chatFriendName;
   document.getElementById('chat-friend-avatar').textContent  = _initials(friend.full_name, friend.email);
   overlay.classList.add('open');
   document.getElementById('chat-input').focus();
 
-  // Carrega histórico e marca como lido em paralelo
   await Promise.all([
     _loadChatHistory(),
     db.from('messages').update({ read: true })
       .eq('sender_id', friendId).eq('receiver_id', _chatUid).eq('read', false),
   ]);
 
-  // Atualiza badge após marcar como lido
   _loadPendingRequests();
 
-  // Subscribe realtime para novas mensagens do amigo
   if (_chatSub) db.removeChannel(_chatSub);
   _chatSub = db.channel(`chat_${[_chatUid, friendId].sort().join('_')}`)
     .on('postgres_changes', {
@@ -360,7 +384,7 @@ export async function sendMessage() {
   }).select().single();
 
   if (error) {
-    showToast('Erro ao enviar mensagem.', 'err');
+    showToast(window.t('frnd-msg-err'), 'err');
     input.value = content;
     return;
   }
@@ -370,7 +394,7 @@ export async function sendMessage() {
 async function _loadChatHistory() {
   const uid = _chatUid, fid = _chatFriendId;
   const container = document.getElementById('chat-messages');
-  container.innerHTML = '<p style="text-align:center;color:var(--txt3);font-size:13px;padding:20px">Carregando...</p>';
+  container.innerHTML = `<p style="text-align:center;color:var(--txt3);font-size:13px;padding:20px">${window.t('frnd-chat-loading')}</p>`;
 
   const { data, error } = await db
     .from('messages')
@@ -379,17 +403,17 @@ async function _loadChatHistory() {
     .order('created_at', { ascending: true })
     .limit(200);
 
-  if (error) { container.innerHTML = '<p style="text-align:center;color:var(--acc);font-size:13px;padding:20px">Erro ao carregar mensagens.</p>'; return; }
+  if (error) { container.innerHTML = `<p style="text-align:center;color:var(--acc);font-size:13px;padding:20px">${window.t('frnd-chat-err')}</p>`; return; }
 
   if (!data?.length) {
-    container.innerHTML = '<p style="text-align:center;color:var(--txt3);font-size:13px;padding:40px 20px">Nenhuma mensagem ainda.<br>Diga olá! 👋</p>';
+    container.innerHTML = `<p style="text-align:center;color:var(--txt3);font-size:13px;padding:40px 20px">${window.t('frnd-chat-empty')}</p>`;
     return;
   }
 
   container.innerHTML = '';
   let lastDay = '';
   data.forEach(m => {
-    const day = new Date(m.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    const day = new Date(m.created_at).toLocaleDateString(_locale(), { day: '2-digit', month: 'short' });
     if (day !== lastDay) {
       lastDay = day;
       container.insertAdjacentHTML('beforeend', `<div class="chat-day-sep">${day}</div>`);
@@ -400,7 +424,7 @@ async function _loadChatHistory() {
 }
 
 function _buildBubble(m, isMine) {
-  const time = new Date(m.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const time = new Date(m.created_at).toLocaleTimeString(_locale(), { hour: '2-digit', minute: '2-digit' });
   return `
     <div class="chat-row ${isMine ? 'chat-row-mine' : 'chat-row-theirs'}">
       <div class="chat-bubble ${isMine ? 'chat-bubble-mine' : 'chat-bubble-theirs'}">
@@ -416,7 +440,7 @@ function _appendBubble(m, isMine) {
   const empty = container.querySelector('p');
   if (empty) empty.remove();
 
-  const today = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  const today = new Date().toLocaleDateString(_locale(), { day: '2-digit', month: 'short' });
   const lastSep = container.querySelector('.chat-day-sep:last-of-type');
   if (!lastSep || lastSep.textContent !== today) {
     container.insertAdjacentHTML('beforeend', `<div class="chat-day-sep">${today}</div>`);

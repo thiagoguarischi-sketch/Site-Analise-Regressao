@@ -20,7 +20,7 @@ import {
 
 import { viewAnalysis, closeModal, editAnalysis, deleteAnalysis as deleteAnalysisModal } from './ui/modals.js';
 import { loadShareList, shareRerender, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
-import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
+import { loadFriendsPanel, friendsRerender, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
 import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair, yfRerender } from './ui/yahooFinance.js';
 import { bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize, bcbImportOne, bcbOnModelChange, bcbImportPair, bcbRerender } from './ui/bcbFinance.js';
@@ -106,7 +106,7 @@ Object.assign(window, {
   openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare,
 
   // Amigos
-  loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend,
+  loadFriendsPanel, friendsRerender, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend,
 
   // Chat
   openChat, closeChat, sendMessage,
