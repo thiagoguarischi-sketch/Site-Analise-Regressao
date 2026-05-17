@@ -8,13 +8,13 @@ export async function loadHistory() {
   const historyContainer = document.getElementById('history-list');
   if (!historyContainer) return;
 
-  historyContainer.innerHTML = '<p style="color:var(--txt3);font-size:13px">Carregando...</p>';
+  historyContainer.innerHTML = `<p style="color:var(--txt3);font-size:13px">${window.t('hist-loading')}</p>`;
 
   try {
     const analyses = await fetchAnalyses();
 
     if (!analyses || analyses.length === 0) {
-      historyContainer.innerHTML = '<p style="color:var(--txt3);font-size:13px">Nenhuma análise salva ainda.</p>';
+      historyContainer.innerHTML = `<p style="color:var(--txt3);font-size:13px">${window.t('hist-empty')}</p>`;
       return;
     }
 
@@ -24,7 +24,9 @@ export async function loadHistory() {
     historyContainer.innerHTML = '';
 
     analyses.forEach(a => {
-      const dataFormatada = new Date(a.created_at).toLocaleString('pt-BR');
+      const lang = localStorage.getItem('slope-lang') || 'pt';
+      const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
+      const dataFormatada = new Date(a.created_at).toLocaleString(locale);
       const isSimples = a.tipo === 'simples';
       const isLogistica = a.tipo === 'logistica';
       const isPolinomial = a.tipo === 'polinomial';
@@ -64,9 +66,9 @@ export async function loadHistory() {
                        : isRegularizada ? 'history-badge-regularizada'
                        : 'history-badge-multipla';
 
-      const tipoLabel = isSimples ? 'Regressão Linear'
-                      : isLogistica ? 'Regressão Logística'
-                      : isPolinomial ? `Reg. Polinomial Grau ${a.dados?.degree ?? '?'}`
+      const tipoLabel = isSimples ? window.t('hist-tipo-simples')
+                      : isLogistica ? window.t('hist-tipo-logistica')
+                      : isPolinomial ? `${window.t('hist-tipo-polinomial')} ${a.dados?.degree ?? '?'}`
                       : isSerie
                         ? (serieModelo === 'var'
                             ? `VAR(${a.dados?.p ?? '?'}) – ${a.dados?.k ?? '?'} var.`
@@ -74,10 +76,10 @@ export async function loadHistory() {
                               ? `ARIMA(${a.dados?.p ?? '?'},${a.dados?.d ?? '?'},${a.dados?.q ?? '?'})`
                               : serieModelo === 'garch'
                                 ? 'GARCH(1,1)'
-                                : 'Série Temporal')
-                      : isQuantilica ? 'Reg. Quantílica'
-                      : isRegularizada ? `Reg. Regularizada (λ=${a.dados?.lambda ?? '?'})`
-                      : 'Regressão Múltipla';
+                                : window.t('hist-tipo-serie'))
+                      : isQuantilica ? window.t('hist-tipo-quantilica')
+                      : isRegularizada ? `${window.t('hist-tipo-regularizada')} (λ=${a.dados?.lambda ?? '?'})`
+                      : window.t('hist-tipo-multipla');
 
       const card = document.createElement('div');
       card.className = 'history-item';
@@ -86,18 +88,18 @@ export async function loadHistory() {
         <span class="history-badge ${badgeClass}">${tipoLabel}</span>
         <div class="history-title">${esc(a.nome)}</div>
         <div class="history-desc">${r2Label} = <b style="color:var(--y)">${r2Val}</b> &nbsp;•&nbsp; n = ${a.dados?.n ?? '—'}</div>
-        <div class="history-date">Salvo em ${dataFormatada}</div>
+        <div class="history-date">${window.t('hist-saved-on')} ${dataFormatada}</div>
         <div class="history-actions">
-          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="viewAnalysis('${a.id}')">🔍 Visualizar</button>
-          <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="editAnalysis('${a.id}')">✏️ Editar</button>
-          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;border-color:rgba(255,107,107,.3);color:var(--acc)" onclick="deleteAnalysis('${a.id}')">🗑 Excluir</button>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="viewAnalysis('${a.id}')">🔍 ${window.t('hist-btn-view')}</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="editAnalysis('${a.id}')">✏️ ${window.t('hist-btn-edit')}</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;border-color:rgba(255,107,107,.3);color:var(--acc)" onclick="deleteAnalysis('${a.id}')">🗑 ${window.t('hist-btn-delete')}</button>
         </div>
       `;
       historyContainer.appendChild(card);
     });
   } catch (err) {
     console.error('Erro ao carregar histórico:', err);
-    historyContainer.innerHTML = '<p style="color:var(--acc);font-size:13px">Erro ao carregar histórico.</p>';
+    historyContainer.innerHTML = `<p style="color:var(--acc);font-size:13px">${window.t('hist-error')}</p>`;
   }
 }
 
