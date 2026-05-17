@@ -78,7 +78,7 @@ async function _doSearch() {
   if (!list) return;
   if (!q) { list.innerHTML = ''; return; }
 
-  list.innerHTML = `<div class="yf-loading">Buscando no Banco Central…</div>`;
+  list.innerHTML = `<div class="yf-loading">${window.t?.('mf-buscando-bcb') ?? 'Buscando no Banco Central…'}</div>`;
   try {
     const r = await fetch(`${API_BASE}/bcb/search?q=${encodeURIComponent(q)}`);
     const { series = [], error } = await r.json();
@@ -97,7 +97,7 @@ async function _doSearch() {
       </button>`;
     }).join('');
   } catch {
-    list.innerHTML = `<div class="yf-no-results">Erro de conexão. Tente novamente.</div>`;
+    list.innerHTML = `<div class="yf-no-results">${window.t?.('mf-erro-conexao') ?? 'Erro de conexão. Tente novamente.'}</div>`;
   }
 }
 
@@ -158,7 +158,7 @@ export async function bcbLoadAll() {
   if (fromVal >= toVal)   { showToast('A data inicial deve ser anterior à data final.', 'err'); return; }
 
   const btn = document.getElementById('bcb-load-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Carregando…'; }
+  if (btn) { btn.disabled = true; btn.textContent = window.t?.('mf-carregando') ?? 'Carregando…'; }
   showToast(`Carregando ${_series.length} série${_series.length > 1 ? 's' : ''}…`, 'info');
 
   try {
@@ -187,7 +187,7 @@ export async function bcbLoadAll() {
   } catch {
     showToast('Erro ao carregar dados.', 'err');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Carregar dados'; }
+    if (btn) { btn.disabled = false; btn.textContent = window.t?.('mf-carregar') ?? 'Carregar dados'; }
   }
 }
 
@@ -216,7 +216,7 @@ function _renderNormal() {
 
   const loaded = _series.filter(s => _datasets[s.codigo]);
   if (!loaded.length) {
-    grid.innerHTML = '<p style="color:var(--txt3);font-size:13px;grid-column:1/-1">Nenhum dado carregado ainda. Clique em "Carregar dados".</p>';
+    grid.innerHTML = `<p style="color:var(--txt3);font-size:13px;grid-column:1/-1">${window.t?.('mf-no-data-yf') ?? 'Nenhum dado carregado ainda. Clique em "Carregar dados".'}</p>`;
     return;
   }
 
@@ -264,21 +264,21 @@ function _renderNormal() {
         <select class="yf-select" id="bcb-mdl-${_attr(s.codigo)}"
           onchange="bcbOnModelChange('${_attr(s.codigo)}')"
           style="flex:1;min-width:0;font-size:12px">
-          <option value="serie" selected>Séries Temporais</option>
-          <option value="nova">Reg. Linear</option>
-          <option value="polinomial">Reg. Polinomial</option>
-          <option value="quantilica">Reg. Quantílica</option>
-          <option value="regularizada">Reg. Regularizada</option>
+          <option value="serie" selected>${window.t?.('mf-series-temporais') ?? 'Séries Temporais'}</option>
+          <option value="nova">${window.t?.('mf-reg-linear') ?? 'Reg. Linear'}</option>
+          <option value="polinomial">${window.t?.('mf-reg-polinomial') ?? 'Reg. Polinomial'}</option>
+          <option value="quantilica">${window.t?.('mf-reg-quantilica') ?? 'Reg. Quantílica'}</option>
+          <option value="regularizada">${window.t?.('mf-reg-regularizada') ?? 'Reg. Regularizada'}</option>
         </select>
         <select class="yf-select" id="bcb-sub-${_attr(s.codigo)}"
           style="flex:1;min-width:0;font-size:12px">
-          <option value="classic">Decomposição Clássica</option>
+          <option value="classic">${window.t?.('mf-decomp-classica') ?? 'Decomposição Clássica'}</option>
           <option value="arima">ARIMA</option>
           <option value="garch">GARCH</option>
           <option value="var">VAR</option>
         </select>
         <button class="yf-fetch-btn" style="padding:6px 12px;font-size:12px;white-space:nowrap"
-          onclick="bcbImportOne('${_attr(s.codigo)}')">Importar</button>
+          onclick="bcbImportOne('${_attr(s.codigo)}')">${window.t?.('mf-importar') ?? 'Importar'}</button>
       </div>
     </div>`;
   }).join('');
@@ -289,7 +289,7 @@ export function bcbToggleNormalize() {
   _normalized = !_normalized;
   const btn = document.getElementById('bcb-norm-btn');
   if (btn) {
-    btn.textContent = _normalized ? '% Variação' : '📊 Valor real';
+    btn.textContent = _normalized ? (window.t?.('mf-variacao') ?? '% Variação') : (window.t?.('mf-valor-real') ?? '📊 Valor real');
     btn.classList.toggle('active', _normalized);
   }
   if (Object.keys(_datasets).length) _renderCompare();
@@ -664,6 +664,11 @@ export function bcbImportPair(switchTabFn) {
     switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
 
   showToast(`${pairs.length} obs. importadas: ${xCod} (X) × ${yCod} (Y)`, 'ok');
+}
+
+// ── Re-renderiza cards ao trocar idioma ───────────────────────────────────────
+export function bcbRerender() {
+  if (Object.keys(_datasets).length) _renderResults();
 }
 
 // ── Expõe datasets carregados para o combinador cross-source ──────────────────

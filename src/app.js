@@ -22,8 +22,8 @@ import { viewAnalysis, closeModal, editAnalysis, deleteAnalysis as deleteAnalysi
 import { loadShareList, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
 import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
-import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair } from './ui/yahooFinance.js';
-import { bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize, bcbImportOne, bcbOnModelChange, bcbImportPair } from './ui/bcbFinance.js';
+import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair, yfRerender } from './ui/yahooFinance.js';
+import { bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize, bcbImportOne, bcbOnModelChange, bcbImportPair, bcbRerender } from './ui/bcbFinance.js';
 import { crossRefresh, crossUpdateSeries, crossImportPair, crossSTModelChange, crossSTSrcChange, crossVarSrcChange, crossAddVarSeries, crossRemoveVarSeries, crossImportST } from './ui/crossImport.js';
 
 import {
@@ -113,13 +113,13 @@ Object.assign(window, {
 
   // Mercado Financeiro — Yahoo Finance
   yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize,
-  yfOnModelChange,
+  yfOnModelChange, yfRerender,
   yfImportOne: sym => yfImportOne(sym, switchTab),
   yfImportPair: () => yfImportPair(switchTab),
 
   // Mercado Financeiro — Banco Central do Brasil
   bcbSearchInput, bcbAddSerie, bcbRemoveSerie, bcbLoadAll, bcbSwitchView, bcbToggleNormalize,
-  bcbOnModelChange,
+  bcbOnModelChange, bcbRerender,
   bcbImportOne: cod => bcbImportOne(cod, switchTab),
   bcbImportPair: () => bcbImportPair(switchTab),
 

@@ -3906,13 +3906,14 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(124,131,253,.12)">📈</div>
-          Mercado Financeiro
-          <span style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Importe dados históricos de ações, ETFs e criptomoedas</span>
+          <span data-i18n="mf-yf-titulo">Mercado Financeiro</span>
+          <span data-i18n="mf-yf-sub" style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Importe dados históricos de ações, ETFs e criptomoedas</span>
         </div>
 
         <div class="yf-search-wrap">
           <span class="yf-search-icon">🔍</span>
           <input id="yf-search" class="yf-search-input" type="text"
+            data-i18n-placeholder="mf-yf-search-ph"
             placeholder="Pesquise um ativo: AAPL, PETR4.SA, BTC-USD, ^BVSP…"
             oninput="yfSearchInput()" autocomplete="off" spellcheck="false">
         </div>
@@ -3924,33 +3925,33 @@
         <!-- Opções globais -->
         <div id="yf-global-opts" class="yf-opts-row" style="display:none">
           <div class="yf-field">
-            <label class="yf-label">De</label>
+            <label class="yf-label" data-i18n="mf-de">De</label>
             <input type="date" id="yf-date-from" class="yf-date">
           </div>
           <div class="yf-field">
-            <label class="yf-label">Até</label>
+            <label class="yf-label" data-i18n="mf-ate">Até</label>
             <input type="date" id="yf-date-to" class="yf-date">
           </div>
           <div class="yf-field">
-            <label class="yf-label">Intervalo</label>
+            <label class="yf-label" data-i18n="mf-intervalo">Intervalo</label>
             <select id="yf-interval" class="yf-select">
-              <option value="1d" selected>Diário</option>
-              <option value="1wk">Semanal</option>
-              <option value="1mo">Mensal</option>
+              <option value="1d" selected data-i18n="mf-diario">Diário</option>
+              <option value="1wk" data-i18n="mf-semanal">Semanal</option>
+              <option value="1mo" data-i18n="mf-mensal">Mensal</option>
             </select>
           </div>
           <div class="yf-field">
-            <label class="yf-label">Variável Y</label>
+            <label class="yf-label" data-i18n="mf-col-vary">Variável Y</label>
             <select id="yf-col-y" class="yf-select">
-              <option value="close" selected>Fechamento</option>
+              <option value="close" selected data-i18n="mf-fechamento">Fechamento</option>
               <option value="adjclose">Adj. Close</option>
-              <option value="open">Abertura</option>
-              <option value="high">Máxima</option>
-              <option value="low">Mínima</option>
+              <option value="open" data-i18n="mf-abertura">Abertura</option>
+              <option value="high" data-i18n="mf-maxima">Máxima</option>
+              <option value="low" data-i18n="mf-minima">Mínima</option>
               <option value="volume">Volume</option>
             </select>
           </div>
-          <button id="yf-load-btn" class="yf-fetch-btn" onclick="yfLoadAll()">Carregar dados</button>
+          <button id="yf-load-btn" class="yf-fetch-btn" data-i18n="mf-carregar" onclick="yfLoadAll()">Carregar dados</button>
         </div>
       </div>
 
@@ -3960,10 +3961,10 @@
         <!-- Toggle de view -->
         <div class="yf-view-bar">
           <div class="yf-view-tabs">
-            <button class="yf-view-btn active" data-view="normal"  onclick="yfSwitchView('normal')">⊞ Individual</button>
-            <button class="yf-view-btn"         data-view="compare" onclick="yfSwitchView('compare')">📊 Comparador</button>
+            <button class="yf-view-btn active" data-view="normal"  onclick="yfSwitchView('normal')" data-i18n="mf-individual">⊞ Individual</button>
+            <button class="yf-view-btn"         data-view="compare" onclick="yfSwitchView('compare')" data-i18n="mf-comparador">📊 Comparador</button>
           </div>
-          <button id="yf-norm-btn" class="yf-fetch-btn" style="padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--txt2);border:1px solid var(--brd2)" onclick="yfToggleNormalize()">📊 Preço real</button>
+          <button id="yf-norm-btn" class="yf-fetch-btn" style="padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--txt2);border:1px solid var(--brd2)" data-i18n="mf-preco-real" onclick="yfToggleNormalize()">📊 Preço real</button>
         </div>
 
         <!-- Vista individual: grid de cards -->
@@ -3972,7 +3973,7 @@
         <!-- Vista comparador -->
         <div id="yf-view-compare" style="display:none">
           <div class="card" style="padding:20px">
-            <p id="yf-compare-ph" style="color:var(--txt3);font-size:13px;text-align:center;padding:24px 0">
+            <p id="yf-compare-ph" data-i18n="mf-yf-comp-ph" style="color:var(--txt3);font-size:13px;text-align:center;padding:24px 0">
               Carregue ao menos um ativo para ver o comparador.
             </p>
             <div style="position:relative;height:380px">
@@ -3986,36 +3987,36 @@
           <div class="card" style="padding:20px">
             <div class="card-title" style="font-size:14px;margin-bottom:14px">
               <div class="card-title-icon" style="background:rgba(124,131,253,.15);font-size:14px">🔗</div>
-              Importar par de ativos para regressão
+              <span data-i18n="mf-par-yf-titulo">Importar par de ativos para regressão</span>
             </div>
-            <p style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">
+            <p data-i18n="mf-par-yf-desc" style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">
               Selecione dois ativos e importe-os como variáveis X e Y em qualquer modelo de regressão. Exemplo: Petrobras × Ibovespa na Regressão Linear.
             </p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
               <div>
-                <div style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ativo X (variável independente)</div>
+                <div data-i18n="mf-ativo-x" style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ativo X (variável independente)</div>
                 <div style="display:flex;gap:6px">
                   <select class="yf-select" id="yf-pair-x-sym" style="flex:1;min-width:0"></select>
                   <select class="yf-select" id="yf-pair-x-col" style="width:110px">
-                    <option value="close">Fechamento</option>
+                    <option value="close" data-i18n="mf-fechamento">Fechamento</option>
                     <option value="adjclose">Adj. Close</option>
-                    <option value="open">Abertura</option>
-                    <option value="high">Máxima</option>
-                    <option value="low">Mínima</option>
+                    <option value="open" data-i18n="mf-abertura">Abertura</option>
+                    <option value="high" data-i18n="mf-maxima">Máxima</option>
+                    <option value="low" data-i18n="mf-minima">Mínima</option>
                     <option value="volume">Volume</option>
                   </select>
                 </div>
               </div>
               <div>
-                <div style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ativo Y (variável dependente)</div>
+                <div data-i18n="mf-ativo-y" style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Ativo Y (variável dependente)</div>
                 <div style="display:flex;gap:6px">
                   <select class="yf-select" id="yf-pair-y-sym" style="flex:1;min-width:0"></select>
                   <select class="yf-select" id="yf-pair-y-col" style="width:110px">
-                    <option value="close">Fechamento</option>
+                    <option value="close" data-i18n="mf-fechamento">Fechamento</option>
                     <option value="adjclose">Adj. Close</option>
-                    <option value="open">Abertura</option>
-                    <option value="high">Máxima</option>
-                    <option value="low">Mínima</option>
+                    <option value="open" data-i18n="mf-abertura">Abertura</option>
+                    <option value="high" data-i18n="mf-maxima">Máxima</option>
+                    <option value="low" data-i18n="mf-minima">Mínima</option>
                     <option value="volume">Volume</option>
                   </select>
                 </div>
@@ -4023,12 +4024,12 @@
             </div>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <select class="yf-select" id="yf-pair-model" style="flex:1;min-width:160px;font-size:12px">
-                <option value="nova">Reg. Linear</option>
-                <option value="polinomial">Reg. Polinomial</option>
-                <option value="quantilica">Reg. Quantílica</option>
-                <option value="regularizada">Reg. Regularizada</option>
+                <option value="nova" data-i18n="mf-reg-linear">Reg. Linear</option>
+                <option value="polinomial" data-i18n="mf-reg-polinomial">Reg. Polinomial</option>
+                <option value="quantilica" data-i18n="mf-reg-quantilica">Reg. Quantílica</option>
+                <option value="regularizada" data-i18n="mf-reg-regularizada">Reg. Regularizada</option>
               </select>
-              <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px;white-space:nowrap"
+              <button class="yf-fetch-btn" data-i18n="mf-importar-par" style="padding:8px 20px;font-size:13px;white-space:nowrap"
                 onclick="yfImportPair()">Importar par</button>
             </div>
           </div>
@@ -4045,12 +4046,12 @@
           <div class="card-title">
             <div class="card-title-icon" style="background:rgba(0,212,160,.12)">🏛️</div>
             Banco Central do Brasil
-            <span style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Importe séries do SGS/BCB por nome ou código</span>
+            <span data-i18n="mf-bcb-sub" style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Importe séries do SGS/BCB por nome ou código</span>
           </div>
 
           <!-- Séries populares -->
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;align-items:center">
-            <span style="font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-right:2px">Séries populares:</span>
+            <span data-i18n="mf-series-pop" style="font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-right:2px">Séries populares:</span>
             <button class="bcb-quick-btn" onclick="bcbAddSerie('432','Taxa SELIC acumulada no mês','Mensal','% a.a.')">SELIC</button>
             <button class="bcb-quick-btn" onclick="bcbAddSerie('11','CDI acumulada no mês','Mensal','% a.a.')">CDI</button>
             <button class="bcb-quick-btn" onclick="bcbAddSerie('433','IPCA - Variação mensal','Mensal','%')">IPCA</button>
@@ -4064,6 +4065,7 @@
           <div id="bcb-search-wrap" class="yf-search-wrap">
             <span class="yf-search-icon">🔍</span>
             <input id="bcb-search" class="yf-search-input" type="text"
+              data-i18n-placeholder="mf-bcb-search-ph"
               placeholder="Pesquise pelo nome (ex: SELIC, câmbio, IPCA) ou código numérico (ex: 432)…"
               oninput="bcbSearchInput()" autocomplete="off" spellcheck="false">
           </div>
@@ -4075,14 +4077,14 @@
           <!-- Opções globais -->
           <div id="bcb-global-opts" class="yf-opts-row" style="display:none">
             <div class="yf-field">
-              <label class="yf-label">De</label>
+              <label class="yf-label" data-i18n="mf-de">De</label>
               <input type="date" id="bcb-date-from" class="yf-date">
             </div>
             <div class="yf-field">
-              <label class="yf-label">Até</label>
+              <label class="yf-label" data-i18n="mf-ate">Até</label>
               <input type="date" id="bcb-date-to" class="yf-date">
             </div>
-            <button id="bcb-load-btn" class="yf-fetch-btn" onclick="bcbLoadAll()">Carregar dados</button>
+            <button id="bcb-load-btn" class="yf-fetch-btn" data-i18n="mf-carregar" onclick="bcbLoadAll()">Carregar dados</button>
           </div>
         </div>
 
@@ -4092,10 +4094,10 @@
           <!-- Toggle de view -->
           <div class="yf-view-bar">
             <div class="yf-view-tabs">
-              <button class="bcb-view-btn active" data-view="normal"  onclick="bcbSwitchView('normal')">⊞ Individual</button>
-              <button class="bcb-view-btn"         data-view="compare" onclick="bcbSwitchView('compare')">📊 Comparador</button>
+              <button class="bcb-view-btn active" data-view="normal"  onclick="bcbSwitchView('normal')" data-i18n="mf-individual">⊞ Individual</button>
+              <button class="bcb-view-btn"         data-view="compare" onclick="bcbSwitchView('compare')" data-i18n="mf-comparador">📊 Comparador</button>
             </div>
-            <button id="bcb-norm-btn" class="yf-fetch-btn" style="padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--txt2);border:1px solid var(--brd2)" onclick="bcbToggleNormalize()">📊 Valor real</button>
+            <button id="bcb-norm-btn" class="yf-fetch-btn" style="padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--txt2);border:1px solid var(--brd2)" data-i18n="mf-valor-real" onclick="bcbToggleNormalize()">📊 Valor real</button>
           </div>
 
           <!-- Vista individual: grid de cards -->
@@ -4104,7 +4106,7 @@
           <!-- Vista comparador -->
           <div id="bcb-view-compare" style="display:none">
             <div class="card" style="padding:20px">
-              <p id="bcb-compare-ph" style="color:var(--txt3);font-size:13px;text-align:center;padding:24px 0">
+              <p id="bcb-compare-ph" data-i18n="mf-bcb-comp-ph" style="color:var(--txt3);font-size:13px;text-align:center;padding:24px 0">
                 Carregue ao menos uma série para ver o comparador.
               </p>
               <div style="position:relative;height:380px">
@@ -4118,29 +4120,29 @@
             <div class="card" style="padding:20px">
               <div class="card-title" style="font-size:14px;margin-bottom:14px">
                 <div class="card-title-icon" style="background:rgba(0,212,160,.15);font-size:14px">🔗</div>
-                Importar par de séries para regressão
+                <span data-i18n="mf-par-bcb-titulo">Importar par de séries para regressão</span>
               </div>
-              <p style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">
+              <p data-i18n="mf-par-bcb-desc" style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">
                 Selecione duas séries e importe-as como variáveis X e Y em qualquer modelo de regressão. Exemplo: SELIC × IPCA na Regressão Linear.
               </p>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
                 <div>
-                  <div style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Série X (variável independente)</div>
+                  <div data-i18n="mf-serie-x" style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Série X (variável independente)</div>
                   <select class="yf-select" id="bcb-pair-x" style="width:100%"></select>
                 </div>
                 <div>
-                  <div style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Série Y (variável dependente)</div>
+                  <div data-i18n="mf-serie-y" style="font-size:11px;color:var(--txt3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Série Y (variável dependente)</div>
                   <select class="yf-select" id="bcb-pair-y" style="width:100%"></select>
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                 <select class="yf-select" id="bcb-pair-model" style="flex:1;min-width:160px;font-size:12px">
-                  <option value="nova">Reg. Linear</option>
-                  <option value="polinomial">Reg. Polinomial</option>
-                  <option value="quantilica">Reg. Quantílica</option>
-                  <option value="regularizada">Reg. Regularizada</option>
+                  <option value="nova" data-i18n="mf-reg-linear">Reg. Linear</option>
+                  <option value="polinomial" data-i18n="mf-reg-polinomial">Reg. Polinomial</option>
+                  <option value="quantilica" data-i18n="mf-reg-quantilica">Reg. Quantílica</option>
+                  <option value="regularizada" data-i18n="mf-reg-regularizada">Reg. Regularizada</option>
                 </select>
-                <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px;white-space:nowrap"
+                <button class="yf-fetch-btn" data-i18n="mf-importar-par" style="padding:8px 20px;font-size:13px;white-space:nowrap"
                   onclick="bcbImportPair()">Importar par</button>
               </div>
             </div>
@@ -4154,14 +4156,14 @@
         <div class="card" style="padding:20px">
           <div class="card-title" style="font-size:14px;margin-bottom:10px">
             <div class="card-title-icon" style="background:rgba(255,193,7,.13);font-size:14px">🔀</div>
-            Combinador de Fontes
-            <span style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Misture dados do BCB e do Yahoo Finance no mesmo modelo</span>
+            <span data-i18n="mf-cross-titulo">Combinador de Fontes</span>
+            <span data-i18n="mf-cross-sub" style="font-size:12px;color:var(--txt3);font-weight:400;margin-left:8px">Misture dados do BCB e do Yahoo Finance no mesmo modelo</span>
           </div>
-          <p style="font-size:12px;color:var(--txt3);margin-bottom:12px;line-height:1.5">
+          <p data-i18n="mf-cross-desc" style="font-size:12px;color:var(--txt3);margin-bottom:12px;line-height:1.5">
             Carregue séries em qualquer aba acima e combine-as aqui como variáveis X e Y para qualquer modelo de regressão ou série temporal.
           </p>
 
-          <div id="cross-no-data" style="font-size:13px;color:var(--txt3);text-align:center;padding:20px 0;border:1px dashed var(--brd2);border-radius:8px">
+          <div id="cross-no-data" data-i18n="mf-cross-nodata" style="font-size:13px;color:var(--txt3);text-align:center;padding:20px 0;border:1px dashed var(--brd2);border-radius:8px">
             Carregue ao menos 2 séries (em qualquer fonte acima) para usar o combinador.
           </div>
 
@@ -4170,7 +4172,7 @@
 
               <!-- Variável X -->
               <div>
-                <div style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Variável X — independente</div>
+                <div data-i18n="mf-varx-ind" style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Variável X — independente</div>
                 <div style="display:flex;flex-direction:column;gap:6px">
                   <select class="yf-select" id="cross-x-src" onchange="crossUpdateSeries('x')">
                     <option value="yf">📈 Yahoo Finance</option>
@@ -4179,11 +4181,11 @@
                   <select class="yf-select" id="cross-x-id"></select>
                   <div id="cross-x-col-wrap">
                     <select class="yf-select" id="cross-x-col">
-                      <option value="close">Fechamento</option>
+                      <option value="close" data-i18n="mf-fechamento">Fechamento</option>
                       <option value="adjclose">Adj. Close</option>
-                      <option value="open">Abertura</option>
-                      <option value="high">Máxima</option>
-                      <option value="low">Mínima</option>
+                      <option value="open" data-i18n="mf-abertura">Abertura</option>
+                      <option value="high" data-i18n="mf-maxima">Máxima</option>
+                      <option value="low" data-i18n="mf-minima">Mínima</option>
                       <option value="volume">Volume</option>
                     </select>
                   </div>
@@ -4192,7 +4194,7 @@
 
               <!-- Variável Y -->
               <div>
-                <div style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Variável Y — dependente</div>
+                <div data-i18n="mf-vary-dep" style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Variável Y — dependente</div>
                 <div style="display:flex;flex-direction:column;gap:6px">
                   <select class="yf-select" id="cross-y-src" onchange="crossUpdateSeries('y')">
                     <option value="yf">📈 Yahoo Finance</option>
@@ -4201,11 +4203,11 @@
                   <select class="yf-select" id="cross-y-id"></select>
                   <div id="cross-y-col-wrap">
                     <select class="yf-select" id="cross-y-col">
-                      <option value="close">Fechamento</option>
+                      <option value="close" data-i18n="mf-fechamento">Fechamento</option>
                       <option value="adjclose">Adj. Close</option>
-                      <option value="open">Abertura</option>
-                      <option value="high">Máxima</option>
-                      <option value="low">Mínima</option>
+                      <option value="open" data-i18n="mf-abertura">Abertura</option>
+                      <option value="high" data-i18n="mf-maxima">Máxima</option>
+                      <option value="low" data-i18n="mf-minima">Mínima</option>
                       <option value="volume">Volume</option>
                     </select>
                   </div>
@@ -4216,12 +4218,12 @@
 
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <select class="yf-select" id="cross-model" style="flex:1;min-width:160px;font-size:12px">
-                <option value="nova">Reg. Linear</option>
-                <option value="polinomial">Reg. Polinomial</option>
-                <option value="quantilica">Reg. Quantílica</option>
-                <option value="regularizada">Reg. Regularizada</option>
+                <option value="nova" data-i18n="mf-reg-linear">Reg. Linear</option>
+                <option value="polinomial" data-i18n="mf-reg-polinomial">Reg. Polinomial</option>
+                <option value="quantilica" data-i18n="mf-reg-quantilica">Reg. Quantílica</option>
+                <option value="regularizada" data-i18n="mf-reg-regularizada">Reg. Regularizada</option>
               </select>
-              <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px;white-space:nowrap"
+              <button class="yf-fetch-btn" data-i18n="mf-importar-par" style="padding:8px 20px;font-size:13px;white-space:nowrap"
                 onclick="crossImportPair()">Importar par</button>
             </div>
           </div>
@@ -4232,10 +4234,10 @@
           <hr style="border:none;border-top:1px solid var(--brd2);margin:20px 0">
 
           <div style="font-size:13px;font-weight:600;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:8px">
-            <span>📉</span> Séries Temporais
+            <span data-i18n="mf-cross-ts">📉 Séries Temporais</span>
           </div>
 
-          <div id="cross-st-no-data" style="font-size:13px;color:var(--txt3);text-align:center;padding:16px 0;border:1px dashed var(--brd2);border-radius:8px">
+          <div id="cross-st-no-data" data-i18n="mf-cross-st-nodata" style="font-size:13px;color:var(--txt3);text-align:center;padding:16px 0;border:1px dashed var(--brd2);border-radius:8px">
             Carregue ao menos 1 série (em qualquer fonte acima) para usar esta seção.
           </div>
 
@@ -4243,18 +4245,18 @@
 
             <!-- Sub-modelo -->
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-              <span style="font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Sub-modelo</span>
+              <span data-i18n="mf-submodelo" style="font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">Sub-modelo</span>
               <select class="yf-select" id="cross-st-model" style="flex:1;min-width:160px;font-size:12px" onchange="crossSTModelChange()">
-                <option value="classic">Decomposição Clássica</option>
+                <option value="classic" data-i18n="mf-decomp-classica">Decomposição Clássica</option>
                 <option value="arima">ARIMA</option>
                 <option value="garch">GARCH</option>
-                <option value="var">VAR (múltiplas séries)</option>
+                <option value="var" data-i18n="mf-var-mult">VAR (múltiplas séries)</option>
               </select>
             </div>
 
             <!-- Série única (classic / ARIMA / GARCH) -->
             <div id="cross-st-single">
-              <div style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Série a importar</div>
+              <div data-i18n="mf-serie-importar" style="font-size:11px;color:var(--txt3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Série a importar</div>
               <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
                 <select class="yf-select" id="cross-st-src" onchange="crossSTSrcChange()">
                   <option value="yf">📈 Yahoo Finance</option>
@@ -4263,27 +4265,27 @@
                 <select class="yf-select" id="cross-st-id"></select>
                 <div id="cross-st-col-wrap">
                   <select class="yf-select" id="cross-st-col" style="width:100%">
-                    <option value="close">Fechamento</option>
+                    <option value="close" data-i18n="mf-fechamento">Fechamento</option>
                     <option value="adjclose">Adj. Close</option>
-                    <option value="open">Abertura</option>
-                    <option value="high">Máxima</option>
-                    <option value="low">Mínima</option>
+                    <option value="open" data-i18n="mf-abertura">Abertura</option>
+                    <option value="high" data-i18n="mf-maxima">Máxima</option>
+                    <option value="low" data-i18n="mf-minima">Mínima</option>
                     <option value="volume">Volume</option>
                   </select>
                 </div>
               </div>
-              <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px"
+              <button class="yf-fetch-btn" data-i18n="mf-importar-serie" style="padding:8px 20px;font-size:13px"
                 onclick="crossImportST()">Importar série</button>
             </div>
 
             <!-- VAR (múltiplas séries) -->
             <div id="cross-st-var" style="display:none">
-              <div style="font-size:11px;color:var(--txt3);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Séries para o VAR</div>
+              <div data-i18n="mf-series-var" style="font-size:11px;color:var(--txt3);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Séries para o VAR</div>
               <div id="cross-var-list" style="margin-bottom:10px"></div>
               <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                <button class="yf-fetch-btn" style="padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--txt2);border:1px solid var(--brd2)"
+                <button class="yf-fetch-btn" data-i18n="mf-add-serie" style="padding:6px 14px;font-size:12px;background:var(--bg3);color:var(--txt2);border:1px solid var(--brd2)"
                   onclick="crossAddVarSeries()">+ Série</button>
-                <button class="yf-fetch-btn" style="padding:8px 20px;font-size:13px"
+                <button class="yf-fetch-btn" data-i18n="mf-importar-var" style="padding:8px 20px;font-size:13px"
                   onclick="crossImportST()">Importar VAR</button>
               </div>
             </div>
@@ -6724,6 +6726,69 @@ window.openCurso = openCurso;
       'imp-suggestions-label':'Modelos sugeridos para seus dados',
       'btn-importar':       '✓ Importar para análise',
       'btn-cancelar':       'Cancelar',
+      /* mercado financeiro */
+      'mf-yf-titulo':       'Mercado Financeiro',
+      'mf-yf-sub':          'Importe dados históricos de ações, ETFs e criptomoedas',
+      'mf-yf-search-ph':    'Pesquise um ativo: AAPL, PETR4.SA, BTC-USD, ^BVSP…',
+      'mf-de':              'De',
+      'mf-ate':             'Até',
+      'mf-intervalo':       'Intervalo',
+      'mf-diario':          'Diário',
+      'mf-semanal':         'Semanal',
+      'mf-mensal':          'Mensal',
+      'mf-col-vary':        'Variável Y',
+      'mf-fechamento':      'Fechamento',
+      'mf-abertura':        'Abertura',
+      'mf-maxima':          'Máxima',
+      'mf-minima':          'Mínima',
+      'mf-carregar':        'Carregar dados',
+      'mf-individual':      '⊞ Individual',
+      'mf-comparador':      '📊 Comparador',
+      'mf-preco-real':      '📊 Preço real',
+      'mf-valor-real':      '📊 Valor real',
+      'mf-yf-comp-ph':      'Carregue ao menos um ativo para ver o comparador.',
+      'mf-par-yf-titulo':   'Importar par de ativos para regressão',
+      'mf-par-yf-desc':     'Selecione dois ativos e importe-os como variáveis X e Y em qualquer modelo de regressão. Exemplo: Petrobras × Ibovespa na Regressão Linear.',
+      'mf-ativo-x':         'Ativo X (variável independente)',
+      'mf-ativo-y':         'Ativo Y (variável dependente)',
+      'mf-importar-par':    'Importar par',
+      'mf-bcb-sub':         'Importe séries do SGS/BCB por nome ou código',
+      'mf-series-pop':      'Séries populares:',
+      'mf-bcb-search-ph':   'Pesquise pelo nome (ex: SELIC, câmbio, IPCA) ou código numérico (ex: 432)…',
+      'mf-bcb-comp-ph':     'Carregue ao menos uma série para ver o comparador.',
+      'mf-par-bcb-titulo':  'Importar par de séries para regressão',
+      'mf-par-bcb-desc':    'Selecione duas séries e importe-as como variáveis X e Y em qualquer modelo de regressão. Exemplo: SELIC × IPCA na Regressão Linear.',
+      'mf-serie-x':         'Série X (variável independente)',
+      'mf-serie-y':         'Série Y (variável dependente)',
+      'mf-cross-titulo':    'Combinador de Fontes',
+      'mf-cross-sub':       'Misture dados do BCB e do Yahoo Finance no mesmo modelo',
+      'mf-cross-desc':      'Carregue séries em qualquer aba acima e combine-as aqui como variáveis X e Y para qualquer modelo de regressão ou série temporal.',
+      'mf-cross-nodata':    'Carregue ao menos 2 séries (em qualquer fonte acima) para usar o combinador.',
+      'mf-varx-ind':        'Variável X — independente',
+      'mf-vary-dep':        'Variável Y — dependente',
+      'mf-cross-ts':        '📉 Séries Temporais',
+      'mf-cross-st-nodata': 'Carregue ao menos 1 série (em qualquer fonte acima) para usar esta seção.',
+      'mf-submodelo':       'Sub-modelo',
+      'mf-decomp-classica': 'Decomposição Clássica',
+      'mf-var-mult':        'VAR (múltiplas séries)',
+      'mf-serie-importar':  'Série a importar',
+      'mf-importar-serie':  'Importar série',
+      'mf-importar-var':    'Importar VAR',
+      'mf-series-var':      'Séries para o VAR',
+      'mf-add-serie':       '+ Série',
+      'mf-reg-linear':      'Reg. Linear',
+      'mf-reg-polinomial':  'Reg. Polinomial',
+      'mf-reg-quantilica':  'Reg. Quantílica',
+      'mf-reg-regularizada':'Reg. Regularizada',
+      'mf-series-temporais':'Séries Temporais',
+      /* mercado financeiro — strings JS dinâmicas */
+      'mf-importar':        'Importar',
+      'mf-buscando':        'Buscando…',
+      'mf-buscando-bcb':    'Buscando no Banco Central…',
+      'mf-erro-conexao':    'Erro de conexão. Tente novamente.',
+      'mf-carregando':      'Carregando…',
+      'mf-variacao':        '% Variação',
+      'mf-no-data-yf':      'Nenhum dado carregado ainda. Clique em "Carregar dados".',
     },
     en: {
       /* tabs */
@@ -7008,10 +7073,75 @@ window.openCurso = openCurso;
       'imp-suggestions-label':'Suggested models for your data',
       'btn-importar':       '✓ Import for analysis',
       'btn-cancelar':       'Cancel',
+      /* financial market */
+      'mf-yf-titulo':       'Financial Market',
+      'mf-yf-sub':          'Import historical data for stocks, ETFs, and cryptocurrencies',
+      'mf-yf-search-ph':    'Search an asset: AAPL, PETR4.SA, BTC-USD, ^BVSP…',
+      'mf-de':              'From',
+      'mf-ate':             'To',
+      'mf-intervalo':       'Interval',
+      'mf-diario':          'Daily',
+      'mf-semanal':         'Weekly',
+      'mf-mensal':          'Monthly',
+      'mf-col-vary':        'Variable Y',
+      'mf-fechamento':      'Close',
+      'mf-abertura':        'Open',
+      'mf-maxima':          'High',
+      'mf-minima':          'Low',
+      'mf-carregar':        'Load data',
+      'mf-individual':      '⊞ Individual',
+      'mf-comparador':      '📊 Comparison',
+      'mf-preco-real':      '📊 Real price',
+      'mf-valor-real':      '📊 Real value',
+      'mf-yf-comp-ph':      'Load at least one asset to see the comparison.',
+      'mf-par-yf-titulo':   'Import asset pair for regression',
+      'mf-par-yf-desc':     'Select two assets and import them as X and Y variables in any regression model. Example: Petrobras × Ibovespa in Linear Regression.',
+      'mf-ativo-x':         'Asset X (independent variable)',
+      'mf-ativo-y':         'Asset Y (dependent variable)',
+      'mf-importar-par':    'Import pair',
+      'mf-bcb-sub':         'Import SGS/BCB series by name or code',
+      'mf-series-pop':      'Popular series:',
+      'mf-bcb-search-ph':   'Search by name (e.g.: SELIC, exchange rate, IPCA) or numeric code (e.g.: 432)…',
+      'mf-bcb-comp-ph':     'Load at least one series to see the comparison.',
+      'mf-par-bcb-titulo':  'Import series pair for regression',
+      'mf-par-bcb-desc':    'Select two series and import them as X and Y variables in any regression model. Example: SELIC × IPCA in Linear Regression.',
+      'mf-serie-x':         'Series X (independent variable)',
+      'mf-serie-y':         'Series Y (dependent variable)',
+      'mf-cross-titulo':    'Data Source Combiner',
+      'mf-cross-sub':       'Mix BCB and Yahoo Finance data in the same model',
+      'mf-cross-desc':      'Load series from any source above and combine them here as X and Y variables for any regression model or time series.',
+      'mf-cross-nodata':    'Load at least 2 series (from any source above) to use the combiner.',
+      'mf-varx-ind':        'Variable X — independent',
+      'mf-vary-dep':        'Variable Y — dependent',
+      'mf-cross-ts':        '📉 Time Series',
+      'mf-cross-st-nodata': 'Load at least 1 series (from any source above) to use this section.',
+      'mf-submodelo':       'Sub-model',
+      'mf-decomp-classica': 'Classical Decomposition',
+      'mf-var-mult':        'VAR (multiple series)',
+      'mf-serie-importar':  'Series to import',
+      'mf-importar-serie':  'Import series',
+      'mf-importar-var':    'Import VAR',
+      'mf-series-var':      'Series for VAR',
+      'mf-add-serie':       '+ Series',
+      'mf-reg-linear':      'Linear Reg.',
+      'mf-reg-polinomial':  'Polynomial Reg.',
+      'mf-reg-quantilica':  'Quantile Reg.',
+      'mf-reg-regularizada':'Regularized Reg.',
+      'mf-series-temporais':'Time Series',
+      /* financial market — dynamic JS strings */
+      'mf-importar':        'Import',
+      'mf-buscando':        'Searching…',
+      'mf-buscando-bcb':    'Searching the Central Bank…',
+      'mf-erro-conexao':    'Connection error. Please try again.',
+      'mf-carregando':      'Loading…',
+      'mf-variacao':        '% Change',
+      'mf-no-data-yf':      'No data loaded yet. Click "Load data".',
     }
   };
 
   let lang = localStorage.getItem('slope-lang') || 'pt';
+
+  window.t = k => (T[lang] || T.pt)[k] ?? k;
 
   function applyLang(l) {
     const t = T[l];
@@ -7035,6 +7165,8 @@ window.openCurso = openCurso;
     const btn = document.getElementById('lang-toggle');
     if (btn) btn.innerHTML = FLAGS[l];
     if (window._currentCursoModel) openCurso(window._currentCursoModel);
+    window.yfRerender?.();
+    window.bcbRerender?.();
   }
 
   window.toggleLang = function () {
