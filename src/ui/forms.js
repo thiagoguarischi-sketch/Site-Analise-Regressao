@@ -84,12 +84,19 @@ export function updateCount() {
 }
 
 export function loadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
-    { name: 'Gasto Publicidade vs Vendas', lx: 'Gasto (R$k)', ly: 'Vendas (R$k)',
+    { name: isEn ? 'Ad Spend vs Sales'           : 'Gasto Publicidade vs Vendas',
+      lx:   isEn ? 'Spend ($k)'                  : 'Gasto (R$k)',
+      ly:   isEn ? 'Sales ($k)'                  : 'Vendas (R$k)',
       xs: [2,3,5,7,8,10,12,15,18,20], ys: [4,5,8,11,13,16,19,23,27,30] },
-    { name: 'Horas Estudo vs Nota', lx: 'Horas de Estudo', ly: 'Nota (0-10)',
+    { name: isEn ? 'Study Hours vs Grade'         : 'Horas Estudo vs Nota',
+      lx:   isEn ? 'Study Hours'                 : 'Horas de Estudo',
+      ly:   isEn ? 'Grade (0-10)'                : 'Nota (0-10)',
       xs: [1,2,3,4,5,6,7,8,9,10], ys: [3.5,4.2,5.1,6.0,6.8,7.5,8.1,8.7,9.0,9.4] },
-    { name: 'Temperatura vs Consumo Sorvete', lx: 'Temperatura (°C)', ly: 'Vendas (unid)',
+    { name: isEn ? 'Temperature vs Ice Cream Sales' : 'Temperatura vs Consumo Sorvete',
+      lx:   isEn ? 'Temperature (°C)'            : 'Temperatura (°C)',
+      ly:   isEn ? 'Sales (units)'               : 'Vendas (unid)',
       xs: [18,20,22,24,26,28,30,32,34,36], ys: [120,150,180,220,270,320,390,440,510,580] },
   ];
   const ex = examples[Math.floor(Math.random() * examples.length)];

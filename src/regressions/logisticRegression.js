@@ -136,15 +136,18 @@ export function lgUpdateCount() {
 }
 
 export function lgLoadExample() {
-  const vars = ['Idade', 'Renda (R$k)', 'Tempo no site (min)'];
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
+  const vars = isEn
+    ? ['Age', 'Income ($k)', 'Time on site (min)']
+    : ['Idade', 'Renda (R$k)', 'Tempo no site (min)'];
   const data = [
     [25, 3.5, 8, 1], [45, 8.2, 3, 0], [32, 5.1, 12, 1], [28, 4.0, 15, 1], [55, 12.0, 2, 0],
     [38, 6.5, 9, 1], [22, 2.8, 20, 1], [60, 15.0, 1, 0], [35, 5.8, 11, 1], [48, 9.5, 4, 0],
     [29, 4.2, 14, 1], [52, 11.0, 2, 0], [41, 7.2, 7, 1], [26, 3.1, 18, 1], [58, 13.5, 1, 0],
     [33, 5.5, 10, 1], [44, 8.8, 5, 0], [27, 3.8, 16, 1], [50, 10.2, 3, 0], [36, 6.0, 8, 1],
   ];
-  document.getElementById('lg-analysis-name').value = 'Compra Online';
-  document.getElementById('lg-label-y').value = 'Comprou (0/1)';
+  document.getElementById('lg-analysis-name').value = isEn ? 'Online Purchase' : 'Compra Online';
+  document.getElementById('lg-label-y').value = isEn ? 'Purchased (0/1)' : 'Comprou (0/1)';
   lgVars = vars.map(name => ({ name }));
   lgRenderVarChips();
   lgRenderTableHeader();

@@ -90,11 +90,16 @@ export function rrUpdateCount() {
 }
 
 export function rrLoadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
-    { name: 'Área vs Preço', lx: 'Área (m²)', ly: 'Preço (R$k)',
+    { name: isEn ? 'Area vs Price'   : 'Área vs Preço',
+      lx:   isEn ? 'Area (m²)'      : 'Área (m²)',
+      ly:   isEn ? 'Price ($k)'     : 'Preço (R$k)',
       xs: [45,55,60,70,80,90,100,110,120,135,150,60,75,85,95],
       ys: [180,210,230,260,290,320,360,390,420,470,510,225,275,305,340] },
-    { name: 'Horas vs Produção', lx: 'Horas', ly: 'Produção',
+    { name: isEn ? 'Hours vs Output' : 'Horas vs Produção',
+      lx:   isEn ? 'Hours'          : 'Horas',
+      ly:   isEn ? 'Output'         : 'Produção',
       xs: [1,2,3,4,5,6,7,8,9,10,11,12,3,6,9],
       ys: [12,22,30,36,40,43,44,42,38,32,24,14,31,42,37] },
   ];
