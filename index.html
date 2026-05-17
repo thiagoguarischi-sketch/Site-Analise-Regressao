@@ -4813,37 +4813,37 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
     <div class="about-logo-row">
       <div>
         <div class="about-logo-name">Slope</div>
-        <div class="about-logo-tag">Análise estatística de regressão</div>
+        <div class="about-logo-tag" data-i18n="about-tagline">Análise estatística de regressão</div>
       </div>
     </div>
 
-    <div class="about-section-label">Sobre a plataforma</div>
-    <p class="about-text">
+    <div class="about-section-label" data-i18n="about-platform-label">Sobre a plataforma</div>
+    <p class="about-text" data-i18n-html="about-platform-text">
       A <strong>Slope</strong> é uma plataforma de análise estatística focada em regressão, projetada para transformar dados brutos em insights acionáveis. Realize desde regressões lineares simples até modelos avançados — tudo no navegador, sem instalações.
     </p>
     <div class="about-pills">
-      <span class="about-pill">📊 Linear Simples</span>
-      <span class="about-pill">🔢 Múltipla</span>
-      <span class="about-pill">📐 Polinomial</span>
-      <span class="about-pill">📦 Logística</span>
-      <span class="about-pill">🎯 Quantílica</span>
-      <span class="about-pill">⏱️ Série Temporal</span>
-      <span class="about-pill">🔒 Regularizada</span>
+      <span class="about-pill" data-i18n="about-pill-simple">📊 Linear Simples</span>
+      <span class="about-pill" data-i18n="about-pill-multiple">🔢 Múltipla</span>
+      <span class="about-pill" data-i18n="about-pill-poly">📐 Polinomial</span>
+      <span class="about-pill" data-i18n="about-pill-logistic">📦 Logística</span>
+      <span class="about-pill" data-i18n="about-pill-quantile">🎯 Quantílica</span>
+      <span class="about-pill" data-i18n="about-pill-timeseries">⏱️ Série Temporal</span>
+      <span class="about-pill" data-i18n="about-pill-regularized">🔒 Regularizada</span>
     </div>
 
     <div class="about-divider"></div>
 
-    <div class="about-section-label">Quem somos</div>
-    <p class="about-text">
+    <div class="about-section-label" data-i18n="about-team-label">Quem somos</div>
+    <p class="about-text" data-i18n-html="about-team-text1">
       A <strong>Slope</strong> nasceu da vontade de democratizar a análise de dados. Somos uma equipe apaixonada por estatística e tecnologia, acreditando que decisões baseadas em dados devem estar ao alcance de qualquer pessoa — analistas, pesquisadores, gestores e estudantes.
     </p>
-    <p class="about-text">
+    <p class="about-text" data-i18n="about-team-text2">
       Nossa missão é oferecer ferramentas estatísticas robustas com uma interface intuitiva, eliminando a barreira entre o usuário e a análise quantitativa.
     </p>
 
     <div class="about-divider"></div>
 
-    <div class="about-section-label">Contato</div>
+    <div class="about-section-label" data-i18n="about-contact-label">Contato</div>
     <div class="about-contact">
       <span style="font-size:20px">✉️</span>
       <div>
@@ -4852,7 +4852,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
       </div>
     </div>
 
-    <div class="about-version">Slope v1.0 &nbsp;·&nbsp; Feito com ♥ no Brasil</div>
+    <div class="about-version" data-i18n="about-version">Slope v1.0 &nbsp;·&nbsp; Feito com ♥ no Brasil</div>
   </div>
 </div>
 
@@ -6462,6 +6462,22 @@ window.openCurso = openCurso;
       'tip-compartilhar':'Compartilhar',
       'tip-amigos':     'Amigos',
       'tip-sobre':      'Quem Somos',
+      /* about modal */
+      'about-tagline':        'Análise estatística de regressão',
+      'about-platform-label': 'Sobre a plataforma',
+      'about-platform-text':  'A <strong>Slope</strong> é uma plataforma de análise estatística focada em regressão, projetada para transformar dados brutos em insights acionáveis. Realize desde regressões lineares simples até modelos avançados — tudo no navegador, sem instalações.',
+      'about-pill-simple':    '📊 Linear Simples',
+      'about-pill-multiple':  '🔢 Múltipla',
+      'about-pill-poly':      '📐 Polinomial',
+      'about-pill-logistic':  '📦 Logística',
+      'about-pill-quantile':  '🎯 Quantílica',
+      'about-pill-timeseries':'⏱️ Série Temporal',
+      'about-pill-regularized':'🔒 Regularizada',
+      'about-team-label':     'Quem somos',
+      'about-team-text1':     'A <strong>Slope</strong> nasceu da vontade de democratizar a análise de dados. Somos uma equipe apaixonada por estatística e tecnologia, acreditando que decisões baseadas em dados devem estar ao alcance de qualquer pessoa — analistas, pesquisadores, gestores e estudantes.',
+      'about-team-text2':     'Nossa missão é oferecer ferramentas estatísticas robustas com uma interface intuitiva, eliminando a barreira entre o usuário e a análise quantitativa.',
+      'about-contact-label':  'Contato',
+      'about-version':        'Slope v1.0  ·  Feito com ♥ no Brasil',
       /* guide section labels */
       'guide-what':     'O que é',
       'guide-formula':  'Fórmula',
@@ -6928,6 +6944,22 @@ window.openCurso = openCurso;
       'tip-compartilhar':'Share',
       'tip-amigos':     'Friends',
       'tip-sobre':      'About Us',
+      /* about modal */
+      'about-tagline':        'Statistical regression analysis',
+      'about-platform-label': 'About the platform',
+      'about-platform-text':  '<strong>Slope</strong> is a statistical analysis platform focused on regression, designed to turn raw data into actionable insights. From simple linear regressions to advanced models — all in the browser, no installation required.',
+      'about-pill-simple':    '📊 Simple Linear',
+      'about-pill-multiple':  '🔢 Multiple',
+      'about-pill-poly':      '📐 Polynomial',
+      'about-pill-logistic':  '📦 Logistic',
+      'about-pill-quantile':  '🎯 Quantile',
+      'about-pill-timeseries':'⏱️ Time Series',
+      'about-pill-regularized':'🔒 Regularized',
+      'about-team-label':     'About us',
+      'about-team-text1':     '<strong>Slope</strong> was born from the desire to democratize data analysis. We are a team passionate about statistics and technology, believing that data-driven decisions should be within reach of everyone — analysts, researchers, managers and students.',
+      'about-team-text2':     'Our mission is to provide robust statistical tools with an intuitive interface, removing the barrier between the user and quantitative analysis.',
+      'about-contact-label':  'Contact',
+      'about-version':        'Slope v1.0  ·  Made with ♥ in Brazil',
       /* guide section labels */
       'guide-what':     'What is it',
       'guide-formula':  'Formula',
