@@ -4302,18 +4302,19 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.12)">👥</div>
-          Amigos na Plataforma
+          <span data-i18n="frnd-title">Amigos na Plataforma</span>
         </div>
-        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.6">
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.6" data-i18n="frnd-desc">
           Encontre outros usuários da plataforma pelo nome ou e-mail e construa sua rede de contatos.
         </p>
 
         <!-- Busca -->
-        <div class="import-section-label">Buscar usuários</div>
+        <div class="import-section-label" data-i18n="frnd-search-label">Buscar usuários</div>
         <div class="friends-search-row" style="margin-bottom:4px">
           <input class="label-input" type="text" id="friends-search-input" placeholder="Nome ou e-mail..."
+            data-i18n-placeholder="frnd-search-ph"
             onkeydown="if(event.key==='Enter')searchFriends()">
-          <button class="btn-primary" id="friends-search-btn" onclick="searchFriends()" style="padding:0 18px;white-space:nowrap">Buscar</button>
+          <button class="btn-primary" id="friends-search-btn" onclick="searchFriends()" style="padding:0 18px;white-space:nowrap" data-i18n="frnd-search-btn">Buscar</button>
         </div>
         <div id="friends-search-results"></div>
       </div>
@@ -4322,10 +4323,10 @@
       <div class="card" style="margin-top:16px">
         <div class="card-title" style="font-size:14px">
           <div class="card-title-icon" style="background:rgba(255,179,71,.12);font-size:14px">⏳</div>
-          Pedidos de amizade
+          <span data-i18n="frnd-pending-title">Pedidos de amizade</span>
         </div>
         <div id="friends-pending">
-          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Carregando...</p>
+          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0" data-i18n="frnd-loading">Carregando...</p>
         </div>
       </div>
 
@@ -4333,11 +4334,11 @@
       <div class="card" style="margin-top:16px">
         <div class="card-title" style="font-size:14px">
           <div class="card-title-icon" style="background:rgba(124,131,253,.15);font-size:14px">✓</div>
-          Meus amigos
+          <span data-i18n="frnd-list-title">Meus amigos</span>
           <span id="friends-count" style="font-size:11px;color:var(--txt3);font-weight:400;margin-left:auto"></span>
         </div>
         <div id="friends-list">
-          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Carregando...</p>
+          <p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0" data-i18n="frnd-loading">Carregando...</p>
         </div>
       </div>
 
@@ -4345,9 +4346,9 @@
       <div class="card" id="friends-setup-msg" style="display:none;margin-top:16px;border-color:rgba(255,179,71,.3)">
         <div class="card-title" style="font-size:14px;color:var(--acc2)">
           <div class="card-title-icon" style="background:rgba(255,179,71,.12);font-size:14px">⚙️</div>
-          Configuração necessária
+          <span data-i18n="frnd-setup-title">Configuração necessária</span>
         </div>
-        <p style="font-size:13px;color:var(--txt2);line-height:1.7;margin-bottom:12px">
+        <p style="font-size:13px;color:var(--txt2);line-height:1.7;margin-bottom:12px" data-i18n-html="frnd-setup-desc">
           O recurso de amigos requer duas tabelas no Supabase. Execute o SQL abaixo no <strong>SQL Editor</strong> do seu projeto Supabase:
         </p>
         <pre style="background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:14px;font-size:11px;color:var(--y);overflow-x:auto;line-height:1.6">-- Tabela de perfis (sincronizada com auth.users)
@@ -4884,9 +4885,10 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
     <div id="chat-messages"></div>
     <div id="chat-footer">
       <textarea id="chat-input" rows="1" placeholder="Digite uma mensagem..."
+        data-i18n-placeholder="frnd-chat-ph"
         oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
-      <button id="chat-send-btn" onclick="sendMessage()" title="Enviar (Enter)">➤</button>
+      <button id="chat-send-btn" onclick="sendMessage()" title="Enviar (Enter)" data-i18n-title="frnd-chat-send">➤</button>
     </div>
   </div>
 </div>
@@ -6862,6 +6864,52 @@ window.openCurso = openCurso;
       'mf-carregando':      'Carregando…',
       'mf-variacao':        '% Variação',
       'mf-no-data-yf':      'Nenhum dado carregado ainda. Clique em "Carregar dados".',
+      /* amigos — estáticos */
+      'frnd-title':         'Amigos na Plataforma',
+      'frnd-desc':          'Encontre outros usuários da plataforma pelo nome ou e-mail e construa sua rede de contatos.',
+      'frnd-search-label':  'Buscar usuários',
+      'frnd-search-ph':     'Nome ou e-mail...',
+      'frnd-search-btn':    'Buscar',
+      'frnd-pending-title': 'Pedidos de amizade',
+      'frnd-list-title':    'Meus amigos',
+      'frnd-setup-title':   'Configuração necessária',
+      'frnd-setup-desc':    'O recurso de amigos requer duas tabelas no Supabase. Execute o SQL abaixo no <strong>SQL Editor</strong> do seu projeto Supabase:',
+      'frnd-chat-ph':       'Digite uma mensagem...',
+      'frnd-chat-send':     'Enviar (Enter)',
+      /* amigos — dinâmicos (JS) */
+      'frnd-loading':       'Carregando...',
+      'frnd-not-found':     'Nenhum usuário encontrado.',
+      'frnd-no-pending':    'Sem pedidos pendentes.',
+      'frnd-received':      'Pedidos recebidos',
+      'frnd-sent':          'Enviados por mim',
+      'frnd-st-friends':    '✓ Amigos',
+      'frnd-st-waiting':    '⏳ Aguardando',
+      'frnd-btn-add':       '➕ Adicionar',
+      'frnd-btn-accept':    '✓ Aceitar',
+      'frnd-btn-msg':       '💬 Mensagem',
+      'frnd-empty-title':   'Ainda sem amigos por aqui',
+      'frnd-empty-desc':    'Use a busca acima para encontrar e adicionar usuários.',
+      'frnd-friend':        'amigo',
+      'frnd-friends':       'amigos',
+      'frnd-since':         'amigos desde',
+      'frnd-default-user':  'Usuário',
+      'frnd-default-friend':'Amigo',
+      'frnd-confirm-remove':'Remover "%s" da sua lista de amigos?',
+      'frnd-confirm-reject':'Recusar este pedido de amizade?',
+      'frnd-toast-min2':    'Digite pelo menos 2 caracteres.',
+      'frnd-toast-dup':     'Pedido já enviado anteriormente.',
+      'frnd-toast-req-err': 'Erro ao enviar pedido.',
+      'frnd-toast-sent':    'Pedido de amizade enviado! 🤝',
+      'frnd-toast-acc-err': 'Erro ao aceitar pedido.',
+      'frnd-toast-accepted':'Amizade aceita! 🎉',
+      'frnd-toast-rej-err': 'Erro ao recusar pedido.',
+      'frnd-toast-rejected':'Pedido recusado.',
+      'frnd-toast-rem-err': 'Erro ao remover amigo.',
+      'frnd-toast-removed': 'Amigo removido.',
+      'frnd-chat-loading':  'Carregando...',
+      'frnd-chat-err':      'Erro ao carregar mensagens.',
+      'frnd-chat-empty':    'Nenhuma mensagem ainda.<br>Diga olá! 👋',
+      'frnd-msg-err':       'Erro ao enviar mensagem.',
     },
     en: {
       /* tabs */
@@ -7282,6 +7330,52 @@ window.openCurso = openCurso;
       'mf-carregando':      'Loading…',
       'mf-variacao':        '% Change',
       'mf-no-data-yf':      'No data loaded yet. Click "Load data".',
+      /* friends — static */
+      'frnd-title':         'Platform Friends',
+      'frnd-desc':          'Find other platform users by name or email and build your network.',
+      'frnd-search-label':  'Search users',
+      'frnd-search-ph':     'Name or email...',
+      'frnd-search-btn':    'Search',
+      'frnd-pending-title': 'Friend requests',
+      'frnd-list-title':    'My friends',
+      'frnd-setup-title':   'Setup required',
+      'frnd-setup-desc':    'The friends feature requires two tables in Supabase. Run the SQL below in the <strong>SQL Editor</strong> of your Supabase project:',
+      'frnd-chat-ph':       'Type a message...',
+      'frnd-chat-send':     'Send (Enter)',
+      /* friends — dynamic (JS) */
+      'frnd-loading':       'Loading...',
+      'frnd-not-found':     'No users found.',
+      'frnd-no-pending':    'No pending requests.',
+      'frnd-received':      'Received requests',
+      'frnd-sent':          'Sent by me',
+      'frnd-st-friends':    '✓ Friends',
+      'frnd-st-waiting':    '⏳ Pending',
+      'frnd-btn-add':       '➕ Add',
+      'frnd-btn-accept':    '✓ Accept',
+      'frnd-btn-msg':       '💬 Message',
+      'frnd-empty-title':   'No friends yet',
+      'frnd-empty-desc':    'Use the search above to find and add users.',
+      'frnd-friend':        'friend',
+      'frnd-friends':       'friends',
+      'frnd-since':         'friends since',
+      'frnd-default-user':  'User',
+      'frnd-default-friend':'Friend',
+      'frnd-confirm-remove':'Remove "%s" from your friends list?',
+      'frnd-confirm-reject':'Decline this friend request?',
+      'frnd-toast-min2':    'Enter at least 2 characters.',
+      'frnd-toast-dup':     'Request already sent.',
+      'frnd-toast-req-err': 'Error sending request.',
+      'frnd-toast-sent':    'Friend request sent! 🤝',
+      'frnd-toast-acc-err': 'Error accepting request.',
+      'frnd-toast-accepted':'Friendship accepted! 🎉',
+      'frnd-toast-rej-err': 'Error declining request.',
+      'frnd-toast-rejected':'Request declined.',
+      'frnd-toast-rem-err': 'Error removing friend.',
+      'frnd-toast-removed': 'Friend removed.',
+      'frnd-chat-loading':  'Loading...',
+      'frnd-chat-err':      'Error loading messages.',
+      'frnd-chat-empty':    'No messages yet.<br>Say hello! 👋',
+      'frnd-msg-err':       'Error sending message.',
     }
   };
 
@@ -7314,6 +7408,7 @@ window.openCurso = openCurso;
     window.yfRerender?.();
     window.bcbRerender?.();
     window.shareRerender?.();
+    window.friendsRerender?.();
   }
 
   window.toggleLang = function () {
