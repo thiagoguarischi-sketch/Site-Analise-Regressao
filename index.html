@@ -3724,28 +3724,28 @@
           ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
           onclick="document.getElementById('file-input').click()">
           <div class="drop-icon">📎</div>
-          <div class="drop-text">Arraste seu arquivo aqui ou clique para selecionar</div>
-          <div class="drop-subtext">Suporta .xlsx, .xls, .csv</div>
+          <div class="drop-text" data-i18n="imp-drop-text">Arraste seu arquivo aqui ou clique para selecionar</div>
+          <div class="drop-subtext" data-i18n="imp-drop-sub">Suporta .xlsx, .xls, .csv</div>
         </div>
         <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="onFileSelect(event)">
 
         <div style="margin-top:20px">
-          <div class="field-label" style="margin-bottom:6px">Importar via URL (CSV público ou Google Sheets)</div>
+          <div class="field-label" style="margin-bottom:6px" data-i18n="imp-url-label">Importar via URL (CSV público ou Google Sheets)</div>
           <div class="url-row">
-            <input class="url-input" type="url" id="import-url" placeholder="https://docs.google.com/spreadsheets/... ou URL do CSV">
-            <button class="btn-primary" onclick="importURL()">Importar</button>
+            <input class="url-input" type="url" id="import-url" placeholder="https://docs.google.com/spreadsheets/... ou URL do CSV" data-i18n-placeholder="imp-url-placeholder">
+            <button class="btn-primary" onclick="importURL()" data-i18n="btn-imp-url">Importar</button>
           </div>
         </div>
 
         <div id="import-preview" style="display:none;margin-top:20px">
-          <div class="field-label" style="margin-bottom:8px">Pré-visualização — selecione as colunas X e Y:</div>
+          <div class="field-label" style="margin-bottom:8px" data-i18n="imp-preview-label">Pré-visualização — selecione as colunas X e Y:</div>
           <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">
             <div>
-              <label class="field-label">Coluna X (independente)</label>
+              <label class="field-label" data-i18n="imp-col-x">Coluna X (independente)</label>
               <select class="data-input" id="col-x" style="min-width:140px" onchange="updateImportStats()"></select>
             </div>
             <div>
-              <label class="field-label">Coluna Y (dependente)</label>
+              <label class="field-label" data-i18n="imp-col-y">Coluna Y (dependente)</label>
               <select class="data-input" id="col-y" style="min-width:140px" onchange="updateImportStats()"></select>
             </div>
           </div>
@@ -6578,7 +6578,15 @@ window.openCurso = openCurso;
       'reg-tbl':        '📐 Tabela de Resultados',
       'reg-lambda':     '🔬 Efeito do λ nos Coeficientes',
       /* import */
-      'imp-dados':      '📂 Importar Dados',
+      'imp-dados':           '📂 Importar Dados',
+      'imp-drop-text':       'Arraste seu arquivo aqui ou clique para selecionar',
+      'imp-drop-sub':        'Suporta .xlsx, .xls, .csv',
+      'imp-url-label':       'Importar via URL (CSV público ou Google Sheets)',
+      'imp-url-placeholder': 'https://docs.google.com/spreadsheets/... ou URL do CSV',
+      'btn-imp-url':         'Importar',
+      'imp-preview-label':   'Pré-visualização — selecione as colunas X e Y:',
+      'imp-col-x':           'Coluna X (independente)',
+      'imp-col-y':           'Coluna Y (dependente)',
       /* config titles */
       'cfg-linear':     'Configuração da análise',
       'cfg-multipla':   'Configuração — Regressão Múltipla',
@@ -6854,7 +6862,15 @@ window.openCurso = openCurso;
       'reg-tbl':        '📐 Results Table',
       'reg-lambda':     '🔬 λ Effect on Coefficients',
       /* import */
-      'imp-dados':      '📂 Import Data',
+      'imp-dados':           '📂 Import Data',
+      'imp-drop-text':       'Drag your file here or click to select',
+      'imp-drop-sub':        'Supports .xlsx, .xls, .csv',
+      'imp-url-label':       'Import via URL (public CSV or Google Sheets)',
+      'imp-url-placeholder': 'https://docs.google.com/spreadsheets/... or CSV URL',
+      'btn-imp-url':         'Import',
+      'imp-preview-label':   'Preview — select X and Y columns:',
+      'imp-col-x':           'X Column (independent)',
+      'imp-col-y':           'Y Column (dependent)',
       /* config titles */
       'cfg-linear':     'Analysis configuration',
       'cfg-multipla':   'Configuration — Multiple Regression',
@@ -7011,6 +7027,10 @@ window.openCurso = openCurso;
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
       const v = t[el.getAttribute('data-i18n-title')];
       if (v !== undefined) el.title = v;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const v = t[el.getAttribute('data-i18n-placeholder')];
+      if (v !== undefined) el.placeholder = v;
     });
     const btn = document.getElementById('lang-toggle');
     if (btn) btn.innerHTML = FLAGS[l];
