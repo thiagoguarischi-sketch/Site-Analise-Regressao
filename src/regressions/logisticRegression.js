@@ -192,17 +192,17 @@ function renderLogisticResults(res) {
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${aic.toFixed(2)}</div><div class="metric-lab">AIC</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${bic.toFixed(2)}</div><div class="metric-lab">BIC</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${n}</div><div class="metric-lab">n</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${k}</div><div class="metric-lab">preditores</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${k}</div><div class="metric-lab">${window.t('reg-predictors')}</div></div>
   `;
 
   document.getElementById('lg-global-tests').innerHTML = `
     <div class="alert ${pChi < 0.05 ? 'alert-ok' : 'alert-err'}">
-      <b>Teste χ² (Razão de Verossimilhança):</b> χ²(${k})=${chiStat.toFixed(4)}, p=${fmtP(pChi)}
-      — Modelo ${pChi < 0.05 ? 'estatisticamente significativo ✓' : 'NÃO significativo ✗'}
+      <b>${window.t('test-chi2-lr')}:</b> χ²(${k})=${chiStat.toFixed(4)}, p=${fmtP(pChi)}
+      — ${window.t('anova-regression')} ${pChi < 0.05 ? window.t('stat-sig') : window.t('stat-not-sig')}
     </div>
     <div style="display:flex;gap:10px;margin-top:8px;font-size:12px;color:var(--txt2)">
-      <span>Deviance nula: ${nullDeviance.toFixed(2)}</span>
-      <span>Deviance residual: ${deviance.toFixed(2)}</span>
+      <span>${window.t('lg-deviance-null')}: ${nullDeviance.toFixed(2)}</span>
+      <span>${window.t('lg-deviance-resid')}: ${deviance.toFixed(2)}</span>
     </div>`;
 
   const pSig = p => p < 0.001 ? '***' : p < 0.01 ? '**' : p < 0.05 ? '*' : p < 0.1 ? '†' : '';
@@ -221,34 +221,34 @@ function renderLogisticResults(res) {
   }).join('');
   document.getElementById('lg-coef-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>Coeficiente</th><th>β</th><th>EP</th><th>OR</th><th>IC 95% OR</th><th>z</th><th>p-valor</th></tr></thead>
+      <thead><tr><th>${window.t('tbl-coef')}</th><th>β</th><th>${window.t('tbl-se')}</th><th>OR</th><th>${window.t('tbl-ci95')} OR</th><th>z</th><th>${window.t('tbl-pvalue')}</th></tr></thead>
       <tbody>${coefRows}</tbody>
     </table>
     <p style="font-size:11px;color:var(--txt3);margin-top:6px;padding:0 4px">* p<0.05 ** p<0.01 *** p<0.001 † p<0.1 | OR = Odds Ratio</p>`;
 
   const { tp, tn, fp, fn, acc, prec, rec, f1, spec } = cm;
   document.getElementById('lg-confusion-matrix').innerHTML = `
-    <div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Matriz de Confusão (limiar 0.50)</div>
+    <div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">${window.t('cm-title')}</div>
     <table style="border-collapse:collapse;font-size:13px">
       <tr>
         <td style="padding:6px 10px;color:var(--txt3);font-size:11px"></td>
-        <td style="padding:6px 10px;text-align:center;font-size:11px;color:var(--x);font-weight:600">Pred 0</td>
-        <td style="padding:6px 10px;text-align:center;font-size:11px;color:var(--y);font-weight:600">Pred 1</td>
+        <td style="padding:6px 10px;text-align:center;font-size:11px;color:var(--x);font-weight:600">${window.t('cm-pred-label')} 0</td>
+        <td style="padding:6px 10px;text-align:center;font-size:11px;color:var(--y);font-weight:600">${window.t('cm-pred-label')} 1</td>
       </tr>
       <tr>
-        <td style="padding:6px 10px;font-size:11px;color:var(--x);font-weight:600">Real 0</td>
+        <td style="padding:6px 10px;font-size:11px;color:var(--x);font-weight:600">${window.t('cm-actual')} 0</td>
         <td style="padding:8px 16px;background:rgba(0,212,160,.12);border:1px solid var(--brd);border-radius:6px 0 0 0;text-align:center;font-weight:700;color:var(--y)">${tn}</td>
         <td style="padding:8px 16px;background:rgba(255,107,107,.1);border:1px solid var(--brd);border-radius:0 6px 0 0;text-align:center;font-weight:700;color:var(--acc)">${fp}</td>
       </tr>
       <tr>
-        <td style="padding:6px 10px;font-size:11px;color:var(--y);font-weight:600">Real 1</td>
+        <td style="padding:6px 10px;font-size:11px;color:var(--y);font-weight:600">${window.t('cm-actual')} 1</td>
         <td style="padding:8px 16px;background:rgba(255,107,107,.1);border:1px solid var(--brd);border-radius:0 0 0 6px;text-align:center;font-weight:700;color:var(--acc)">${fn}</td>
         <td style="padding:8px 16px;background:rgba(0,212,160,.12);border:1px solid var(--brd);border-radius:0 0 6px 0;text-align:center;font-weight:700;color:var(--y)">${tp}</td>
       </tr>
     </table>`;
   document.getElementById('lg-class-metrics').innerHTML = `
-    <div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">Métricas de Classificação</div>
-    ${[['Acurácia', acc], ['Precisão', prec], ['Recall (Sensib.)', rec], ['Especificidade', spec], ['F1-Score', f1]].map(([lab, val]) => `
+    <div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">${window.t('cls-metrics-title')}</div>
+    ${[[window.t('cls-accuracy'), acc], [window.t('cls-precision'), prec], [window.t('cls-recall'), rec], [window.t('cls-specificity'), spec], ['F1-Score', f1]].map(([lab, val]) => `
     <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--brd);font-size:13px">
       <span style="color:var(--txt2)">${lab}</span>
       <span style="font-weight:600;color:${val >= 0.8 ? 'var(--y)' : val >= 0.6 ? 'var(--acc2)' : 'var(--acc)'}">${(val * 100).toFixed(1)}%</span>
@@ -306,21 +306,12 @@ export function runLogisticPrediction() {
 async function lgGenerateAI(res) {
   const box = document.getElementById('lg-ai-box');
   box.innerHTML = aiLoadingHTML();
-  const prompt = `Você é especialista em estatística. Analise esta regressão logística em português (4 parágrafos curtos):
-
-Variável dependente: ${res.labelY}
-Variáveis independentes: ${res.varNames.map((n, i) => `X${i + 1}=${n}`).join(', ')}
-n=${res.n}, k=${res.k}
-
-Coeficientes (β | OR):
-${res.beta.map((b, j) => j === 0 ? `β₀=${b.toFixed(4)}` : `β${j}(${res.varNames[j - 1]})=${b.toFixed(4)}, OR=${res.or[j].toFixed(4)}, p=${res.pZ[j].toFixed(4)}`).join('\n')}
-
-R² McFadden=${res.mcFaddenR2.toFixed(4)}, AUC=${res.auc.toFixed(4)}
-χ²=${res.chiStat.toFixed(4)}, p=${res.pChi.toFixed(6)}
-AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}
-Acurácia=${(res.cm.acc * 100).toFixed(1)}%, F1=${(res.cm.f1 * 100).toFixed(1)}%
-
-Inclua: 1) interpretação dos OR significativos 2) qualidade do ajuste 3) poder discriminativo (AUC) 4) limitações.`;
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
+  const coefSummary = res.beta.map((b, j) => j === 0 ? `β₀=${b.toFixed(4)}` : `β${j}(${res.varNames[j - 1]})=${b.toFixed(4)}, OR=${res.or[j].toFixed(4)}, p=${res.pZ[j].toFixed(4)}`).join('\n');
+  const stats = `Y: ${res.labelY} | X: ${res.varNames.map((n, i) => `X${i + 1}=${n}`).join(', ')} | n=${res.n}, k=${res.k}\n${coefSummary}\nR²McF=${res.mcFaddenR2.toFixed(4)}, AUC=${res.auc.toFixed(4)}, χ²=${res.chiStat.toFixed(4)}, p=${res.pChi.toFixed(6)}\nAIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}, Accuracy=${(res.cm.acc * 100).toFixed(1)}%, F1=${(res.cm.f1 * 100).toFixed(1)}%`;
+  const prompt = isEn
+    ? `You are a statistics expert. Analyze this logistic regression in English (4 short paragraphs):\n\n${stats}\n\nInclude: 1) interpretation of significant ORs 2) fit quality 3) discriminative power (AUC) 4) limitations.`
+    : `Você é especialista em estatística. Analise esta regressão logística em português (4 parágrafos curtos):\n\n${stats}\n\nInclua: 1) interpretação dos OR significativos 2) qualidade do ajuste 3) poder discriminativo (AUC) 4) limitações.`;
 
   try {
     const text = await callAI(prompt);
@@ -527,3 +518,7 @@ export function lgExportCSV() {
   const rows = res.Y.map((y, i) => [...res.Xs.map(x => x[i]), y, res.probs[i].toFixed(6), res.predY[i], res.devResid[i].toFixed(6)]);
   downloadCSV((document.getElementById('lg-analysis-name').value || 'logistica') + '.csv', header, rows);
 }
+
+window.logisticRerender = () => {
+  if (lgLastResult) renderLogisticResults(lgLastResult);
+};

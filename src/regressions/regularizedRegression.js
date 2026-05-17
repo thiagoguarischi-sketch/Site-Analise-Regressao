@@ -176,7 +176,7 @@ function rrRenderResults(res) {
   document.getElementById('rr-global-tests').innerHTML = `
     <div class="alert alert-ok">
       λ = ${lambda} | OLS β₁ = ${ols.b1.toFixed(4)} → Ridge β₁ = ${ridge.b1.toFixed(4)} | Lasso β₁ = ${lasso.b1.toFixed(4)}<br>
-      Shrinkage Ridge: ${((1 - Math.abs(ridge.b1 / ols.b1)) * 100).toFixed(1)}% &nbsp;|&nbsp; Shrinkage Lasso: ${((1 - Math.abs(lasso.b1 / ols.b1)) * 100).toFixed(1)}%
+      ${window.t('rr-shrinkage-ridge')}: ${((1 - Math.abs(ridge.b1 / ols.b1)) * 100).toFixed(1)}% &nbsp;|&nbsp; ${window.t('rr-shrinkage-lasso')}: ${((1 - Math.abs(lasso.b1 / ols.b1)) * 100).toFixed(1)}%
     </div>`;
 
   const xMin = Math.min(...xs), xMax = Math.max(...xs);
@@ -223,12 +223,12 @@ function rrRenderResults(res) {
   </tr>`).join('');
   document.getElementById('rr-coef-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>Modelo</th><th>β₀</th><th>β₁</th><th>R²</th><th>λ</th><th>Shrinkage</th></tr></thead>
+      <thead><tr><th>${window.t('rr-model-col')}</th><th>β₀</th><th>β₁</th><th>R²</th><th>λ</th><th>${window.t('rr-shrinkage-col')}</th></tr></thead>
       <tbody>${tableRows}</tbody>
     </table>`;
 
   document.getElementById('rr-lambda-hint').innerHTML =
-    `<b>λ = ${lambda}</b>: quanto maior, maior a penalização (shrinkage). Ridge nunca zera β. Lasso pode zerar β (feature selection).`;
+    `<b>λ = ${lambda}</b>: ${window.t('rr-penalty-hint')}`;
 
   const sweepType = type === 'lasso' ? 'lasso' : 'ridge';
   const sweep = res.sweep || [];
@@ -391,3 +391,7 @@ export function rrExportCSV() {
   ]);
   downloadCSV((document.getElementById('rr-analysis-name').value || 'regularizada') + '.csv', header, rows);
 }
+
+window.regularizedRerender = () => {
+  if (rrLastResult) rrRenderResults(rrLastResult);
+};

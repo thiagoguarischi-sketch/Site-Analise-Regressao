@@ -198,7 +198,7 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
     compareEl.appendChild(card);
   }
   document.getElementById('po-best-degree-alert').innerHTML =
-    `<div class="alert alert-ok">Melhor grau por R²adj: <b>Grau ${bestDeg}</b> (R²adj = ${bestR2adj.toFixed(4)})${bestDeg !== res.degree ? ' — você selecionou grau ' + res.degree : ''}. Clique em um card para mudar.</div>`;
+    `<div class="alert alert-ok">${window.t('poly-best-lbl')}: <b>${window.t('reg-degree-lbl')} ${bestDeg}</b> (R²adj = ${bestR2adj.toFixed(4)})${bestDeg !== res.degree ? ` — ${window.t('reg-degree-lbl')} ${res.degree}` : ''}. Clique em um card para mudar.</div>`;
 
   const superscript = ['', '', '²', '³', '⁴', '⁵', '⁶'];
   const eqParts = res.beta.map((b, j) => {
@@ -210,16 +210,16 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
 
   document.getElementById('po-metrics').innerHTML = `
     <div class="metric"><div class="metric-val metric-y">${fmt(res.r2)}</div><div class="metric-lab">R²</div></div>
-    <div class="metric"><div class="metric-val metric-y">${fmt(res.r2adj)}</div><div class="metric-lab">R² Ajustado</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.se)}</div><div class="metric-lab">Erro padrão</div></div>
+    <div class="metric"><div class="metric-val metric-y">${fmt(res.r2adj)}</div><div class="metric-lab">${window.t('reg-r2adj-lbl')}</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.se)}</div><div class="metric-lab">${window.t('reg-std-error')}</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.Fstat)}</div><div class="metric-lab">F-stat</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${res.n}</div><div class="metric-lab">n</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--x)">${res.degree}</div><div class="metric-lab">Grau</div></div>`;
+    <div class="metric"><div class="metric-val" style="color:var(--x)">${res.degree}</div><div class="metric-lab">${window.t('reg-degree-lbl')}</div></div>`;
 
   document.getElementById('po-global-tests').innerHTML = `
     <div class="alert ${res.pF < 0.05 ? 'alert-ok' : 'alert-err'}">
-      <b>Teste F:</b> F(${res.df_reg},${res.df_resid})=${fmt(res.Fstat)}, p=${fmtP(res.pF)}
-      — Modelo ${res.pF < 0.05 ? 'significativo ✓' : 'NÃO significativo ✗'}
+      <b>${window.t('test-f-global')}:</b> F(${res.df_reg},${res.df_resid})=${fmt(res.Fstat)}, p=${fmtP(res.pF)}
+      — ${window.t('anova-regression')} ${res.pF < 0.05 ? window.t('stat-sig') : window.t('stat-not-sig')}
     </div>`;
 
   const superFull = ['β₀', 'β₁·X', 'β₂·X²', 'β₃·X³', 'β₄·X⁴', 'β₅·X⁵', 'β₆·X⁶'];
@@ -234,17 +234,17 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
   </tr>`).join('');
   document.getElementById('po-coef-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>Termo</th><th>Estimativa</th><th>EP</th><th>t</th><th>p-valor</th><th>IC 95%</th></tr></thead>
+      <thead><tr><th>${window.t('tbl-term')}</th><th>${window.t('tbl-estimate')}</th><th>${window.t('tbl-se')}</th><th>t</th><th>${window.t('tbl-pvalue')}</th><th>${window.t('tbl-ci95')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <p style="font-size:11px;color:var(--txt3);margin-top:6px;padding:0 4px">* p<0.05 ** p<0.01 *** p<0.001 † p<0.1</p>`;
 
   document.getElementById('po-anova-tbl').innerHTML = `
     <table class="anova-table">
-      <thead><tr><th>Fonte</th><th>SQ</th><th>GL</th><th>MQ</th><th>F</th><th>p-valor</th></tr></thead>
+      <thead><tr><th>${window.t('anova-source')}</th><th>${window.t('anova-ss')}</th><th>${window.t('anova-df')}</th><th>${window.t('anova-ms')}</th><th>F</th><th>${window.t('tbl-pvalue')}</th></tr></thead>
       <tbody>
-        <tr><td>Regressão (Grau ${res.degree})</td><td>${fmt(res.SSR)}</td><td>${res.df_reg}</td><td>${fmt(res.MSR)}</td><td>${fmt(res.Fstat)}</td><td>${fmtP(res.pF)}</td></tr>
-        <tr><td>Resíduo</td><td>${fmt(res.SSE)}</td><td>${res.df_resid}</td><td>${fmt(res.MSE)}</td><td>—</td><td>—</td></tr>
+        <tr><td>${window.t('anova-regression')} (${window.t('reg-degree-lbl')} ${res.degree})</td><td>${fmt(res.SSR)}</td><td>${res.df_reg}</td><td>${fmt(res.MSR)}</td><td>${fmt(res.Fstat)}</td><td>${fmtP(res.pF)}</td></tr>
+        <tr><td>${window.t('anova-residual')}</td><td>${fmt(res.SSE)}</td><td>${res.df_resid}</td><td>${fmt(res.MSE)}</td><td>—</td><td>—</td></tr>
         <tr><td><b>Total</b></td><td>${fmt(res.SST)}</td><td>${res.n - 1}</td><td>—</td><td>—</td><td>—</td></tr>
       </tbody>
     </table>`;
@@ -276,7 +276,7 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
         <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${lx}</th>
         <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${ly}</th>
         <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">Ŷ</th>
-        <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">Resíduo</th>
+        <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${window.t('tbl-residual')}</th>
       </tr></thead>
       <tbody>${rRows}</tbody>
     </table>`;
@@ -309,21 +309,12 @@ async function poGenerateAI(res) {
   const box = document.getElementById('po-ai-box');
   box.innerHTML = aiLoadingHTML();
   const superFull = ['β₀', 'β₁·X', 'β₂·X²', 'β₃·X³', 'β₄·X⁴', 'β₅·X⁵', 'β₆·X⁶'];
-  const prompt = `Você é especialista em estatística. Analise esta regressão polinomial em português (3-4 parágrafos curtos):
-
-Variável X: ${res.labelX}
-Variável Y: ${res.labelY}
-Grau do polinômio: ${res.degree}
-n = ${res.n}
-
-Coeficientes:
-${res.beta.map((b, j) => `${superFull[j] || 'β' + j} = ${b.toFixed(6)}, t=${res.t_beta[j].toFixed(3)}, p=${res.p_beta[j].toFixed(4)}`).join('\n')}
-
-R² = ${res.r2.toFixed(4)}, R²adj = ${res.r2adj.toFixed(4)}
-F(${res.df_reg},${res.df_resid}) = ${res.Fstat.toFixed(4)}, p = ${res.pF.toFixed(6)}
-Erro padrão = ${res.se.toFixed(4)}
-
-Inclua: 1) interpretação da curva 2) qualidade do ajuste 3) significância 4) risco de overfitting se grau > 3.`;
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
+  const coefSummary = res.beta.map((b, j) => `${superFull[j] || 'β' + j} = ${b.toFixed(6)}, t=${res.t_beta[j].toFixed(3)}, p=${res.p_beta[j].toFixed(4)}`).join('\n');
+  const stats = `X: ${res.labelX}, Y: ${res.labelY}, degree=${res.degree}, n=${res.n}\n${coefSummary}\nR²=${res.r2.toFixed(4)}, R²adj=${res.r2adj.toFixed(4)}, F(${res.df_reg},${res.df_resid})=${res.Fstat.toFixed(4)}, p=${res.pF.toFixed(6)}, SE=${res.se.toFixed(4)}`;
+  const prompt = isEn
+    ? `You are a statistics expert. Analyze this polynomial regression in English (3-4 short paragraphs):\n\n${stats}\n\nInclude: 1) curve interpretation 2) fit quality 3) significance 4) overfitting risk if degree > 3.`
+    : `Você é especialista em estatística. Analise esta regressão polinomial em português (3-4 parágrafos curtos):\n\n${stats}\n\nInclua: 1) interpretação da curva 2) qualidade do ajuste 3) significância 4) risco de overfitting se grau > 3.`;
   try {
     const text = await callAI(prompt);
     box.innerHTML = aiResultHTML(text);
@@ -486,3 +477,7 @@ export function poExportCSV() {
   const rows = res.xs.map((x, i) => [x, res.ys[i], res.yhat[i], res.resid[i], res.resid_std[i]]);
   downloadCSV((document.getElementById('po-analysis-name').value || 'polinomial') + '.csv', header, rows);
 }
+
+window.polynomialRerender = () => {
+  if (poLastResult) renderPolynomialResults(poLastResult, poLastResult.xs, poLastResult.ys, poLastResult.labelX, poLastResult.labelY);
+};

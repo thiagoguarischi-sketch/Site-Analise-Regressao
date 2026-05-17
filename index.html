@@ -6926,6 +6926,102 @@ window.openCurso = openCurso;
       'frnd-chat-err':      'Erro ao carregar mensagens.',
       'frnd-chat-empty':    'Nenhuma mensagem ainda.<br>Diga olá! 👋',
       'frnd-msg-err':       'Erro ao enviar mensagem.',
+      /* regression output labels */
+      'reg-slope':          '(inclinação)',
+      'reg-intercept':      '(intercepto)',
+      'reg-std-error':      'Erro padrão',
+      'reg-n-obs':          'n (observações)',
+      'reg-r2adj-lbl':      'R² Ajustado',
+      'reg-predictors':     'preditores',
+      'reg-degree-lbl':     'Grau',
+      /* correlation/interpretation */
+      'corr-positive':      'positiva',
+      'corr-negative':      'negativa',
+      'corr-strong':        'forte',
+      'corr-moderate':      'moderada',
+      'corr-weak':          'fraca',
+      'corr-and':           'e',
+      'corr-prefix':        'Existe uma correlação',
+      'corr-explains':      'O modelo explica',
+      'corr-variance':      'da variância de',
+      'corr-equation-lbl':  'Equação:',
+      /* significance */
+      'stat-sig':           'estatisticamente significativo ✓',
+      'stat-not-sig':       'NÃO significativo ✗',
+      /* ANOVA */
+      'anova-source':       'Fonte',
+      'anova-ss':           'SQ',
+      'anova-df':           'GL',
+      'anova-ms':           'MQ',
+      'anova-regression':   'Regressão',
+      'anova-residual':     'Resíduo',
+      /* diagnostic tests */
+      'diag-sw-ok':         '✓ Normalidade dos resíduos não rejeitada',
+      'diag-sw-fail':       '✗ Possível violação de normalidade',
+      'diag-bp-ok':         '✓ Homocedasticidade não rejeitada',
+      'diag-bp-fail':       '⚠ Possível heterocedasticidade',
+      'diag-dw-ok':         '✓ Sem evidência forte de autocorrelação',
+      'diag-dw-fail':       '⚠ Verificar autocorrelação nos resíduos',
+      'diag-influential-pts':'Observações influentes',
+      'diag-leverage-high': 'observações com leverage elevado',
+      'diag-no-violations': '✓ Nenhuma violação severa das suposições detectada automaticamente.',
+      /* table headers */
+      'tbl-residual':       'Resíduo',
+      'tbl-coef':           'Coeficiente',
+      'tbl-estimate':       'Estimativa',
+      'tbl-se':             'EP',
+      'tbl-ci95':           'IC 95%',
+      'tbl-pvalue':         'p-valor',
+      'tbl-term':           'Termo',
+      'tbl-status':         'Status',
+      'tbl-resid-std':      'Resíd. Std',
+      'tbl-quantile':       'Quantil',
+      'tbl-coverage-real':  'Cobertura real',
+      /* confusion matrix */
+      'cm-title':           'Matriz de Confusão (limiar 0.50)',
+      'cm-actual':          'Real',
+      'cm-pred-label':      'Pred',
+      /* classification metrics */
+      'cls-metrics-title':  'Métricas de Classificação',
+      'cls-accuracy':       'Acurácia',
+      'cls-precision':      'Precisão',
+      'cls-recall':         'Recall (Sensib.)',
+      'cls-specificity':    'Especificidade',
+      /* quantile */
+      'qr-coverage-lab':    'cobertura',
+      'qr-coverage-note':   'Cobertura real: % de observações abaixo da linha quantílica.',
+      /* VIF */
+      'vif-moderate-lbl':   '⚠ Moderado',
+      'vif-high-lbl':       '✗ Alto',
+      'vif-note':           'VIF > 10: alta multicolinearidade (remove variável). VIF 5–10: moderada. VIF < 5: aceitável.',
+      /* tests */
+      'test-f-global':      'Teste F global',
+      'test-chi2-lr':       'Teste χ² (Razão de Verossimilhança)',
+      'lg-deviance-null':   'Deviance nula',
+      'lg-deviance-resid':  'Deviance residual',
+      /* polynomial */
+      'poly-best-lbl':      'Melhor grau por R²adj',
+      /* time series metrics */
+      'ts-mean-lbl':        'Média',
+      'ts-stddev-lbl':      'Desvio padrão',
+      'ts-trend-period':    'Tendência/período',
+      'ts-avg-growth':      'Crescimento médio',
+      'ts-best-lbl':        'Melhor:',
+      'ts-worst-lbl':       'Pior:',
+      'ts-period-lbl':      'Período',
+      'ts-projection-lbl':  'Projeção',
+      'ts-trend-only':      'Só tendência',
+      'ts-vs-mean':         'vs. Média',
+      'ts-model-lbl':       'Modelo',
+      'ts-se-lbl':          'σ (erro padrão)',
+      'ts-autocorr':        '⚠️ Autocorrelação residual',
+      'ts-resid-ok':        '✅ Resíduos OK',
+      /* regularized regression */
+      'rr-model-col':       'Modelo',
+      'rr-shrinkage-col':   'Encolhimento',
+      'rr-penalty-hint':    'quanto maior, maior a penalização (encolhimento). Ridge nunca zera β. Lasso pode zerar β (seleção de variáveis).',
+      'rr-shrinkage-ridge': 'Encolhimento Ridge',
+      'rr-shrinkage-lasso': 'Encolhimento Lasso',
     },
     en: {
       /* tabs */
@@ -7408,6 +7504,102 @@ window.openCurso = openCurso;
       'frnd-chat-err':      'Error loading messages.',
       'frnd-chat-empty':    'No messages yet.<br>Say hello! 👋',
       'frnd-msg-err':       'Error sending message.',
+      /* regression output labels */
+      'reg-slope':          '(slope)',
+      'reg-intercept':      '(intercept)',
+      'reg-std-error':      'Std. error',
+      'reg-n-obs':          'n (observations)',
+      'reg-r2adj-lbl':      'Adj. R²',
+      'reg-predictors':     'predictors',
+      'reg-degree-lbl':     'Degree',
+      /* correlation/interpretation */
+      'corr-positive':      'positive',
+      'corr-negative':      'negative',
+      'corr-strong':        'strong',
+      'corr-moderate':      'moderate',
+      'corr-weak':          'weak',
+      'corr-and':           'and',
+      'corr-prefix':        'There is a',
+      'corr-explains':      'The model explains',
+      'corr-variance':      'of the variance of',
+      'corr-equation-lbl':  'Equation:',
+      /* significance */
+      'stat-sig':           'statistically significant ✓',
+      'stat-not-sig':       'NOT significant ✗',
+      /* ANOVA */
+      'anova-source':       'Source',
+      'anova-ss':           'SS',
+      'anova-df':           'df',
+      'anova-ms':           'MS',
+      'anova-regression':   'Regression',
+      'anova-residual':     'Residual',
+      /* diagnostic tests */
+      'diag-sw-ok':         '✓ Residual normality not rejected',
+      'diag-sw-fail':       '✗ Possible normality violation',
+      'diag-bp-ok':         '✓ Homoscedasticity not rejected',
+      'diag-bp-fail':       '⚠ Possible heteroscedasticity',
+      'diag-dw-ok':         '✓ No strong evidence of autocorrelation',
+      'diag-dw-fail':       '⚠ Check residual autocorrelation',
+      'diag-influential-pts':'Influential observations',
+      'diag-leverage-high': 'observations with high leverage',
+      'diag-no-violations': '✓ No severe assumption violations detected automatically.',
+      /* table headers */
+      'tbl-residual':       'Residual',
+      'tbl-coef':           'Coefficient',
+      'tbl-estimate':       'Estimate',
+      'tbl-se':             'SE',
+      'tbl-ci95':           '95% CI',
+      'tbl-pvalue':         'p-value',
+      'tbl-term':           'Term',
+      'tbl-status':         'Status',
+      'tbl-resid-std':      'Std. Resid.',
+      'tbl-quantile':       'Quantile',
+      'tbl-coverage-real':  'Actual coverage',
+      /* confusion matrix */
+      'cm-title':           'Confusion Matrix (threshold 0.50)',
+      'cm-actual':          'Actual',
+      'cm-pred-label':      'Pred.',
+      /* classification metrics */
+      'cls-metrics-title':  'Classification Metrics',
+      'cls-accuracy':       'Accuracy',
+      'cls-precision':      'Precision',
+      'cls-recall':         'Recall (Sensitivity)',
+      'cls-specificity':    'Specificity',
+      /* quantile */
+      'qr-coverage-lab':    'coverage',
+      'qr-coverage-note':   'Actual coverage: % of observations below the quantile line.',
+      /* VIF */
+      'vif-moderate-lbl':   '⚠ Moderate',
+      'vif-high-lbl':       '✗ High',
+      'vif-note':           'VIF > 10: high multicollinearity (remove variable). VIF 5–10: moderate. VIF < 5: acceptable.',
+      /* tests */
+      'test-f-global':      'Global F-test',
+      'test-chi2-lr':       'χ² Test (Likelihood Ratio)',
+      'lg-deviance-null':   'Null deviance',
+      'lg-deviance-resid':  'Residual deviance',
+      /* polynomial */
+      'poly-best-lbl':      'Best degree by R²adj',
+      /* time series metrics */
+      'ts-mean-lbl':        'Mean',
+      'ts-stddev-lbl':      'Std. dev.',
+      'ts-trend-period':    'Trend/period',
+      'ts-avg-growth':      'Avg. growth',
+      'ts-best-lbl':        'Best:',
+      'ts-worst-lbl':       'Worst:',
+      'ts-period-lbl':      'Period',
+      'ts-projection-lbl':  'Projection',
+      'ts-trend-only':      'Trend only',
+      'ts-vs-mean':         'vs. Mean',
+      'ts-model-lbl':       'Model',
+      'ts-se-lbl':          'σ (std. error)',
+      'ts-autocorr':        '⚠️ Residual autocorrelation',
+      'ts-resid-ok':        '✅ Residuals OK',
+      /* regularized regression */
+      'rr-model-col':       'Model',
+      'rr-shrinkage-col':   'Shrinkage',
+      'rr-penalty-hint':    'higher λ means more penalization (shrinkage). Ridge never zeros β. Lasso can zero β (feature selection).',
+      'rr-shrinkage-ridge': 'Ridge Shrinkage',
+      'rr-shrinkage-lasso': 'Lasso Shrinkage',
     }
   };
 
@@ -7441,6 +7633,13 @@ window.openCurso = openCurso;
     window.bcbRerender?.();
     window.shareRerender?.();
     window.friendsRerender?.();
+    window.linearSimpleRerender?.();
+    window.linearMultipleRerender?.();
+    window.polynomialRerender?.();
+    window.logisticRerender?.();
+    window.quantileRerender?.();
+    window.regularizedRerender?.();
+    window.timeSeriesRerender?.();
   }
 
   window.toggleLang = function () {

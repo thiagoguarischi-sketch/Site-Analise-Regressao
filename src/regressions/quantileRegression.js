@@ -178,10 +178,10 @@ function qrRenderResults(res) {
   }).join('');
   document.getElementById('qr-coef-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>Quantil</th><th>β₀</th><th>β₁</th><th>Pinball Loss</th><th>MAE</th><th>Cobertura real</th></tr></thead>
+      <thead><tr><th>${window.t('tbl-quantile')}</th><th>β₀</th><th>β₁</th><th>Pinball Loss</th><th>MAE</th><th>${window.t('tbl-coverage-real')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <p style="font-size:11px;color:var(--txt3);margin-top:6px;padding:0 4px">Cobertura real: % de observações abaixo da linha quantílica.</p>`;
+    <p style="font-size:11px;color:var(--txt3);margin-top:6px;padding:0 4px">${window.t('qr-coverage-note')}</p>`;
 
   const metricsHtml = taus.map(tau => {
     const qr = quantileResults[tau];
@@ -192,11 +192,11 @@ function qrRenderResults(res) {
       <div class="qmetric-lab">Pinball Loss</div>
       <div style="margin-top:8px">
         <div class="qmetric-val" style="color:var(--txt2);font-size:13px">${fmt(qr.b1)}</div>
-        <div class="qmetric-lab">β₁ (inclinação)</div>
+        <div class="qmetric-lab">β₁ ${window.t('reg-slope')}</div>
       </div>
       <div style="margin-top:6px">
         <div class="qmetric-val" style="color:var(--txt2);font-size:13px">${(qr.coverage * 100).toFixed(1)}%</div>
-        <div class="qmetric-lab">cobertura</div>
+        <div class="qmetric-lab">${window.t('qr-coverage-lab')}</div>
       </div>
     </div>`;
   }).join('');
@@ -241,10 +241,10 @@ async function qrGenerateAI(res) {
     return `τ=${tau}: β₀=${qr.b0.toFixed(4)}, β₁=${qr.b1.toFixed(4)}, Pinball=${qr.pinballLoss.toFixed(4)}, cobertura=${(qr.coverage * 100).toFixed(1)}%`;
   }).join('\n');
 
-  const prompt = `Você é especialista em estatística. Analise esta regressão quantílica em português (3-4 parágrafos curtos):
-X: ${lx}, Y: ${ly}, n=${xs.length}
-Quantis estimados:\n${summary}
-Inclua: 1) o que os quantis revelam sobre a distribuição condicional 2) diferença de inclinações entre quantis (heterogeneidade) 3) utilidade prática 4) limitações do modelo linear por quantil.`;
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
+  const prompt = isEn
+    ? `You are a statistics expert. Analyze this quantile regression in English (3-4 short paragraphs):\nX: ${lx}, Y: ${ly}, n=${xs.length}\nEstimated quantiles:\n${summary}\nInclude: 1) what the quantiles reveal about the conditional distribution 2) slope differences across quantiles (heterogeneity) 3) practical utility 4) limitations of the linear quantile model.`
+    : `Você é especialista em estatística. Analise esta regressão quantílica em português (3-4 parágrafos curtos):\nX: ${lx}, Y: ${ly}, n=${xs.length}\nQuantis estimados:\n${summary}\nInclua: 1) o que os quantis revelam sobre a distribuição condicional 2) diferença de inclinações entre quantis (heterogeneidade) 3) utilidade prática 4) limitações do modelo linear por quantil.`;
 
   try {
     const text = await callAI(prompt);
@@ -402,3 +402,7 @@ export function qrExportCSV() {
   ]);
   downloadCSV((document.getElementById('qr-analysis-name').value || 'quantilica') + '.csv', header, rows);
 }
+
+window.quantileRerender = () => {
+  if (qrLastResult) qrRenderResults(qrLastResult);
+};

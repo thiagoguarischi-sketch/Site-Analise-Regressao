@@ -66,12 +66,12 @@ function renderPadrao(res) {
   document.getElementById('view-avancado').style.display = 'none';
 
   document.getElementById('metrics-padrao').innerHTML = `
-    <div class="metric"><div class="metric-val metric-x">${fmt(res.b1)}</div><div class="metric-lab">β₁ (inclinação)</div></div>
-    <div class="metric"><div class="metric-val metric-x">${fmt(res.b0)}</div><div class="metric-lab">β₀ (intercepto)</div></div>
+    <div class="metric"><div class="metric-val metric-x">${fmt(res.b1)}</div><div class="metric-lab">β₁ ${window.t('reg-slope')}</div></div>
+    <div class="metric"><div class="metric-val metric-x">${fmt(res.b0)}</div><div class="metric-lab">β₀ ${window.t('reg-intercept')}</div></div>
     <div class="metric"><div class="metric-val metric-y">${fmt(res.r2)}</div><div class="metric-lab">R²</div></div>
     <div class="metric"><div class="metric-val metric-y">${fmt(res.r)}</div><div class="metric-lab">r (Pearson)</div></div>
-    <div class="metric"><div class="metric-val metric-g">${fmt(res.se)}</div><div class="metric-lab">Erro padrão</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${res.n}</div><div class="metric-lab">n (observações)</div></div>
+    <div class="metric"><div class="metric-val metric-g">${fmt(res.se)}</div><div class="metric-lab">${window.t('reg-std-error')}</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${res.n}</div><div class="metric-lab">${window.t('reg-n-obs')}</div></div>
   `;
 
   const xMin = Math.min(...res.xs), xMax = Math.max(...res.xs);
@@ -81,13 +81,13 @@ function renderPadrao(res) {
   if (chartPadrao) chartPadrao.destroy();
   chartPadrao = createScatterWithLine('chart-padrao', res.xs, res.ys, lineX, lineY, res.labelX, res.labelY);
 
-  const dir = res.b1 >= 0 ? 'positiva' : 'negativa';
-  const strength = Math.abs(res.r) > 0.8 ? 'forte' : Math.abs(res.r) > 0.5 ? 'moderada' : 'fraca';
+  const dirKey = res.b1 >= 0 ? 'corr-positive' : 'corr-negative';
+  const strengthKey = Math.abs(res.r) > 0.8 ? 'corr-strong' : Math.abs(res.r) > 0.5 ? 'corr-moderate' : 'corr-weak';
   document.getElementById('interp-padrao').innerHTML = `
     <div class="interp-box">
-      Equação: <b>Ŷ = ${fmt(res.b0)} + ${fmt(res.b1)}·X</b><br>
-      Existe uma correlação ${strength} e ${dir} (r = ${fmt(res.r)}).
-      O modelo explica <b>${(res.r2 * 100).toFixed(1)}%</b> da variância de ${res.labelY}.
+      ${window.t('corr-equation-lbl')} <b>Ŷ = ${fmt(res.b0)} + ${fmt(res.b1)}·X</b><br>
+      ${window.t('corr-prefix')} ${window.t(strengthKey)} ${window.t('corr-and')} ${window.t(dirKey)} (r = ${fmt(res.r)}).
+      ${window.t('corr-explains')} <b>${(res.r2 * 100).toFixed(1)}%</b> ${window.t('corr-variance')} ${res.labelY}.
     </div>
   `;
 
@@ -98,7 +98,7 @@ function renderPadrao(res) {
     </tr>`).join('');
   document.getElementById('resid-tbl-padrao').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>#</th><th>${res.labelX}</th><th>${res.labelY}</th><th>Ŷ</th><th>Resíduo</th></tr></thead>
+      <thead><tr><th>#</th><th>${res.labelX}</th><th>${res.labelY}</th><th>Ŷ</th><th>${window.t('tbl-residual')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
@@ -113,8 +113,8 @@ function renderAvancado(res) {
     <div class="metric"><div class="metric-val metric-x">${fmt(res.b1)}</div><div class="metric-lab">β₁</div></div>
     <div class="metric"><div class="metric-val metric-x">${fmt(res.b0)}</div><div class="metric-lab">β₀</div></div>
     <div class="metric"><div class="metric-val metric-y">${fmt(res.r2)}</div><div class="metric-lab">R²</div></div>
-    <div class="metric"><div class="metric-val metric-y">${fmt(res.r2adj)}</div><div class="metric-lab">R² Ajustado</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.se)}</div><div class="metric-lab">Erro padrão</div></div>
+    <div class="metric"><div class="metric-val metric-y">${fmt(res.r2adj)}</div><div class="metric-lab">${window.t('reg-r2adj-lbl')}</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.se)}</div><div class="metric-lab">${window.t('reg-std-error')}</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(res.Fstat)}</div><div class="metric-lab">F-stat</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_rmseA)}</div><div class="metric-lab">RMSE</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_maeA)}</div><div class="metric-lab">MAE</div></div>
@@ -162,25 +162,25 @@ function renderAvancado(res) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
       <div class="alert ${res.p_b1 < 0.05 ? 'alert-ok' : 'alert-warn'}">
         <b>β₁:</b> t=${fmt(res.t_b1)}, p=${fmtP(res.p_b1)} ${res.p_b1 < 0.05 ? '✓ significativo' : '✗ não significativo'}<br>
-        IC 95%: [${fmt(ciB1Lo)}, ${fmt(ciB1Hi)}]
+        ${window.t('tbl-ci95')}: [${fmt(ciB1Lo)}, ${fmt(ciB1Hi)}]
       </div>
       <div class="alert ${res.p_b0 < 0.05 ? 'alert-ok' : 'alert-warn'}">
         <b>β₀:</b> t=${fmt(res.t_b0)}, p=${fmtP(res.p_b0)} ${res.p_b0 < 0.05 ? '✓ significativo' : '✗ não significativo'}<br>
-        IC 95%: [${fmt(ciB0Lo)}, ${fmt(ciB0Hi)}]
+        ${window.t('tbl-ci95')}: [${fmt(ciB0Lo)}, ${fmt(ciB0Hi)}]
       </div>
     </div>
     <div class="alert ${res.pF < 0.05 ? 'alert-ok' : 'alert-err'}" style="margin-top:8px">
-      <b>Teste F global:</b> F(1,${res.n - 2})=${fmt(res.Fstat)}, p=${fmtP(res.pF)}
-      — Modelo ${res.pF < 0.05 ? 'estatisticamente significativo ✓' : 'NÃO significativo ✗'}
+      <b>${window.t('test-f-global')}:</b> F(1,${res.n - 2})=${fmt(res.Fstat)}, p=${fmtP(res.pF)}
+      — ${window.t('anova-regression')} ${res.pF < 0.05 ? window.t('stat-sig') : window.t('stat-not-sig')}
     </div>
   `;
 
   document.getElementById('anova-tbl').innerHTML = `
     <table class="anova-table">
-      <thead><tr><th>Fonte</th><th>SQ</th><th>GL</th><th>MQ</th><th>F</th><th>p-valor</th></tr></thead>
+      <thead><tr><th>${window.t('anova-source')}</th><th>${window.t('anova-ss')}</th><th>${window.t('anova-df')}</th><th>${window.t('anova-ms')}</th><th>F</th><th>${window.t('tbl-pvalue')}</th></tr></thead>
       <tbody>
-        <tr><td>Regressão</td><td>${fmt(res.SSR)}</td><td>1</td><td>${fmt(res.MSR)}</td><td>${fmt(res.Fstat)}</td><td>${fmtP(res.pF)}</td></tr>
-        <tr><td>Resíduo</td><td>${fmt(res.SSE)}</td><td>${res.n - 2}</td><td>${fmt(res.MSE)}</td><td>—</td><td>—</td></tr>
+        <tr><td>${window.t('anova-regression')}</td><td>${fmt(res.SSR)}</td><td>1</td><td>${fmt(res.MSR)}</td><td>${fmt(res.Fstat)}</td><td>${fmtP(res.pF)}</td></tr>
+        <tr><td>${window.t('anova-residual')}</td><td>${fmt(res.SSE)}</td><td>${res.n - 2}</td><td>${fmt(res.MSE)}</td><td>—</td><td>—</td></tr>
         <tr><td><b>Total</b></td><td>${fmt(res.SST)}</td><td>${res.n - 1}</td><td>—</td><td>—</td><td>—</td></tr>
       </tbody>
     </table>`;
@@ -192,37 +192,22 @@ async function generateAIInsight(res) {
   const box = document.getElementById('ai-insight-box');
   box.innerHTML = aiLoadingHTML();
 
-  const prompt = `Você é um especialista em estatística. Analise estes resultados de regressão linear simples e forneça uma interpretação clara e objetiva em português (3-4 parágrafos curtos):
-
-Variável independente (X): ${res.labelX}
-Variável dependente (Y): ${res.labelY}
-n = ${res.n} observações
-β₀ = ${res.b0.toFixed(4)}, β₁ = ${res.b1.toFixed(4)}
-R² = ${res.r2.toFixed(4)}, R² ajustado = ${res.r2adj.toFixed(4)}
-r de Pearson = ${res.r.toFixed(4)}
-Erro padrão = ${res.se.toFixed(4)}
-F-statístico = ${res.Fstat.toFixed(4)}, p-valor F = ${res.pF.toFixed(6)}
-t para β₁ = ${res.t_b1.toFixed(4)}, p = ${res.p_b1.toFixed(6)}
-t para β₀ = ${res.t_b0.toFixed(4)}, p = ${res.p_b0.toFixed(6)}
-
-Inclua:
-1. O que a equação significa praticamente
-2. Qualidade do ajuste (R²) em linguagem simples
-3. Significância estatística e o que isso implica
-4. Uma limitação ou ressalva importante
-
-Seja direto e use linguagem acessível.`;
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
+  const stats = `X: ${res.labelX}, Y: ${res.labelY}, n=${res.n}\nβ₀=${res.b0.toFixed(4)}, β₁=${res.b1.toFixed(4)}, R²=${res.r2.toFixed(4)}, R²adj=${res.r2adj.toFixed(4)}\nr=${res.r.toFixed(4)}, SE=${res.se.toFixed(4)}, F=${res.Fstat.toFixed(4)}, p(F)=${res.pF.toFixed(6)}\nt(β₁)=${res.t_b1.toFixed(4)}, p=${res.p_b1.toFixed(6)} | t(β₀)=${res.t_b0.toFixed(4)}, p=${res.p_b0.toFixed(6)}`;
+  const prompt = isEn
+    ? `You are a statistics expert. Analyze these simple linear regression results and provide a clear, objective interpretation in English (3-4 short paragraphs):\n\n${stats}\n\nInclude: 1) practical meaning of the equation 2) fit quality (R²) in plain language 3) statistical significance and its implications 4) one important limitation or caveat.\n\nBe direct and use accessible language.`
+    : `Você é um especialista em estatística. Analise estes resultados de regressão linear simples e forneça uma interpretação clara e objetiva em português (3-4 parágrafos curtos):\n\n${stats}\n\nInclua: 1) o que a equação significa praticamente 2) qualidade do ajuste (R²) em linguagem simples 3) significância estatística e o que isso implica 4) uma limitação ou ressalva importante.\n\nSeja direto e use linguagem acessível.`;
 
   try {
     const text = await callAI(prompt);
     box.innerHTML = aiResultHTML(text);
   } catch (e) {
     console.warn('generateAIInsight error:', e.message);
+    const corrStr = Math.abs(res.r) > 0.8 ? window.t('corr-strong') : Math.abs(res.r) > 0.5 ? window.t('corr-moderate') : window.t('corr-weak');
     box.innerHTML = aiFallbackHTML(
-      `Interpretação automática indisponível no momento.<br>
-       R² = ${(res.r2 * 100).toFixed(1)}% da variância explicada.
-       Correlação ${Math.abs(res.r) > 0.8 ? 'forte' : Math.abs(res.r) > 0.5 ? 'moderada' : 'fraca'} (r=${res.r.toFixed(4)}).
-       Modelo ${res.pF < 0.05 ? 'estatisticamente significativo (p<0.05)' : 'não significativo (p≥0.05)'}.`
+      isEn
+        ? `Automatic interpretation unavailable.<br>R² = ${(res.r2 * 100).toFixed(1)}% of variance explained. ${corrStr} correlation (r=${res.r.toFixed(4)}). Model ${res.pF < 0.05 ? 'statistically significant (p<0.05)' : 'not significant (p≥0.05)'}.`
+        : `Interpretação automática indisponível no momento.<br>R² = ${(res.r2 * 100).toFixed(1)}% da variância explicada. Correlação ${corrStr} (r=${res.r.toFixed(4)}). Modelo ${res.pF < 0.05 ? 'estatisticamente significativo (p<0.05)' : 'não significativo (p≥0.05)'}.`
     );
   }
 }
@@ -264,19 +249,19 @@ function buildDiagnostic(res) {
     <div class="diag-grid">
       <div class="alert ${sw.p > 0.05 ? 'alert-ok' : 'alert-err'}">
         <b>Shapiro-Wilk:</b> W=${sw.W.toFixed(4)}, p=${fmtP(sw.p)}<br>
-        ${sw.p > 0.05 ? '✓ Normalidade dos resíduos não rejeitada' : '✗ Possível violação de normalidade'}
+        ${sw.p > 0.05 ? window.t('diag-sw-ok') : window.t('diag-sw-fail')}
       </div>
       <div class="alert ${bp.p > 0.05 ? 'alert-ok' : 'alert-warn'}">
         <b>Breusch-Pagan:</b> LM=${bp.stat.toFixed(4)}, p=${fmtP(bp.p)}<br>
-        ${bp.p > 0.05 ? '✓ Homocedasticidade não rejeitada' : '⚠ Possível heterocedasticidade'}
+        ${bp.p > 0.05 ? window.t('diag-bp-ok') : window.t('diag-bp-fail')}
       </div>
       <div class="alert ${dw > 1.5 && dw < 2.5 ? 'alert-ok' : 'alert-warn'}">
         <b>Durbin-Watson:</b> DW=${dw.toFixed(4)}<br>
-        ${dw > 1.5 && dw < 2.5 ? '✓ Sem evidência forte de autocorrelação' : '⚠ Verificar autocorrelação nos resíduos'}
+        ${dw > 1.5 && dw < 2.5 ? window.t('diag-dw-ok') : window.t('diag-dw-fail')}
       </div>
       <div class="alert alert-ok">
-        <b>Observações influentes:</b> ${res.cooks_d.filter(c => c > 4 / res.n).length} ponto(s) com Cook's D > 4/n<br>
-        Leverage: ${res.hi.filter(h => h > 2 * 2 / res.n).length} observaç${res.hi.filter(h => h > 2 * 2 / res.n).length === 1 ? 'ão' : 'ões'} com leverage elevado
+        <b>${window.t('diag-influential-pts')}:</b> ${res.cooks_d.filter(c => c > 4 / res.n).length} ponto(s) com Cook's D > 4/n<br>
+        Leverage: ${res.hi.filter(h => h > 2 * 2 / res.n).length} ${window.t('diag-leverage-high')}
       </div>
     </div>`;
 
@@ -305,7 +290,7 @@ function buildDiagnostic(res) {
   }).join('');
   document.getElementById('influential-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>#</th><th>X</th><th>Y</th><th>Leverage</th><th>Resíd. Std</th><th>Cook's D</th><th>Status</th></tr></thead>
+      <thead><tr><th>#</th><th>X</th><th>Y</th><th>Leverage</th><th>${window.t('tbl-resid-std')}</th><th>Cook's D</th><th>${window.t('tbl-status')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
@@ -719,19 +704,19 @@ function renderMultipleResults(res) {
   const _maeM  = mae(res.resid);
   document.getElementById('m-metrics').innerHTML = `
     <div class="metric"><div class="metric-val metric-y">${fmt(r2)}</div><div class="metric-lab">R²</div></div>
-    <div class="metric"><div class="metric-val metric-y">${fmt(r2adj)}</div><div class="metric-lab">R² Ajustado</div></div>
-    <div class="metric"><div class="metric-val metric-g">${fmt(se)}</div><div class="metric-lab">Erro padrão</div></div>
+    <div class="metric"><div class="metric-val metric-y">${fmt(r2adj)}</div><div class="metric-lab">${window.t('reg-r2adj-lbl')}</div></div>
+    <div class="metric"><div class="metric-val metric-g">${fmt(se)}</div><div class="metric-lab">${window.t('reg-std-error')}</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--acc2)">${fmt(Fstat)}</div><div class="metric-lab">F-stat</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_rmseM)}</div><div class="metric-lab">RMSE</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${fmt(_maeM)}</div><div class="metric-lab">MAE</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${n}</div><div class="metric-lab">n</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${k}</div><div class="metric-lab">preditores</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--txt2)">${k}</div><div class="metric-lab">${window.t('reg-predictors')}</div></div>
   `;
 
   document.getElementById('m-global-tests').innerHTML = `
     <div class="alert ${pF < 0.05 ? 'alert-ok' : 'alert-err'}">
-      <b>Teste F global:</b> F(${k}, ${df_resid})=${fmt(Fstat)}, p=${fmtP(pF)}
-      — Modelo ${pF < 0.05 ? 'estatisticamente significativo ✓' : 'NÃO significativo ✗'}
+      <b>${window.t('test-f-global')}:</b> F(${k}, ${df_resid})=${fmt(Fstat)}, p=${fmtP(pF)}
+      — ${window.t('anova-regression')} ${pF < 0.05 ? window.t('stat-sig') : window.t('stat-not-sig')}
     </div>`;
 
   const pSig = p => p < 0.001 ? '***' : p < 0.01 ? '**' : p < 0.05 ? '*' : p < 0.1 ? '†' : '';
@@ -749,7 +734,7 @@ function renderMultipleResults(res) {
   }).join('');
   document.getElementById('m-coef-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>Coeficiente</th><th>Estimativa</th><th>EP</th><th>t</th><th>p-valor</th><th>IC 95%</th></tr></thead>
+      <thead><tr><th>${window.t('tbl-coef')}</th><th>${window.t('tbl-estimate')}</th><th>${window.t('tbl-se')}</th><th>t</th><th>${window.t('tbl-pvalue')}</th><th>${window.t('tbl-ci95')}</th></tr></thead>
       <tbody>${coefRows}</tbody>
     </table>
     <p style="font-size:11px;color:var(--txt3);margin-top:6px;padding:0 4px">* p<0.05 &nbsp;** p<0.01 &nbsp;*** p<0.001 &nbsp;† p<0.1</p>`;
@@ -758,7 +743,7 @@ function renderMultipleResults(res) {
   const vifRows = res.vif.map((v, i) => {
     const pct = Math.min(100, (v / 10) * 100);
     const color = v < 5 ? 'var(--y)' : v < 10 ? 'var(--acc2)' : 'var(--acc)';
-    const status = v < 5 ? '✓ OK' : v < 10 ? '⚠ Moderado' : '✗ Alto';
+    const status = v < 5 ? '✓ OK' : v < 10 ? window.t('vif-moderate-lbl') : window.t('vif-high-lbl');
     return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
       <div style="min-width:130px;font-size:12px;color:var(--txt2)">X${i + 1}: ${esc(varNames[i])}</div>
       <div style="min-width:60px;font-size:13px;font-weight:600;color:${color}">${v >= 9999 ? '>999' : v.toFixed(2)}</div>
@@ -768,15 +753,15 @@ function renderMultipleResults(res) {
   }).join('');
   document.getElementById('m-vif-section').innerHTML = vifRows +
     `<div class="interp-box ${maxVIF < 5 ? 'green' : maxVIF < 10 ? 'amber' : ''}" style="margin-top:8px">
-      VIF > 10: alta multicolinearidade (remove variável). VIF 5–10: moderada. VIF < 5: aceitável.
+      ${window.t('vif-note')}
     </div>`;
 
   document.getElementById('m-anova-tbl').innerHTML = `
     <table class="anova-table">
-      <thead><tr><th>Fonte</th><th>SQ</th><th>GL</th><th>MQ</th><th>F</th><th>p-valor</th></tr></thead>
+      <thead><tr><th>${window.t('anova-source')}</th><th>${window.t('anova-ss')}</th><th>${window.t('anova-df')}</th><th>${window.t('anova-ms')}</th><th>F</th><th>${window.t('tbl-pvalue')}</th></tr></thead>
       <tbody>
-        <tr><td>Regressão</td><td>${fmt(SSR)}</td><td>${k}</td><td>${fmt(MSR)}</td><td>${fmt(Fstat)}</td><td>${fmtP(pF)}</td></tr>
-        <tr><td>Resíduo</td><td>${fmt(SSE)}</td><td>${df_resid}</td><td>${fmt(MSE)}</td><td>—</td><td>—</td></tr>
+        <tr><td>${window.t('anova-regression')}</td><td>${fmt(SSR)}</td><td>${k}</td><td>${fmt(MSR)}</td><td>${fmt(Fstat)}</td><td>${fmtP(pF)}</td></tr>
+        <tr><td>${window.t('anova-residual')}</td><td>${fmt(SSE)}</td><td>${df_resid}</td><td>${fmt(MSE)}</td><td>—</td><td>—</td></tr>
         <tr><td><b>Total</b></td><td>${fmt(SST)}</td><td>${n - 1}</td><td>—</td><td>—</td><td>—</td></tr>
       </tbody>
     </table>`;
@@ -803,7 +788,7 @@ function buildMultipleDiagnostic(res) {
   if (highVIF > 0) alerts.push({ type: 'alert-err', msg: `✗ ${highVIF} variável(is) com VIF > 10 (multicolinearidade severa)` });
   const alertsEl = document.getElementById('m-diag-alerts');
   if (alerts.length === 0) {
-    alertsEl.innerHTML = '<div class="alert alert-ok">✓ Nenhuma violação severa das suposições detectada automaticamente.</div>';
+    alertsEl.innerHTML = `<div class="alert alert-ok">${window.t('diag-no-violations')}</div>`;
   } else {
     alertsEl.innerHTML = alerts.map(a => `<div class="alert ${a.type}" style="margin-bottom:6px">${a.msg}</div>`).join('');
   }
@@ -813,19 +798,19 @@ function buildMultipleDiagnostic(res) {
     <div class="diag-grid">
       <div class="alert ${sw.p > 0.05 ? 'alert-ok' : 'alert-err'}">
         <b>Shapiro-Wilk:</b> W=${sw.W.toFixed(4)}, p=${fmtP(sw.p)}<br>
-        ${sw.p > 0.05 ? '✓ Normalidade dos resíduos não rejeitada' : '✗ Possível violação de normalidade'}
+        ${sw.p > 0.05 ? window.t('diag-sw-ok') : window.t('diag-sw-fail')}
       </div>
       <div class="alert ${bp.p > 0.05 ? 'alert-ok' : 'alert-warn'}">
         <b>Breusch-Pagan:</b> LM=${bp.stat.toFixed(4)}, p=${fmtP(bp.p)}<br>
-        ${bp.p > 0.05 ? '✓ Homocedasticidade não rejeitada' : '⚠ Possível heterocedasticidade'}
+        ${bp.p > 0.05 ? window.t('diag-bp-ok') : window.t('diag-bp-fail')}
       </div>
       <div class="alert ${dw > 1.5 && dw < 2.5 ? 'alert-ok' : 'alert-warn'}">
         <b>Durbin-Watson:</b> DW=${dw.toFixed(4)}<br>
-        ${dw > 1.5 && dw < 2.5 ? '✓ Sem evidência forte de autocorrelação' : '⚠ Verificar autocorrelação nos resíduos'}
+        ${dw > 1.5 && dw < 2.5 ? window.t('diag-dw-ok') : window.t('diag-dw-fail')}
       </div>
       <div class="alert alert-ok">
-        <b>Observações influentes:</b> ${cooks_d.filter(c => c > 4 / n).length} ponto(s) com Cook's D > 4/n<br>
-        Leverage: ${hi.filter(h => h > 2 * (k + 1) / n).length} observaç${hi.filter(h => h > 2 * (k + 1) / n).length === 1 ? 'ão' : 'ões'} com leverage elevado
+        <b>${window.t('diag-influential-pts')}:</b> ${cooks_d.filter(c => c > 4 / n).length} ponto(s) com Cook's D > 4/n<br>
+        Leverage: ${hi.filter(h => h > 2 * (k + 1) / n).length} ${window.t('diag-leverage-high')}
       </div>
     </div>`;
 
@@ -844,7 +829,7 @@ function buildMultipleDiagnostic(res) {
   }).join('');
   document.getElementById('m-influential-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>#</th><th>Y</th><th>Ŷ</th><th>Leverage</th><th>Resíd. Std</th><th>Cook's D</th><th>Status</th></tr></thead>
+      <thead><tr><th>#</th><th>Y</th><th>Ŷ</th><th>Leverage</th><th>${window.t('tbl-resid-std')}</th><th>Cook's D</th><th>${window.t('tbl-status')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
@@ -924,20 +909,12 @@ async function mGenerateAI(res) {
   const box = document.getElementById('m-ai-box');
   box.innerHTML = aiLoadingHTML();
 
-  const prompt = `Você é especialista em estatística. Analise esta regressão linear múltipla em português (4 parágrafos curtos):
-
-Variável dependente: ${res.labelY}
-Variáveis independentes: ${res.varNames.map((n, i) => `X${i + 1}=${n}`).join(', ')}
-n=${res.n}, k=${res.k} preditores
-
-Coeficientes:
-${res.beta.map((b, j) => j === 0 ? `β₀=${b.toFixed(4)}` : `β${j}(${res.varNames[j - 1]})=${b.toFixed(4)}, t=${res.t_beta[j].toFixed(3)}, p=${res.p_beta[j].toFixed(4)}`).join('\n')}
-
-R²=${res.r2.toFixed(4)}, R²adj=${res.r2adj.toFixed(4)}, F=${res.Fstat.toFixed(4)}, p-F=${res.pF.toFixed(6)}
-Erro padrão=${res.se.toFixed(4)}
-VIF: ${res.vif.map((v, i) => `${res.varNames[i]}=${v >= 9999 ? '>999' : v.toFixed(2)}`).join(', ')}
-
-Inclua: 1) equação na prática 2) quais preditores são significativos 3) qualidade do ajuste 4) multicolinearidade e ressalvas.`;
+  const isEnM = (localStorage.getItem('slope-lang') || 'pt') === 'en';
+  const coefSummaryM = res.beta.map((b, j) => j === 0 ? `β₀=${b.toFixed(4)}` : `β${j}(${res.varNames[j - 1]})=${b.toFixed(4)}, t=${res.t_beta[j].toFixed(3)}, p=${res.p_beta[j].toFixed(4)}`).join('\n');
+  const statsM = `Y: ${res.labelY} | X: ${res.varNames.map((n, i) => `X${i + 1}=${n}`).join(', ')} | n=${res.n}, k=${res.k}\n${coefSummaryM}\nR²=${res.r2.toFixed(4)}, R²adj=${res.r2adj.toFixed(4)}, F=${res.Fstat.toFixed(4)}, p=${res.pF.toFixed(6)}, SE=${res.se.toFixed(4)}\nVIF: ${res.vif.map((v, i) => `${res.varNames[i]}=${v >= 9999 ? '>999' : v.toFixed(2)}`).join(', ')}`;
+  const prompt = isEnM
+    ? `You are a statistics expert. Analyze this multiple linear regression in English (4 short paragraphs):\n\n${statsM}\n\nInclude: 1) practical interpretation of the equation 2) which predictors are significant 3) fit quality 4) multicollinearity and caveats.`
+    : `Você é especialista em estatística. Analise esta regressão linear múltipla em português (4 parágrafos curtos):\n\n${statsM}\n\nInclua: 1) equação na prática 2) quais preditores são significativos 3) qualidade do ajuste 4) multicolinearidade e ressalvas.`;
 
   try {
     const text = await callAI(prompt);
@@ -1139,3 +1116,16 @@ export function mExportCSV() {
   const rows = res.Y.map((y, i) => [...res.Xs.map(x => x[i]), y, res.yhat[i], res.resid[i], res.resid_std[i]]);
   downloadCSV((document.getElementById('m-analysis-name').value || 'multipla') + '.csv', header, rows);
 }
+
+// ── Re-render hooks (called by applyLang when language changes) ──
+
+window.linearSimpleRerender = () => {
+  if (!lastResult) return;
+  if (viewMode === 'padrao') renderPadrao(lastResult);
+  else renderAvancado(lastResult);
+  buildDiagnostic(lastResult);
+};
+
+window.linearMultipleRerender = () => {
+  if (mLastResult) renderMultipleResults(mLastResult);
+};
