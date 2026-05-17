@@ -6187,6 +6187,7 @@ function _renderCursoSection(sec) {
 
 // ── Abre o painel de curso ──
 function openCurso(modelId) {
+  window._currentCursoModel = modelId;
   const curLang = localStorage.getItem('slope-lang') || 'pt';
   const model = (curLang === 'en' ? CURSO_MODELS_EN : CURSO_MODELS)[modelId];
   if (!model) return;
@@ -7013,6 +7014,7 @@ window.openCurso = openCurso;
     });
     const btn = document.getElementById('lang-toggle');
     if (btn) btn.innerHTML = FLAGS[l];
+    if (window._currentCursoModel) openCurso(window._currentCursoModel);
   }
 
   window.toggleLang = function () {
