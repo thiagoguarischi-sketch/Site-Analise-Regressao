@@ -19,7 +19,7 @@ import {
 } from './ui/forms.js';
 
 import { viewAnalysis, closeModal, editAnalysis, deleteAnalysis as deleteAnalysisModal } from './ui/modals.js';
-import { loadShareList, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
+import { loadShareList, shareRerender, copyShareLink, copyShareText, previewShareCard, copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared, openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare } from './ui/share.js';
 import { loadFriendsPanel, searchFriends, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, removeFriend, openChat, closeChat, sendMessage } from './ui/friends.js';
 import { loadHistory, updateProfileStats } from './ui/tables.js';
 import { yfSearchInput, yfAddTicker, yfRemoveTicker, yfLoadAll, yfSwitchView, yfToggleNormalize, yfImportOne, yfOnModelChange, yfImportPair, yfRerender } from './ui/yahooFinance.js';
@@ -101,7 +101,7 @@ Object.assign(window, {
   loadHistory, updateProfileStats,
 
   // Compartilhar
-  loadShareList, copyShareLink, copyShareText, previewShareCard,
+  loadShareList, shareRerender, copyShareLink, copyShareText, previewShareCard,
   copyOverlayLink, copyOverlayText, closeShareOverlay, triggerLoadShared,
   openShareWithFriendModal, closeFriendPickOverlay, sendToFriend, loadReceivedShare, deleteReceivedShare,
 

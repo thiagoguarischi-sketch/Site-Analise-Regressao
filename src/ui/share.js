@@ -15,6 +15,7 @@ let _analyses = [];
 let _overlayAnalysis = null;
 let _incomingShared = null;
 let _friendPickAnalysisId = null;
+let _receivedCache = null;
 
 async function _uid() {
   const { data: { user } } = await db.auth.getUser();
@@ -240,6 +241,11 @@ async function _loadReceivedShares() {
   const { data: profiles } = await db.from('profiles').select('id, full_name, email').in('id', senderIds);
   const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
 
+  _receivedCache = { shares, profileMap };
+  _renderReceivedList(container, shares, profileMap);
+}
+
+function _renderReceivedList(container, shares, profileMap) {
   container.innerHTML = shares.map(s => {
     const sender = profileMap[s.sender_id] || {};
     const tipoLabel = {
@@ -271,6 +277,19 @@ async function _loadReceivedShares() {
         </div>
       </div>`;
   }).join('');
+}
+
+// ── Re-renderiza ao trocar idioma ──
+
+export function shareRerender() {
+  if (_analyses.length) {
+    const list = document.getElementById('share-list');
+    if (list) list.innerHTML = _analyses.map(a => _renderShareCard(a)).join('');
+  }
+  if (_receivedCache) {
+    const container = document.getElementById('share-received-list');
+    if (container) _renderReceivedList(container, _receivedCache.shares, _receivedCache.profileMap);
+  }
 }
 
 export async function loadReceivedShare(shareId) {
