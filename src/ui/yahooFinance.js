@@ -71,7 +71,7 @@ async function _doSearch() {
   if (!list) return;
   if (!q) { list.innerHTML = ''; return; }
 
-  list.innerHTML = `<div class="yf-loading">Buscando…</div>`;
+  list.innerHTML = `<div class="yf-loading">${window.t?.('mf-buscando') ?? 'Buscando…'}</div>`;
   try {
     const r = await fetch(`${API_BASE}/yahoo/search?q=${encodeURIComponent(q)}`);
     const { quotes = [], error } = await r.json();
@@ -93,7 +93,7 @@ async function _doSearch() {
       </button>`;
     }).join('');
   } catch {
-    list.innerHTML = `<div class="yf-no-results">Erro de conexão. Tente novamente.</div>`;
+    list.innerHTML = `<div class="yf-no-results">${window.t?.('mf-erro-conexao') ?? 'Erro de conexão. Tente novamente.'}</div>`;
   }
 }
 
@@ -156,7 +156,7 @@ export async function yfLoadAll() {
   if (fromVal >= toVal)   { showToast('A data inicial deve ser anterior à data final.', 'err'); return; }
 
   const btn = document.getElementById('yf-load-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Carregando…'; }
+  if (btn) { btn.disabled = true; btn.textContent = window.t?.('mf-carregando') ?? 'Carregando…'; }
   showToast(`Carregando ${_tickers.length} ativo${_tickers.length > 1 ? 's' : ''}…`, 'info');
 
   try {
@@ -178,7 +178,7 @@ export async function yfLoadAll() {
   } catch {
     showToast('Erro ao carregar dados.', 'err');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Carregar dados'; }
+    if (btn) { btn.disabled = false; btn.textContent = window.t?.('mf-carregar') ?? 'Carregar dados'; }
   }
 }
 
@@ -208,7 +208,7 @@ function _renderNormal() {
 
   const loaded = _tickers.filter(t => _datasets[t.symbol]);
   if (!loaded.length) {
-    grid.innerHTML = '<p style="color:var(--txt3);font-size:13px;grid-column:1/-1">Nenhum dado carregado ainda. Clique em "Carregar dados".</p>';
+    grid.innerHTML = `<p style="color:var(--txt3);font-size:13px;grid-column:1/-1">${window.t?.('mf-no-data-yf') ?? 'Nenhum dado carregado ainda. Clique em "Carregar dados".'}</p>`;
     return;
   }
 
@@ -258,21 +258,21 @@ function _renderNormal() {
         <select class="yf-select" id="yf-mdl-${_attr(t.symbol)}"
           onchange="yfOnModelChange('${_attr(t.symbol)}')"
           style="flex:1;min-width:0;font-size:12px">
-          <option value="serie" selected>Séries Temporais</option>
-          <option value="nova">Reg. Linear</option>
-          <option value="polinomial">Reg. Polinomial</option>
-          <option value="quantilica">Reg. Quantílica</option>
-          <option value="regularizada">Reg. Regularizada</option>
+          <option value="serie" selected>${window.t?.('mf-series-temporais') ?? 'Séries Temporais'}</option>
+          <option value="nova">${window.t?.('mf-reg-linear') ?? 'Reg. Linear'}</option>
+          <option value="polinomial">${window.t?.('mf-reg-polinomial') ?? 'Reg. Polinomial'}</option>
+          <option value="quantilica">${window.t?.('mf-reg-quantilica') ?? 'Reg. Quantílica'}</option>
+          <option value="regularizada">${window.t?.('mf-reg-regularizada') ?? 'Reg. Regularizada'}</option>
         </select>
         <select class="yf-select" id="yf-sub-${_attr(t.symbol)}"
           style="flex:1;min-width:0;font-size:12px">
-          <option value="classic">Decomposição Clássica</option>
+          <option value="classic">${window.t?.('mf-decomp-classica') ?? 'Decomposição Clássica'}</option>
           <option value="arima">ARIMA</option>
           <option value="garch">GARCH</option>
           <option value="var">VAR</option>
         </select>
         <button class="yf-fetch-btn" style="padding:6px 12px;font-size:12px;white-space:nowrap"
-          onclick="yfImportOne('${_attr(t.symbol)}')">Importar</button>
+          onclick="yfImportOne('${_attr(t.symbol)}')">${window.t?.('mf-importar') ?? 'Importar'}</button>
       </div>
     </div>`;
   }).join('');
@@ -283,7 +283,7 @@ export function yfToggleNormalize() {
   _normalized = !_normalized;
   const btn = document.getElementById('yf-norm-btn');
   if (btn) {
-    btn.textContent = _normalized ? '% Variação' : '📊 Preço real';
+    btn.textContent = _normalized ? (window.t?.('mf-variacao') ?? '% Variação') : (window.t?.('mf-preco-real') ?? '📊 Preço real');
     btn.classList.toggle('active', _normalized);
   }
   if (Object.keys(_datasets).length) _renderCompare();
@@ -380,10 +380,17 @@ export function yfOnModelChange(symbol) {
 }
 
 // ── Importar um ativo ─────────────────────────────────────────────────────────
-const _YNAMES = {
+const _YNAMES_PT = {
   open:'Abertura', high:'Máxima', low:'Mínima',
   close:'Fechamento', adjclose:'Adj. Close', volume:'Volume',
 };
+const _YNAMES_EN = {
+  open:'Open', high:'High', low:'Low',
+  close:'Close', adjclose:'Adj. Close', volume:'Volume',
+};
+function _ynames() {
+  return (window.t?.('mf-fechamento') === 'Close') ? _YNAMES_EN : _YNAMES_PT;
+}
 
 const _MODEL_CFG = {
   nova:         { rowsId:'data-rows',    lx:'label-x',    ly:'label-y',    tab:'nova' },
@@ -425,7 +432,7 @@ export function yfImportOne(symbol, switchTabFn) {
   const valid = d.rows.filter(r => r[colY] != null && !isNaN(r[colY]));
   if (valid.length < 3) { showToast('Dados insuficientes (mín. 3 obs.).', 'err'); return; }
 
-  const yLabel = `${symbol} — ${_YNAMES[colY] || colY}`;
+  const yLabel = `${symbol} — ${_ynames()[colY] || colY}`;
 
   if (cfg.isVar) {
     // Verificar se há múltiplos ativos com VAR selecionado
@@ -567,7 +574,7 @@ function _importMultipleToVar(assets, colY, switchTabFn) {
 
   // Nomeia variáveis com os símbolos
   maps.forEach((m, j) => {
-    window.varUpdateName?.(j, `${m.symbol} — ${_YNAMES[colY] || colY}`);
+    window.varUpdateName?.(j, `${m.symbol} — ${_ynames()[colY] || colY}`);
   });
 
   window.varUpdateVarCountDisplay?.();
@@ -684,6 +691,11 @@ export function yfImportPair(switchTabFn) {
     switchTabFn(cfg.tab, document.querySelector(`[onclick*="${cfg.tab}"]`));
 
   showToast(`${pairs.length} obs. importadas: ${xSym} (X) × ${ySym} (Y)`, 'ok');
+}
+
+// ── Re-renderiza cards ao trocar idioma ───────────────────────────────────────
+export function yfRerender() {
+  if (Object.keys(_datasets).length) _renderResults();
 }
 
 // ── Expõe datasets carregados para o combinador cross-source ──────────────────
