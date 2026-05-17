@@ -3753,18 +3753,18 @@
 
           <!-- Estatísticas descritivas -->
           <div id="import-stats" style="display:none">
-            <div class="import-section-label">Estatísticas dos dados</div>
+            <div class="import-section-label" data-i18n="imp-stats-label">Estatísticas dos dados</div>
             <div id="import-stat-strip" class="import-stat-strip"></div>
             <div id="import-stat-table"></div>
 
             <!-- Sugestões de modelos -->
-            <div class="import-section-label" style="margin-top:20px">Modelos sugeridos para seus dados</div>
+            <div class="import-section-label" style="margin-top:20px" data-i18n="imp-suggestions-label">Modelos sugeridos para seus dados</div>
             <div id="import-suggestions"></div>
           </div>
 
           <div style="margin-top:16px;display:flex;gap:8px">
-            <button class="btn-primary" onclick="confirmImport()">✓ Importar para análise</button>
-            <button class="btn-ghost" onclick="cancelImport()">Cancelar</button>
+            <button class="btn-primary" onclick="confirmImport()" data-i18n="btn-importar">✓ Importar para análise</button>
+            <button class="btn-ghost" onclick="cancelImport()" data-i18n="btn-cancelar">Cancelar</button>
           </div>
         </div>
       </div>
@@ -3774,15 +3774,15 @@
     <div class="panel" id="panel-historico">
       <div class="cloud-banner" id="cloud-banner" style="display:none">
         <span class="cloud-banner-icon">☁️</span>
-        <span>Análises sincronizadas com sua conta — acesse em qualquer dispositivo.</span>
+        <span data-i18n="cloud-banner-msg">Análises sincronizadas com sua conta — acesse em qualquer dispositivo.</span>
       </div>
       <div class="card">
         <div class="card-title">
-          📚 Histórico de Análises
+          <span data-i18n="hist-title">📚 Histórico de Análises</span>
           <span id="storage-status" style="margin-left:auto;font-size:12px;color:var(--txt3)"></span>
         </div>
         <div id="history-list">
-          <p style="color:var(--txt3);font-size:14px">Nenhuma análise salva ainda. Execute e salve uma análise!</p>
+          <p style="color:var(--txt3);font-size:14px" data-i18n="hist-empty">Nenhuma análise salva ainda. Execute e salve uma análise!</p>
         </div>
       </div>
     </div>
@@ -3797,62 +3797,62 @@
             <div class="profile-info-email" id="profile-email-display">email@exemplo.com</div>
             <div class="sync-badge">
               <div class="sync-dot"></div>
-              Conta sincronizada na nuvem
+              <span data-i18n="sync-badge-msg">Conta sincronizada na nuvem</span>
             </div>
           </div>
         </div>
         <div class="profile-stats">
           <div class="stat-card">
             <div class="stat-val" id="stat-total">0</div>
-            <div class="stat-lab">Análises salvas</div>
+            <div class="stat-lab" data-i18n="stat-lab-total">Análises salvas</div>
           </div>
           <div class="stat-card">
             <div class="stat-val" id="stat-r2">—</div>
-            <div class="stat-lab">Melhor R²</div>
+            <div class="stat-lab" data-i18n="stat-lab-r2">Melhor R²</div>
           </div>
           <div class="stat-card">
             <div class="stat-val" id="stat-last">—</div>
-            <div class="stat-lab">Última análise</div>
+            <div class="stat-lab" data-i18n="stat-lab-last">Última análise</div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="form-section-title">Editar Perfil</div>
+        <div class="form-section-title" data-i18n="form-edit-profile">Editar Perfil</div>
         <div class="form-row">
-          <label class="form-label">Nome</label>
+          <label class="form-label" data-i18n="form-lbl-nome">Nome</label>
           <input class="form-input" type="text" id="edit-name">
         </div>
         <div class="form-row">
           <label class="form-label">E-mail</label>
           <input class="form-input" type="email" id="edit-email">
         </div>
-        <button class="btn-primary" onclick="saveProfile()" style="margin-top:8px">Salvar alterações</button>
+        <button class="btn-primary" onclick="saveProfile()" style="margin-top:8px" data-i18n="btn-salvar-alt">Salvar alterações</button>
       </div>
 
       <div class="card">
-        <div class="form-section-title">Alterar Senha</div>
+        <div class="form-section-title" data-i18n="form-change-pw">Alterar Senha</div>
         <div class="form-row">
-          <label class="form-label">Senha atual</label>
+          <label class="form-label" data-i18n="form-lbl-pw-old">Senha atual</label>
           <input class="form-input" type="password" id="old-pw">
         </div>
         <div class="form-row">
-          <label class="form-label">Nova senha</label>
+          <label class="form-label" data-i18n="form-lbl-pw-new">Nova senha</label>
           <input class="form-input" type="password" id="new-pw" minlength="8">
         </div>
         <div class="form-row">
-          <label class="form-label">Confirmar nova senha</label>
+          <label class="form-label" data-i18n="form-lbl-pw-confirm">Confirmar nova senha</label>
           <input class="form-input" type="password" id="new-pw2">
         </div>
-        <button class="btn-primary" onclick="changePw()" style="margin-top:8px">Alterar senha</button>
+        <button class="btn-primary" onclick="changePw()" style="margin-top:8px" data-i18n="btn-alterar-pw">Alterar senha</button>
       </div>
 
       <div class="card" style="border-color:rgba(255,107,138,.2)">
-        <div class="form-section-title" style="color:var(--acc)">Zona de Perigo</div>
-        <p style="font-size:13px;color:var(--txt2);margin-bottom:12px">Estas ações são irreversíveis.</p>
+        <div class="form-section-title" style="color:var(--acc)" data-i18n="danger-zone-title">Zona de Perigo</div>
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:12px" data-i18n="danger-zone-msg">Estas ações são irreversíveis.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-ghost" onclick="doLogout()" style="border-color:rgba(255,107,138,.3);color:var(--acc)">Sair da conta</button>
-          <button class="btn-ghost" onclick="deleteAccount()" style="border-color:rgba(255,107,138,.3);color:var(--acc)">Excluir conta</button>
+          <button class="btn-ghost" onclick="doLogout()" style="border-color:rgba(255,107,138,.3);color:var(--acc)" data-i18n="btn-sair-conta">Sair da conta</button>
+          <button class="btn-ghost" onclick="deleteAccount()" style="border-color:rgba(255,107,138,.3);color:var(--acc)" data-i18n="btn-excluir-conta">Excluir conta</button>
         </div>
       </div>
     </div>
@@ -3862,12 +3862,12 @@
       <div class="card">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.12)">🔗</div>
-          Compartilhar Análises
+          <span data-i18n="share-title">Compartilhar Análises</span>
         </div>
-        <p style="font-size:13px;color:var(--txt2);margin-bottom:6px;line-height:1.6">
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:6px;line-height:1.6" data-i18n-html="share-desc">
           Gere um <strong>link único</strong> com os resultados da análise — qualquer pessoa pode visualizar sem precisar de conta. Ou copie um <strong>resumo em texto</strong> para colar em e-mail, relatório ou apresentação.
         </p>
-        <div class="interp-box" style="margin-bottom:16px">
+        <div class="interp-box" style="margin-bottom:16px" data-i18n-html="share-privacy">
           🔒 Os seus dados brutos <strong>nunca são enviados</strong> para terceiros. O link contém apenas os resultados estatísticos já calculados.
         </div>
         <div id="share-list">
@@ -3879,9 +3879,9 @@
       <div class="card" style="margin-top:16px">
         <div class="card-title">
           <div class="card-title-icon" style="background:rgba(0,212,160,.12)">📬</div>
-          Recebido de amigos
+          <span data-i18n="share-received-title">Recebido de amigos</span>
         </div>
-        <p style="font-size:13px;color:var(--txt2);margin-bottom:12px;line-height:1.6">
+        <p style="font-size:13px;color:var(--txt2);margin-bottom:12px;line-height:1.6" data-i18n="share-received-desc">
           Análises que seus amigos enviaram para você. Carregue para ver os dados e resultados completos.
         </p>
         <div id="share-received-list">
@@ -4424,29 +4424,29 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-linear">
                 O modelo mais fundamental da estatística. Estima a relação linear entre uma variável independente (X) e uma variável resposta contínua (Y) usando o método dos <strong style="color:var(--txt)">Mínimos Quadrados Ordinários (OLS)</strong>, minimizando a soma dos quadrados dos resíduos.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">Ŷ = β₀ + β₁·X + ε<br>β₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-linear">Ŷ = β₀ + β₁·X + ε<br>β₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Prever o salário de um profissional com base em anos de experiência</div>
-                <div class="guide-use-item">Estimar o consumo de energia a partir da temperatura</div>
-                <div class="guide-use-item">Analisar a relação entre preço e demanda de um produto</div>
+                <div class="guide-use-item" data-i18n="gcard-use-linear-1">Prever o salário de um profissional com base em anos de experiência</div>
+                <div class="guide-use-item" data-i18n="gcard-use-linear-2">Estimar o consumo de energia a partir da temperatura</div>
+                <div class="guide-use-item" data-i18n="gcard-use-linear-3">Analisar a relação entre preço e demanda de um produto</div>
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">R²</span>
-                <span class="guide-metric-chip">R² Ajustado</span>
-                <span class="guide-metric-chip">p-valor</span>
-                <span class="guide-metric-chip">IC 95%</span>
+                <span class="guide-metric-chip" data-i18n="chip-r2-adj">R² Ajustado</span>
+                <span class="guide-metric-chip" data-i18n="chip-pvalor">p-valor</span>
+                <span class="guide-metric-chip" data-i18n="chip-ic95">IC 95%</span>
                 <span class="guide-metric-chip">F-estatístico</span>
                 <span class="guide-metric-chip">Cook's Distance</span>
               </div>
@@ -4473,28 +4473,28 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-multipla">
                 Extensão da regressão linear para múltiplos preditores. Usa <strong style="color:var(--txt)">álgebra matricial (OLS)</strong> para estimar o efeito individual de cada variável controlando as demais. Inclui diagnóstico de multicolinearidade via <strong style="color:var(--txt)">VIF</strong>.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ<br>β = (XᵀX)⁻¹Xᵀy</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-multipla">Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ<br>β = (XᵀX)⁻¹Xᵀy</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Prever o preço de imóveis usando área, quartos e localização</div>
-                <div class="guide-use-item">Modelar a produtividade com fatores climáticos, solo e insumos</div>
-                <div class="guide-use-item">Analisar vendas considerando preço, publicidade e sazonalidade</div>
+                <div class="guide-use-item" data-i18n="gcard-use-multipla-1">Prever o preço de imóveis usando área, quartos e localização</div>
+                <div class="guide-use-item" data-i18n="gcard-use-multipla-2">Modelar a produtividade com fatores climáticos, solo e insumos</div>
+                <div class="guide-use-item" data-i18n="gcard-use-multipla-3">Analisar vendas considerando preço, publicidade e sazonalidade</div>
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
                 <span class="guide-metric-chip">VIF</span>
-                <span class="guide-metric-chip">R² Ajustado</span>
-                <span class="guide-metric-chip">t-teste por β</span>
+                <span class="guide-metric-chip" data-i18n="chip-r2-adj">R² Ajustado</span>
+                <span class="guide-metric-chip" data-i18n="chip-tteste">t-teste por β</span>
                 <span class="guide-metric-chip">F-global</span>
                 <span class="guide-metric-chip">ANOVA</span>
               </div>
@@ -4521,20 +4521,20 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-logistica">
                 Modela a <strong style="color:var(--txt)">probabilidade</strong> de um evento binário ocorrer. Usa a <strong style="color:var(--txt)">função sigmoide</strong> para restringir a saída entre 0 e 1. Os parâmetros são estimados por <strong style="color:var(--txt)">descida do gradiente</strong> maximizando a verossimilhança.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">P(Y=1) = 1 / (1 + e^−(β₀ + β₁X₁ + … + βₙXₙ))<br>Limiar: P ≥ 0.5 → Classe 1</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-logistica">P(Y=1) = 1 / (1 + e^−(β₀ + β₁X₁ + … + βₙXₙ))<br>Limiar: P ≥ 0.5 → Classe 1</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Prever se um cliente vai comprar ou não (Y = 0 ou 1)</div>
-                <div class="guide-use-item">Diagnóstico médico: paciente tem ou não tem a doença</div>
-                <div class="guide-use-item">Detecção de fraudes em transações financeiras</div>
+                <div class="guide-use-item" data-i18n="gcard-use-logistica-1">Prever se um cliente vai comprar ou não (Y = 0 ou 1)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-logistica-2">Diagnóstico médico: paciente tem ou não tem a doença</div>
+                <div class="guide-use-item" data-i18n="gcard-use-logistica-3">Detecção de fraudes em transações financeiras</div>
               </div>
             </div>
             <div>
@@ -4544,7 +4544,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
                 <span class="guide-metric-chip">McFadden R²</span>
                 <span class="guide-metric-chip">Deviance</span>
                 <span class="guide-metric-chip">Log-likelihood</span>
-                <span class="guide-metric-chip">Calibração</span>
+                <span class="guide-metric-chip" data-i18n="chip-calibracao">Calibração</span>
               </div>
             </div>
           </div>
@@ -4569,28 +4569,28 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-polinomial">
                 Generaliza a regressão linear para capturar relações curvilíneas. Transforma X em potências (X², X³…) via <strong style="color:var(--txt)">matriz de Vandermonde</strong> e aplica OLS. O grau ideal é selecionado automaticamente pelo maior <strong style="color:var(--txt)">R² ajustado</strong>.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">Ŷ = β₀ + β₁X + β₂X² + … + βₙXⁿ<br>Grau ótimo: max(R²_adj) sobre graus 1..6</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-polinomial">Ŷ = β₀ + β₁X + β₂X² + … + βₙXⁿ<br>Grau ótimo: max(R²_adj) sobre graus 1..6</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Crescimento de plantas ao longo do tempo (curva sigmoide)</div>
-                <div class="guide-use-item">Consumo de combustível vs. velocidade (curva em U)</div>
-                <div class="guide-use-item">Relações biológicas ou físicas com pontos de inflexão</div>
+                <div class="guide-use-item" data-i18n="gcard-use-polinomial-1">Crescimento de plantas ao longo do tempo (curva sigmoide)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-polinomial-2">Consumo de combustível vs. velocidade (curva em U)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-polinomial-3">Relações biológicas ou físicas com pontos de inflexão</div>
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
-                <span class="guide-metric-chip">R² por grau</span>
-                <span class="guide-metric-chip">R² Ajustado</span>
-                <span class="guide-metric-chip">Resíduos</span>
+                <span class="guide-metric-chip" data-i18n="chip-r2-grau">R² por grau</span>
+                <span class="guide-metric-chip" data-i18n="chip-r2-adj">R² Ajustado</span>
+                <span class="guide-metric-chip" data-i18n="chip-residuos">Resíduos</span>
                 <span class="guide-metric-chip">QQ-plot</span>
               </div>
             </div>
@@ -4616,30 +4616,30 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-serie">
                 Decompõe uma série temporal em três componentes aditivos: <strong style="color:var(--txt)">Tendência</strong> (direção de longo prazo), <strong style="color:var(--txt)">Sazonalidade</strong> (padrão periódico) e <strong style="color:var(--txt)">Resíduo</strong> (ruído). Permite projetar valores futuros com média móvel e componentes detectados.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">Yₜ = Tendência + Sazonalidade + Resíduo<br>Projeção: Ŷₜ₊ₖ = Trend(t+k) + Sazonal(t+k)</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-serie">Yₜ = Tendência + Sazonalidade + Resíduo<br>Projeção: Ŷₜ₊ₖ = Trend(t+k) + Sazonal(t+k)</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Projetar vendas mensais para o próximo trimestre</div>
-                <div class="guide-use-item">Analisar temperatura ou precipitação ao longo do ano</div>
-                <div class="guide-use-item">Monitorar métricas de negócio com padrões sazonais</div>
+                <div class="guide-use-item" data-i18n="gcard-use-serie-1">Projetar vendas mensais para o próximo trimestre</div>
+                <div class="guide-use-item" data-i18n="gcard-use-serie-2">Analisar temperatura ou precipitação ao longo do ano</div>
+                <div class="guide-use-item" data-i18n="gcard-use-serie-3">Monitorar métricas de negócio com padrões sazonais</div>
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
-                <span class="guide-metric-chip">Tendência</span>
-                <span class="guide-metric-chip">Amplitude sazonal</span>
+                <span class="guide-metric-chip" data-i18n="chip-tendencia">Tendência</span>
+                <span class="guide-metric-chip" data-i18n="chip-amp-sazonal">Amplitude sazonal</span>
                 <span class="guide-metric-chip">CV (%)</span>
-                <span class="guide-metric-chip">Média móvel</span>
-                <span class="guide-metric-chip">Crescimento médio</span>
+                <span class="guide-metric-chip" data-i18n="chip-media-movel">Média móvel</span>
+                <span class="guide-metric-chip" data-i18n="chip-cresc-medio">Crescimento médio</span>
               </div>
             </div>
           </div>
@@ -4664,29 +4664,29 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-quantilica">
                 Em vez de estimar apenas a média condicional, modela <strong style="color:var(--txt)">quantis específicos</strong> da distribuição de Y. Usa a <strong style="color:var(--txt)">função de perda pinball</strong> com descida do gradiente adaptativa. Ideal quando outliers distorcem a média ou quando o interesse é nos extremos da distribuição.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">L(u,τ) = u·(τ − 𝟙[u &lt; 0])<br>τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-quantilica">L(u,τ) = u·(τ − 𝟙[u &lt; 0])<br>τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Analisar salários no percentil 90 (profissionais de alta renda)</div>
-                <div class="guide-use-item">Modelar riscos extremos em finanças ou seguros (VaR)</div>
-                <div class="guide-use-item">Dados com outliers severos onde a média é enganosa</div>
+                <div class="guide-use-item" data-i18n="gcard-use-quantilica-1">Analisar salários no percentil 90 (profissionais de alta renda)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-quantilica-2">Modelar riscos extremos em finanças ou seguros (VaR)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-quantilica-3">Dados com outliers severos onde a média é enganosa</div>
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-metrics-lbl">Métricas principais</div>
               <div class="guide-metrics">
-                <span class="guide-metric-chip">Cobertura (%)</span>
-                <span class="guide-metric-chip">Perda pinball</span>
-                <span class="guide-metric-chip">β por quantil</span>
-                <span class="guide-metric-chip">Intervalo quantílico</span>
+                <span class="guide-metric-chip" data-i18n="chip-cobertura">Cobertura (%)</span>
+                <span class="guide-metric-chip" data-i18n="chip-pinball">Perda pinball</span>
+                <span class="guide-metric-chip" data-i18n="chip-beta-quantil">β por quantil</span>
+                <span class="guide-metric-chip" data-i18n="chip-interv-quantil">Intervalo quantílico</span>
               </div>
             </div>
           </div>
@@ -4711,20 +4711,20 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <div class="guide-card-body">
             <div>
               <div class="guide-section-label" data-i18n="guide-what">O que é</div>
-              <div class="guide-desc">
+              <div class="guide-desc" data-i18n-html="gcard-desc-regularizada">
                 Adiciona uma <strong style="color:var(--txt)">penalidade</strong> à função de custo do OLS para controlar overfitting com muitas variáveis. <strong style="color:var(--txt)">Ridge (L2)</strong> encolhe coeficientes uniformemente. <strong style="color:var(--txt)">Lasso (L1)</strong> pode zerar coeficientes irrelevantes, fazendo seleção automática de variáveis.
               </div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-formula">Fórmula</div>
-              <div class="guide-formula">Ridge: β = (XᵀX + λI)⁻¹Xᵀy<br>Lasso: min ‖Xβ−y‖² + λ‖β‖₁</div>
+              <div class="guide-formula" data-i18n-html="gcard-formula-regularizada">Ridge: β = (XᵀX + λI)⁻¹Xᵀy<br>Lasso: min ‖Xβ−y‖² + λ‖β‖₁</div>
             </div>
             <div>
               <div class="guide-section-label" data-i18n="guide-when">Quando usar</div>
               <div class="guide-uses">
-                <div class="guide-use-item">Muitas variáveis correlacionadas entre si (multicolinearidade)</div>
-                <div class="guide-use-item">Lasso para descobrir quais variáveis realmente importam</div>
-                <div class="guide-use-item">Dados com mais variáveis do que observações (p &gt; n)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-regularizada-1">Muitas variáveis correlacionadas entre si (multicolinearidade)</div>
+                <div class="guide-use-item" data-i18n="gcard-use-regularizada-2">Lasso para descobrir quais variáveis realmente importam</div>
+                <div class="guide-use-item" data-i18n="gcard-use-regularizada-3">Dados com mais variáveis do que observações (p &gt; n)</div>
               </div>
             </div>
             <div>
@@ -4732,8 +4732,8 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
               <div class="guide-metrics">
                 <span class="guide-metric-chip">λ ótimo</span>
                 <span class="guide-metric-chip">RMSE por λ</span>
-                <span class="guide-metric-chip">β encolhidos</span>
-                <span class="guide-metric-chip">Vars zeradas</span>
+                <span class="guide-metric-chip" data-i18n="chip-beta-encol">β encolhidos</span>
+                <span class="guide-metric-chip" data-i18n="chip-vars-zero">Vars zeradas</span>
                 <span class="guide-metric-chip">R²</span>
               </div>
             </div>
@@ -4756,23 +4756,23 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
           <span data-i18n="guide-choose-title">Como escolher o modelo certo?</span>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:4px">
-          <div class="interp-box">
+          <div class="interp-box" data-i18n-html="gcard-choose-1">
             <strong>Y é um número contínuo?</strong><br>
             Use <em>Regressão Linear</em> (1 variável) ou <em>Múltipla</em> (várias). Se a relação parecer curva, experimente <em>Polinomial</em>.
           </div>
-          <div class="interp-box green">
+          <div class="interp-box green" data-i18n-html="gcard-choose-2">
             <strong>Y é 0 ou 1 (sim/não)?</strong><br>
             Use <em>Regressão Logística</em>. Ela estima a probabilidade do evento ocorrer e avalia discriminação via AUC-ROC.
           </div>
-          <div class="interp-box amber">
+          <div class="interp-box amber" data-i18n-html="gcard-choose-3">
             <strong>Dados ordenados no tempo?</strong><br>
             Use <em>Séries Temporais</em> para detectar tendência, sazonalidade e projetar valores futuros.
           </div>
-          <div class="interp-box" style="border-left-color:var(--acc)">
+          <div class="interp-box" style="border-left-color:var(--acc)" data-i18n-html="gcard-choose-4">
             <strong>Muitos outliers ou quer percentis?</strong><br>
             Use <em>Regressão Quantílica</em>. Ela é robusta a valores extremos e modela a distribuição completa de Y.
           </div>
-          <div class="interp-box" style="border-left-color:#4DD0E1">
+          <div class="interp-box" style="border-left-color:#4DD0E1" data-i18n-html="gcard-choose-5">
             <strong>Muitas variáveis ou multicolinearidade?</strong><br>
             Use <em>Ridge</em> para estabilizar os coeficientes, ou <em>Lasso</em> para selecionar automaticamente as variáveis relevantes.
           </div>
@@ -6183,6 +6183,103 @@ window.openCurso = openCurso;
       /* AI hints */
       'ai-hint-auto':   'Execute uma análise para gerar interpretação automática.',
       'ai-hint':        'Execute uma análise para gerar interpretação.',
+      /* guide card descriptions */
+      'gcard-desc-linear':     'O modelo mais fundamental da estatística. Estima a relação linear entre uma variável independente (X) e uma variável resposta contínua (Y) usando o método dos <strong style="color:var(--txt)">Mínimos Quadrados Ordinários (OLS)</strong>, minimizando a soma dos quadrados dos resíduos.',
+      'gcard-desc-multipla':   'Extensão da regressão linear para múltiplos preditores. Usa <strong style="color:var(--txt)">álgebra matricial (OLS)</strong> para estimar o efeito individual de cada variável controlando as demais. Inclui diagnóstico de multicolinearidade via <strong style="color:var(--txt)">VIF</strong>.',
+      'gcard-desc-logistica':  'Modela a <strong style="color:var(--txt)">probabilidade</strong> de um evento binário ocorrer. Usa a <strong style="color:var(--txt)">função sigmoide</strong> para restringir a saída entre 0 e 1. Os parâmetros são estimados por <strong style="color:var(--txt)">descida do gradiente</strong> maximizando a verossimilhança.',
+      'gcard-desc-polinomial': 'Generaliza a regressão linear para capturar relações curvilíneas. Transforma X em potências (X², X³…) via <strong style="color:var(--txt)">matriz de Vandermonde</strong> e aplica OLS. O grau ideal é selecionado automaticamente pelo maior <strong style="color:var(--txt)">R² ajustado</strong>.',
+      'gcard-desc-serie':      'Decompõe uma série temporal em três componentes aditivos: <strong style="color:var(--txt)">Tendência</strong> (direção de longo prazo), <strong style="color:var(--txt)">Sazonalidade</strong> (padrão periódico) e <strong style="color:var(--txt)">Resíduo</strong> (ruído). Permite projetar valores futuros com média móvel e componentes detectados.',
+      'gcard-desc-quantilica': 'Em vez de estimar apenas a média condicional, modela <strong style="color:var(--txt)">quantis específicos</strong> da distribuição de Y. Usa a <strong style="color:var(--txt)">função de perda pinball</strong> com descida do gradiente adaptativa. Ideal quando outliers distorcem a média ou quando o interesse é nos extremos da distribuição.',
+      'gcard-desc-regularizada':'Adiciona uma <strong style="color:var(--txt)">penalidade</strong> à função de custo do OLS para controlar overfitting com muitas variáveis. <strong style="color:var(--txt)">Ridge (L2)</strong> encolhe coeficientes uniformemente. <strong style="color:var(--txt)">Lasso (L1)</strong> pode zerar coeficientes irrelevantes, fazendo seleção automática de variáveis.',
+      /* guide card formulas */
+      'gcard-formula-linear':     'Ŷ = β₀ + β₁·X + ε<br>β₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²',
+      'gcard-formula-multipla':   'Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ<br>β = (XᵀX)⁻¹Xᵀy',
+      'gcard-formula-logistica':  'P(Y=1) = 1 / (1 + e^−(β₀ + β₁X₁ + … + βₙXₙ))<br>Limiar: P ≥ 0.5 → Classe 1',
+      'gcard-formula-polinomial': 'Ŷ = β₀ + β₁X + β₂X² + … + βₙXⁿ<br>Grau ótimo: max(R²_adj) sobre graus 1..6',
+      'gcard-formula-serie':      'Yₜ = Tendência + Sazonalidade + Resíduo<br>Projeção: Ŷₜ₊ₖ = Trend(t+k) + Sazonal(t+k)',
+      'gcard-formula-quantilica': 'L(u,τ) = u·(τ − 𝟙[u &lt; 0])<br>τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}',
+      'gcard-formula-regularizada':'Ridge: β = (XᵀX + λI)⁻¹Xᵀy<br>Lasso: min ‖Xβ−y‖² + λ‖β‖₁',
+      /* guide use items - linear */
+      'gcard-use-linear-1':    'Prever o salário de um profissional com base em anos de experiência',
+      'gcard-use-linear-2':    'Estimar o consumo de energia a partir da temperatura',
+      'gcard-use-linear-3':    'Analisar a relação entre preço e demanda de um produto',
+      /* guide use items - multipla */
+      'gcard-use-multipla-1':  'Prever o preço de imóveis usando área, quartos e localização',
+      'gcard-use-multipla-2':  'Modelar a produtividade com fatores climáticos, solo e insumos',
+      'gcard-use-multipla-3':  'Analisar vendas considerando preço, publicidade e sazonalidade',
+      /* guide use items - logistica */
+      'gcard-use-logistica-1': 'Prever se um cliente vai comprar ou não (Y = 0 ou 1)',
+      'gcard-use-logistica-2': 'Diagnóstico médico: paciente tem ou não tem a doença',
+      'gcard-use-logistica-3': 'Detecção de fraudes em transações financeiras',
+      /* guide use items - polinomial */
+      'gcard-use-polinomial-1':'Crescimento de plantas ao longo do tempo (curva sigmoide)',
+      'gcard-use-polinomial-2':'Consumo de combustível vs. velocidade (curva em U)',
+      'gcard-use-polinomial-3':'Relações biológicas ou físicas com pontos de inflexão',
+      /* guide use items - serie */
+      'gcard-use-serie-1':     'Projetar vendas mensais para o próximo trimestre',
+      'gcard-use-serie-2':     'Analisar temperatura ou precipitação ao longo do ano',
+      'gcard-use-serie-3':     'Monitorar métricas de negócio com padrões sazonais',
+      /* guide use items - quantilica */
+      'gcard-use-quantilica-1':'Analisar salários no percentil 90 (profissionais de alta renda)',
+      'gcard-use-quantilica-2':'Modelar riscos extremos em finanças ou seguros (VaR)',
+      'gcard-use-quantilica-3':'Dados com outliers severos onde a média é enganosa',
+      /* guide use items - regularizada */
+      'gcard-use-regularizada-1':'Muitas variáveis correlacionadas entre si (multicolinearidade)',
+      'gcard-use-regularizada-2':'Lasso para descobrir quais variáveis realmente importam',
+      'gcard-use-regularizada-3':'Dados com mais variáveis do que observações (p &gt; n)',
+      /* guide metric chips */
+      'chip-r2-adj':        'R² Ajustado',
+      'chip-pvalor':        'p-valor',
+      'chip-ic95':          'IC 95%',
+      'chip-tteste':        't-teste por β',
+      'chip-calibracao':    'Calibração',
+      'chip-r2-grau':       'R² por grau',
+      'chip-residuos':      'Resíduos',
+      'chip-tendencia':     'Tendência',
+      'chip-amp-sazonal':   'Amplitude sazonal',
+      'chip-media-movel':   'Média móvel',
+      'chip-cresc-medio':   'Crescimento médio',
+      'chip-cobertura':     'Cobertura (%)',
+      'chip-pinball':       'Perda pinball',
+      'chip-beta-quantil':  'β por quantil',
+      'chip-interv-quantil':'Intervalo quantílico',
+      'chip-beta-encol':    'β encolhidos',
+      'chip-vars-zero':     'Vars zeradas',
+      /* guide choose boxes */
+      'gcard-choose-1': '<strong>Y é um número contínuo?</strong><br>Use <em>Regressão Linear</em> (1 variável) ou <em>Múltipla</em> (várias). Se a relação parecer curva, experimente <em>Polinomial</em>.',
+      'gcard-choose-2': '<strong>Y é 0 ou 1 (sim/não)?</strong><br>Use <em>Regressão Logística</em>. Ela estima a probabilidade do evento ocorrer e avalia discriminação via AUC-ROC.',
+      'gcard-choose-3': '<strong>Dados ordenados no tempo?</strong><br>Use <em>Séries Temporais</em> para detectar tendência, sazonalidade e projetar valores futuros.',
+      'gcard-choose-4': '<strong>Muitos outliers ou quer percentis?</strong><br>Use <em>Regressão Quantílica</em>. Ela é robusta a valores extremos e modela a distribuição completa de Y.',
+      'gcard-choose-5': '<strong>Muitas variáveis ou multicolinearidade?</strong><br>Use <em>Ridge</em> para estabilizar os coeficientes, ou <em>Lasso</em> para selecionar automaticamente as variáveis relevantes.',
+      /* panels */
+      'cloud-banner-msg':   'Análises sincronizadas com sua conta — acesse em qualquer dispositivo.',
+      'hist-title':         '📚 Histórico de Análises',
+      'hist-empty':         'Nenhuma análise salva ainda. Execute e salve uma análise!',
+      'sync-badge-msg':     'Conta sincronizada na nuvem',
+      'stat-lab-total':     'Análises salvas',
+      'stat-lab-r2':        'Melhor R²',
+      'stat-lab-last':      'Última análise',
+      'form-edit-profile':  'Editar Perfil',
+      'form-lbl-nome':      'Nome',
+      'btn-salvar-alt':     'Salvar alterações',
+      'form-change-pw':     'Alterar Senha',
+      'form-lbl-pw-old':    'Senha atual',
+      'form-lbl-pw-new':    'Nova senha',
+      'form-lbl-pw-confirm':'Confirmar nova senha',
+      'btn-alterar-pw':     'Alterar senha',
+      'danger-zone-title':  'Zona de Perigo',
+      'danger-zone-msg':    'Estas ações são irreversíveis.',
+      'btn-sair-conta':     'Sair da conta',
+      'btn-excluir-conta':  'Excluir conta',
+      'share-title':        'Compartilhar Análises',
+      'share-desc':         'Gere um <strong>link único</strong> com os resultados da análise — qualquer pessoa pode visualizar sem precisar de conta. Ou copie um <strong>resumo em texto</strong> para colar em e-mail, relatório ou apresentação.',
+      'share-privacy':      '🔒 Os seus dados brutos <strong>nunca são enviados</strong> para terceiros. O link contém apenas os resultados estatísticos já calculados.',
+      'share-received-title':'Recebido de amigos',
+      'share-received-desc':'Análises que seus amigos enviaram para você. Carregue para ver os dados e resultados completos.',
+      'imp-stats-label':    'Estatísticas dos dados',
+      'imp-suggestions-label':'Modelos sugeridos para seus dados',
+      'btn-importar':       '✓ Importar para análise',
+      'btn-cancelar':       'Cancelar',
     },
     en: {
       /* tabs */
@@ -6362,6 +6459,103 @@ window.openCurso = openCurso;
       /* AI hints */
       'ai-hint-auto':   'Run an analysis to generate automatic interpretation.',
       'ai-hint':        'Run an analysis to generate interpretation.',
+      /* guide card descriptions */
+      'gcard-desc-linear':     'The most fundamental model in statistics. Estimates the linear relationship between one independent variable (X) and a continuous response variable (Y) using <strong style="color:var(--txt)">Ordinary Least Squares (OLS)</strong>, minimizing the sum of squared residuals.',
+      'gcard-desc-multipla':   'Extension of linear regression to multiple predictors. Uses <strong style="color:var(--txt)">matrix algebra (OLS)</strong> to estimate each variable\'s individual effect while controlling for the others. Includes multicollinearity diagnostics via <strong style="color:var(--txt)">VIF</strong>.',
+      'gcard-desc-logistica':  'Models the <strong style="color:var(--txt)">probability</strong> of a binary event occurring. Uses the <strong style="color:var(--txt)">sigmoid function</strong> to constrain output between 0 and 1. Parameters are estimated via <strong style="color:var(--txt)">gradient descent</strong> maximizing the likelihood.',
+      'gcard-desc-polinomial': 'Generalizes linear regression to capture curvilinear relationships. Transforms X into powers (X², X³…) via <strong style="color:var(--txt)">Vandermonde matrix</strong> and applies OLS. The ideal degree is automatically selected by the highest <strong style="color:var(--txt)">adjusted R²</strong>.',
+      'gcard-desc-serie':      'Decomposes a time series into three additive components: <strong style="color:var(--txt)">Trend</strong> (long-term direction), <strong style="color:var(--txt)">Seasonality</strong> (periodic pattern) and <strong style="color:var(--txt)">Residual</strong> (noise). Enables forecasting future values using moving averages and detected components.',
+      'gcard-desc-quantilica': 'Instead of estimating only the conditional mean, it models <strong style="color:var(--txt)">specific quantiles</strong> of Y\'s distribution. Uses the <strong style="color:var(--txt)">pinball loss function</strong> with adaptive gradient descent. Ideal when outliers distort the mean or when interest lies in the distribution\'s tails.',
+      'gcard-desc-regularizada':'Adds a <strong style="color:var(--txt)">penalty</strong> to the OLS cost function to control overfitting with many variables. <strong style="color:var(--txt)">Ridge (L2)</strong> shrinks coefficients uniformly. <strong style="color:var(--txt)">Lasso (L1)</strong> can zero out irrelevant coefficients, performing automatic variable selection.',
+      /* guide card formulas */
+      'gcard-formula-linear':     'Ŷ = β₀ + β₁·X + ε<br>β₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²',
+      'gcard-formula-multipla':   'Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ<br>β = (XᵀX)⁻¹Xᵀy',
+      'gcard-formula-logistica':  'P(Y=1) = 1 / (1 + e^−(β₀ + β₁X₁ + … + βₙXₙ))<br>Threshold: P ≥ 0.5 → Class 1',
+      'gcard-formula-polinomial': 'Ŷ = β₀ + β₁X + β₂X² + … + βₙXⁿ<br>Optimal degree: max(R²_adj) over degrees 1..6',
+      'gcard-formula-serie':      'Yₜ = Trend + Seasonality + Residual<br>Projection: Ŷₜ₊ₖ = Trend(t+k) + Season(t+k)',
+      'gcard-formula-quantilica': 'L(u,τ) = u·(τ − 𝟙[u &lt; 0])<br>τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9}',
+      'gcard-formula-regularizada':'Ridge: β = (XᵀX + λI)⁻¹Xᵀy<br>Lasso: min ‖Xβ−y‖² + λ‖β‖₁',
+      /* guide use items - linear */
+      'gcard-use-linear-1':    'Predict a professional\'s salary based on years of experience',
+      'gcard-use-linear-2':    'Estimate energy consumption from temperature',
+      'gcard-use-linear-3':    'Analyze the relationship between price and product demand',
+      /* guide use items - multipla */
+      'gcard-use-multipla-1':  'Predict real estate prices using area, rooms, and location',
+      'gcard-use-multipla-2':  'Model productivity with climate factors, soil, and inputs',
+      'gcard-use-multipla-3':  'Analyze sales considering price, advertising, and seasonality',
+      /* guide use items - logistica */
+      'gcard-use-logistica-1': 'Predict whether a customer will buy or not (Y = 0 or 1)',
+      'gcard-use-logistica-2': 'Medical diagnosis: patient has or does not have the disease',
+      'gcard-use-logistica-3': 'Fraud detection in financial transactions',
+      /* guide use items - polinomial */
+      'gcard-use-polinomial-1':'Plant growth over time (sigmoid curve)',
+      'gcard-use-polinomial-2':'Fuel consumption vs. speed (U-shaped curve)',
+      'gcard-use-polinomial-3':'Biological or physical relationships with inflection points',
+      /* guide use items - serie */
+      'gcard-use-serie-1':     'Project monthly sales for the next quarter',
+      'gcard-use-serie-2':     'Analyze temperature or precipitation throughout the year',
+      'gcard-use-serie-3':     'Monitor business metrics with seasonal patterns',
+      /* guide use items - quantilica */
+      'gcard-use-quantilica-1':'Analyze salaries at the 90th percentile (high-income professionals)',
+      'gcard-use-quantilica-2':'Model extreme risks in finance or insurance (VaR)',
+      'gcard-use-quantilica-3':'Data with severe outliers where the mean is misleading',
+      /* guide use items - regularizada */
+      'gcard-use-regularizada-1':'Many mutually correlated variables (multicollinearity)',
+      'gcard-use-regularizada-2':'Lasso to discover which variables truly matter',
+      'gcard-use-regularizada-3':'Data with more variables than observations (p &gt; n)',
+      /* guide metric chips */
+      'chip-r2-adj':        'Adj. R²',
+      'chip-pvalor':        'p-value',
+      'chip-ic95':          '95% CI',
+      'chip-tteste':        't-test per β',
+      'chip-calibracao':    'Calibration',
+      'chip-r2-grau':       'R² per degree',
+      'chip-residuos':      'Residuals',
+      'chip-tendencia':     'Trend',
+      'chip-amp-sazonal':   'Seasonal amplitude',
+      'chip-media-movel':   'Moving avg.',
+      'chip-cresc-medio':   'Avg. growth',
+      'chip-cobertura':     'Coverage (%)',
+      'chip-pinball':       'Pinball loss',
+      'chip-beta-quantil':  'β per quantile',
+      'chip-interv-quantil':'Quantile interval',
+      'chip-beta-encol':    'Shrunk β',
+      'chip-vars-zero':     'Zeroed vars',
+      /* guide choose boxes */
+      'gcard-choose-1': '<strong>Is Y a continuous number?</strong><br>Use <em>Linear Regression</em> (1 variable) or <em>Multiple</em> (several). If the relationship looks curved, try <em>Polynomial</em>.',
+      'gcard-choose-2': '<strong>Is Y 0 or 1 (yes/no)?</strong><br>Use <em>Logistic Regression</em>. It estimates the probability of the event and evaluates discrimination via AUC-ROC.',
+      'gcard-choose-3': '<strong>Time-ordered data?</strong><br>Use <em>Time Series</em> to detect trend, seasonality, and project future values.',
+      'gcard-choose-4': '<strong>Many outliers or need percentiles?</strong><br>Use <em>Quantile Regression</em>. It is robust to extreme values and models the full distribution of Y.',
+      'gcard-choose-5': '<strong>Many variables or multicollinearity?</strong><br>Use <em>Ridge</em> to stabilize coefficients, or <em>Lasso</em> to automatically select the relevant variables.',
+      /* panels */
+      'cloud-banner-msg':   'Analyses synced to your account — access from any device.',
+      'hist-title':         '📚 Analysis History',
+      'hist-empty':         'No saved analyses yet. Run and save an analysis!',
+      'sync-badge-msg':     'Account synced to the cloud',
+      'stat-lab-total':     'Saved analyses',
+      'stat-lab-r2':        'Best R²',
+      'stat-lab-last':      'Last analysis',
+      'form-edit-profile':  'Edit Profile',
+      'form-lbl-nome':      'Name',
+      'btn-salvar-alt':     'Save changes',
+      'form-change-pw':     'Change Password',
+      'form-lbl-pw-old':    'Current password',
+      'form-lbl-pw-new':    'New password',
+      'form-lbl-pw-confirm':'Confirm new password',
+      'btn-alterar-pw':     'Change password',
+      'danger-zone-title':  'Danger Zone',
+      'danger-zone-msg':    'These actions are irreversible.',
+      'btn-sair-conta':     'Sign out',
+      'btn-excluir-conta':  'Delete account',
+      'share-title':        'Share Analyses',
+      'share-desc':         'Generate a <strong>unique link</strong> with the analysis results — anyone can view it without an account. Or copy a <strong>text summary</strong> to paste into an email, report, or presentation.',
+      'share-privacy':      '🔒 Your raw data is <strong>never sent</strong> to third parties. The link contains only the already-computed statistical results.',
+      'share-received-title':'Received from friends',
+      'share-received-desc':'Analyses your friends sent to you. Load them to see the full data and results.',
+      'imp-stats-label':    'Data statistics',
+      'imp-suggestions-label':'Suggested models for your data',
+      'btn-importar':       '✓ Import for analysis',
+      'btn-cancelar':       'Cancel',
     }
   };
 
@@ -6373,6 +6567,10 @@ window.openCurso = openCurso;
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const v = t[el.getAttribute('data-i18n')];
       if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const v = t[el.getAttribute('data-i18n-html')];
+      if (v !== undefined) el.innerHTML = v;
     });
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
       const v = t[el.getAttribute('data-i18n-title')];

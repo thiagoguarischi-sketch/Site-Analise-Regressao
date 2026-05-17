@@ -3069,28 +3069,28 @@ Valor Temporal = prêmio − valor intrínseco
         <h4>Os 6 tipos de análise disponíveis e quando usar cada um</h4>
         <div class="cards-grid">
           <div class="product-card">
-            <div class="product-header"><span class="product-tag rf">Linear</span> Regressão Linear Simples</div>
-            <div class="product-desc"><strong>Use para:</strong> medir o Beta de um ativo (retorno da ação × retorno do índice), verificar se uma variável macroeconômica explica o preço de um ativo, calcular correlação entre dois ativos.<br><br><strong>Ex. prático:</strong> retornos diários do PETR4 × variação do Brent.</div>
+            <div class="product-header" data-i18n-html="pcard-hdr-linear"><span class="product-tag rf">Linear</span> Regressão Linear Simples</div>
+            <div class="product-desc" data-i18n-html="pcard-desc-linear"><strong>Use para:</strong> medir o Beta de um ativo (retorno da ação × retorno do índice), verificar se uma variável macroeconômica explica o preço de um ativo, calcular correlação entre dois ativos.<br><br><strong>Ex. prático:</strong> retornos diários do PETR4 × variação do Brent.</div>
           </div>
           <div class="product-card">
-            <div class="product-header"><span class="product-tag rf">Múltipla</span> Regressão Linear Múltipla</div>
-            <div class="product-desc"><strong>Use para:</strong> modelo multifatorial (estilo Fama-French) — explicar retorno de uma ação por vários fatores simultâneos (mercado, tamanho, valor, momentum).<br><br><strong>Ex. prático:</strong> retorno VALE3 ~ retorno IBOV + variação dólar + preço do minério.</div>
+            <div class="product-header" data-i18n-html="pcard-hdr-multipla"><span class="product-tag rf">Múltipla</span> Regressão Linear Múltipla</div>
+            <div class="product-desc" data-i18n-html="pcard-desc-multipla"><strong>Use para:</strong> modelo multifatorial (estilo Fama-French) — explicar retorno de uma ação por vários fatores simultâneos (mercado, tamanho, valor, momentum).<br><br><strong>Ex. prático:</strong> retorno VALE3 ~ retorno IBOV + variação dólar + preço do minério.</div>
           </div>
           <div class="product-card">
-            <div class="product-header"><span class="product-tag rv">Polinomial</span> Regressão Polinomial</div>
-            <div class="product-desc"><strong>Use para:</strong> relações não-lineares entre variáveis (curva de juros, elasticidade de preço). Bom quando a dispersão no gráfico sugere curvatura.<br><br><strong>Ex. prático:</strong> modelar a curva de retorno de opções em função da volatilidade implícita (smile de volatilidade).</div>
+            <div class="product-header" data-i18n-html="pcard-hdr-polinomial"><span class="product-tag rv">Polinomial</span> Regressão Polinomial</div>
+            <div class="product-desc" data-i18n-html="pcard-desc-polinomial"><strong>Use para:</strong> relações não-lineares entre variáveis (curva de juros, elasticidade de preço). Bom quando a dispersão no gráfico sugere curvatura.<br><br><strong>Ex. prático:</strong> modelar a curva de retorno de opções em função da volatilidade implícita (smile de volatilidade).</div>
           </div>
           <div class="product-card">
-            <div class="product-header"><span class="product-tag rv">Logística</span> Regressão Logística</div>
-            <div class="product-desc"><strong>Use para:</strong> prever probabilidade de eventos binários — chance de uma empresa entrar em default, probabilidade de o índice fechar positivo dado um conjunto de indicadores.<br><br><strong>Ex. prático:</strong> prever se IBOV vai subir amanhã com base em RSI, volume e abertura dos EUA.</div>
+            <div class="product-header" data-i18n-html="pcard-hdr-logistica"><span class="product-tag rv">Logística</span> Regressão Logística</div>
+            <div class="product-desc" data-i18n-html="pcard-desc-logistica"><strong>Use para:</strong> prever probabilidade de eventos binários — chance de uma empresa entrar em default, probabilidade de o índice fechar positivo dado um conjunto de indicadores.<br><br><strong>Ex. prático:</strong> prever se IBOV vai subir amanhã com base em RSI, volume e abertura dos EUA.</div>
           </div>
           <div class="product-card">
-            <div class="product-header"><span class="product-tag der">Quantílica</span> Regressão Quantílica</div>
-            <div class="product-desc"><strong>Use para:</strong> analisar comportamento nas caudas da distribuição — como o ativo se comporta em cenários extremos (crashes e rallies) vs. dias normais. Captura assimetria.<br><br><strong>Ex. prático:</strong> como o USDBRL reage ao risco-país nos piores 10% dos dias para a bolsa.</div>
+            <div class="product-header" data-i18n-html="pcard-hdr-quantilica"><span class="product-tag der">Quantílica</span> Regressão Quantílica</div>
+            <div class="product-desc" data-i18n-html="pcard-desc-quantilica"><strong>Use para:</strong> analisar comportamento nas caudas da distribuição — como o ativo se comporta em cenários extremos (crashes e rallies) vs. dias normais. Captura assimetria.<br><br><strong>Ex. prático:</strong> como o USDBRL reage ao risco-país nos piores 10% dos dias para a bolsa.</div>
           </div>
           <div class="product-card">
-            <div class="product-header"><span class="product-tag der">Ridge/Lasso</span> Regularização</div>
-            <div class="product-desc"><strong>Use para:</strong> modelos com muitas variáveis explicativas (overfitting). Ridge mantém todos os fatores com coeficientes reduzidos; Lasso elimina os irrelevantes automaticamente.<br><br><strong>Ex. prático:</strong> modelo com 15 indicadores técnicos — Lasso identifica quais realmente importam.</div>
+            <div class="product-header" data-i18n-html="pcard-hdr-regularizada"><span class="product-tag der">Ridge/Lasso</span> Regularização</div>
+            <div class="product-desc" data-i18n-html="pcard-desc-regularizada"><strong>Use para:</strong> modelos com muitas variáveis explicativas (overfitting). Ridge mantém todos os fatores com coeficientes reduzidos; Lasso elimina os irrelevantes automaticamente.<br><br><strong>Ex. prático:</strong> modelo com 15 indicadores técnicos — Lasso identifica quais realmente importam.</div>
           </div>
         </div>
       </div>
@@ -3536,6 +3536,19 @@ sections.forEach(function(s) { observer.observe(s); });
       'chip-1': 'Economia', 'chip-2': 'Renda Fixa', 'chip-3': 'Renda Variável',
       'chip-4': 'Derivativos', 'chip-5': 'Gestão de Portfólio', 'chip-6': 'Tributação',
       'chip-7': 'Psicologia', 'chip-8': 'Nível: Básico ao Avançado',
+      /* product cards - aba modelos */
+      'pcard-hdr-linear':     '<span class="product-tag rf">Linear</span> Regressão Linear Simples',
+      'pcard-desc-linear':    '<strong>Use para:</strong> medir o Beta de um ativo (retorno da ação × retorno do índice), verificar se uma variável macroeconômica explica o preço de um ativo, calcular correlação entre dois ativos.<br><br><strong>Ex. prático:</strong> retornos diários do PETR4 × variação do Brent.',
+      'pcard-hdr-multipla':   '<span class="product-tag rf">Múltipla</span> Regressão Linear Múltipla',
+      'pcard-desc-multipla':  '<strong>Use para:</strong> modelo multifatorial (estilo Fama-French) — explicar retorno de uma ação por vários fatores simultâneos (mercado, tamanho, valor, momentum).<br><br><strong>Ex. prático:</strong> retorno VALE3 ~ retorno IBOV + variação dólar + preço do minério.',
+      'pcard-hdr-polinomial': '<span class="product-tag rv">Polinomial</span> Regressão Polinomial',
+      'pcard-desc-polinomial':'<strong>Use para:</strong> relações não-lineares entre variáveis (curva de juros, elasticidade de preço). Bom quando a dispersão no gráfico sugere curvatura.<br><br><strong>Ex. prático:</strong> modelar a curva de retorno de opções em função da volatilidade implícita (smile de volatilidade).',
+      'pcard-hdr-logistica':  '<span class="product-tag rv">Logística</span> Regressão Logística',
+      'pcard-desc-logistica': '<strong>Use para:</strong> prever probabilidade de eventos binários — chance de uma empresa entrar em default, probabilidade de o índice fechar positivo dado um conjunto de indicadores.<br><br><strong>Ex. prático:</strong> prever se IBOV vai subir amanhã com base em RSI, volume e abertura dos EUA.',
+      'pcard-hdr-quantilica': '<span class="product-tag der">Quantílica</span> Regressão Quantílica',
+      'pcard-desc-quantilica':'<strong>Use para:</strong> analisar comportamento nas caudas da distribuição — como o ativo se comporta em cenários extremos (crashes e rallies) vs. dias normais. Captura assimetria.<br><br><strong>Ex. prático:</strong> como o USDBRL reage ao risco-país nos piores 10% dos dias para a bolsa.',
+      'pcard-hdr-regularizada':'<span class="product-tag der">Ridge/Lasso</span> Regularização',
+      'pcard-desc-regularizada':'<strong>Use para:</strong> modelos com muitas variáveis explicativas (overfitting). Ridge mantém todos os fatores com coeficientes reduzidos; Lasso elimina os irrelevantes automaticamente.<br><br><strong>Ex. prático:</strong> modelo com 15 indicadores técnicos — Lasso identifica quais realmente importam.',
     },
     en: {
       'back': '← Back', 'breadcrumb': 'Course', 'course-name': 'Financial Markets',
@@ -3575,6 +3588,19 @@ sections.forEach(function(s) { observer.observe(s); });
       'chip-1': 'Economics', 'chip-2': 'Fixed Income', 'chip-3': 'Equities',
       'chip-4': 'Derivatives', 'chip-5': 'Portfolio Management', 'chip-6': 'Taxation',
       'chip-7': 'Psychology', 'chip-8': 'Level: Beginner to Advanced',
+      /* product cards - models tab */
+      'pcard-hdr-linear':     '<span class="product-tag rf">Linear</span> Simple Linear Regression',
+      'pcard-desc-linear':    '<strong>Use for:</strong> measuring an asset\'s Beta (stock return × index return), checking whether a macroeconomic variable explains an asset\'s price, calculating correlation between two assets.<br><br><strong>Practical example:</strong> daily returns of PETR4 × change in Brent crude.',
+      'pcard-hdr-multipla':   '<span class="product-tag rf">Multiple</span> Multiple Linear Regression',
+      'pcard-desc-multipla':  '<strong>Use for:</strong> multifactor models (Fama-French style) — explaining a stock\'s return via several simultaneous factors (market, size, value, momentum).<br><br><strong>Practical example:</strong> VALE3 return ~ IBOV return + USD change + iron ore price.',
+      'pcard-hdr-polinomial': '<span class="product-tag rv">Polynomial</span> Polynomial Regression',
+      'pcard-desc-polinomial':'<strong>Use for:</strong> non-linear relationships between variables (yield curve, price elasticity). Good when the scatter plot suggests curvature.<br><br><strong>Practical example:</strong> modeling the option return curve as a function of implied volatility (volatility smile).',
+      'pcard-hdr-logistica':  '<span class="product-tag rv">Logistic</span> Logistic Regression',
+      'pcard-desc-logistica': '<strong>Use for:</strong> predicting the probability of binary events — likelihood of a company defaulting, probability of the index closing positive given a set of indicators.<br><br><strong>Practical example:</strong> predicting whether the IBOV will rise tomorrow based on RSI, volume, and US opening.',
+      'pcard-hdr-quantilica': '<span class="product-tag der">Quantile</span> Quantile Regression',
+      'pcard-desc-quantilica':'<strong>Use for:</strong> analyzing tail behavior — how the asset behaves in extreme scenarios (crashes and rallies) vs. normal days. Captures asymmetry.<br><br><strong>Practical example:</strong> how USDBRL reacts to country risk on the worst 10% of days for the stock market.',
+      'pcard-hdr-regularizada':'<span class="product-tag der">Ridge/Lasso</span> Regularization',
+      'pcard-desc-regularizada':'<strong>Use for:</strong> models with many explanatory variables (overfitting). Ridge keeps all factors with reduced coefficients; Lasso eliminates irrelevant ones automatically.<br><br><strong>Practical example:</strong> model with 15 technical indicators — Lasso identifies which ones truly matter.',
     }
   };
 
@@ -3586,6 +3612,10 @@ sections.forEach(function(s) { observer.observe(s); });
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const v = t[el.getAttribute('data-i18n')];
       if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const v = t[el.getAttribute('data-i18n-html')];
+      if (v !== undefined) el.innerHTML = v;
     });
     const btn = document.getElementById('lang-toggle');
     if (btn) btn.innerHTML = FLAGS[l];
