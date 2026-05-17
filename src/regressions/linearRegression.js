@@ -622,10 +622,12 @@ export function mUpdateCount() {
 }
 
 export function mLoadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
     {
-      name: 'Preço de Imóveis', ly: 'Preço (R$k)',
-      vars: ['Área (m²)', 'Quartos', 'Idade (anos)'],
+      name: isEn ? 'House Prices'       : 'Preço de Imóveis',
+      ly:   isEn ? 'Price ($k)'         : 'Preço (R$k)',
+      vars: isEn ? ['Area (m²)', 'Bedrooms', 'Age (years)'] : ['Área (m²)', 'Quartos', 'Idade (anos)'],
       data: [
         [80, 2, 5, 320], [95, 3, 3, 410], [120, 3, 8, 480], [60, 1, 15, 210],
         [150, 4, 2, 620], [85, 2, 10, 350], [110, 3, 6, 450], [70, 2, 20, 270],
@@ -634,8 +636,9 @@ export function mLoadExample() {
       ],
     },
     {
-      name: 'Desempenho Vendas', ly: 'Vendas (R$k)',
-      vars: ['Equipe (pessoas)', 'Investimento (R$k)', 'Meses de operação'],
+      name: isEn ? 'Sales Performance'  : 'Desempenho Vendas',
+      ly:   isEn ? 'Sales ($k)'         : 'Vendas (R$k)',
+      vars: isEn ? ['Team (people)', 'Investment ($k)', 'Months of operation'] : ['Equipe (pessoas)', 'Investimento (R$k)', 'Meses de operação'],
       data: [
         [5, 10, 6, 80], [8, 15, 12, 140], [3, 5, 3, 45], [10, 20, 24, 210],
         [6, 12, 9, 105], [12, 25, 18, 270], [4, 8, 6, 70], [7, 14, 15, 155],

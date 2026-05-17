@@ -111,15 +111,24 @@ export function stSetModel(model) {
 }
 
 export function stLoadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
-    { name: 'Vendas Mensais', ly: 'Vendas (R$k)', lx: 'Mês',
-      labels: ['Jan/23','Fev/23','Mar/23','Abr/23','Mai/23','Jun/23','Jul/23','Ago/23','Set/23','Out/23','Nov/23','Dez/23','Jan/24','Fev/24','Mar/24','Abr/24','Mai/24','Jun/24'],
+    { name: isEn ? 'Monthly Sales'        : 'Vendas Mensais',
+      ly:   isEn ? 'Sales ($k)'           : 'Vendas (R$k)',
+      lx:   isEn ? 'Month'               : 'Mês',
+      labels: ['Jan/23','Feb/23','Mar/23','Apr/23','May/23','Jun/23','Jul/23','Aug/23','Sep/23','Oct/23','Nov/23','Dec/23','Jan/24','Feb/24','Mar/24','Apr/24','May/24','Jun/24'],
       values: [42,38,45,50,55,60,58,63,67,72,80,95,48,44,52,58,64,70] },
-    { name: 'Temperatura Média', ly: 'Temp (°C)', lx: 'Mês',
-      labels: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar','Abr'],
+    { name: isEn ? 'Average Temperature'  : 'Temperatura Média',
+      ly:   isEn ? 'Temp (°C)'           : 'Temp (°C)',
+      lx:   isEn ? 'Month'               : 'Mês',
+      labels: isEn
+        ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr']
+        : ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar','Abr'],
       values: [28,29,27,25,22,20,19,20,22,24,26,28,27,28,26,24] },
-    { name: 'Retornos Financeiros', ly: 'Retorno (%)', lx: 'Semana',
-      labels: Array.from({ length: 24 }, (_, i) => `S${i + 1}`),
+    { name: isEn ? 'Financial Returns'    : 'Retornos Financeiros',
+      ly:   isEn ? 'Return (%)'          : 'Retorno (%)',
+      lx:   isEn ? 'Week'               : 'Semana',
+      labels: Array.from({ length: 24 }, (_, i) => `W${i + 1}`),
       values: [1.2,-0.8,2.1,-1.5,0.3,3.2,-2.1,1.8,-0.5,2.9,-1.2,0.7,1.5,-3.1,2.4,0.8,-1.9,3.5,-0.6,1.1,-2.3,2.8,-0.4,1.6] },
   ];
   const ex = examples[Math.floor(Math.random() * examples.length)];
@@ -319,10 +328,11 @@ function varGetData() {
 }
 
 export function varLoadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
     {
-      names: ['PIB (R$bi)', 'Investimento (R$bi)'],
-      labels: ['T1/21','T2/21','T3/21','T4/21','T1/22','T2/22','T3/22','T4/22','T1/23','T2/23','T3/23','T4/23','T1/24','T2/24','T3/24','T4/24'],
+      names: isEn ? ['GDP ($bn)', 'Investment ($bn)'] : ['PIB (R$bi)', 'Investimento (R$bi)'],
+      labels: ['Q1/21','Q2/21','Q3/21','Q4/21','Q1/22','Q2/22','Q3/22','Q4/22','Q1/23','Q2/23','Q3/23','Q4/23','Q1/24','Q2/24','Q3/24','Q4/24'],
       matrix: [
         [2200,320],[2260,335],[2310,350],[2380,370],
         [2350,360],[2420,380],[2480,395],[2550,415],
@@ -331,7 +341,7 @@ export function varLoadExample() {
       ],
     },
     {
-      names: ['Exportações', 'Taxa de Câmbio', 'Preço Commodities'],
+      names: isEn ? ['Exports', 'Exchange Rate', 'Commodity Price'] : ['Exportações', 'Taxa de Câmbio', 'Preço Commodities'],
       labels: Array.from({ length: 20 }, (_, i) => `M${i + 1}`),
       matrix: [
         [100,5.2,80],[105,5.4,82],[98,5.6,79],[108,5.3,85],

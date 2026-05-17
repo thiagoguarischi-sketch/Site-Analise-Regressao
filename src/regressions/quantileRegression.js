@@ -94,11 +94,16 @@ function qrGetActiveTaus() {
 }
 
 export function qrLoadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
-    { name: 'Renda vs Escolaridade', lx: 'Anos de estudo', ly: 'Renda (R$k)',
+    { name: isEn ? 'Income vs Education'     : 'Renda vs Escolaridade',
+      lx:   isEn ? 'Years of study'          : 'Anos de estudo',
+      ly:   isEn ? 'Income ($k)'             : 'Renda (R$k)',
       xs: [4,6,8,8,9,10,10,11,12,12,12,13,14,14,15,15,16,16,17,18,18,20,20,22],
       ys: [1.2,1.8,2.1,3.5,2.8,3.2,5.1,3.8,4.2,6.5,9.8,5.2,6.1,11.2,7.5,14.8,9.2,18.5,12.1,15.0,28.5,18.0,35.2,42.0] },
-    { name: 'Consumo vs Temperatura', lx: 'Temperatura (°C)', ly: 'Consumo (kWh)',
+    { name: isEn ? 'Consumption vs Temperature' : 'Consumo vs Temperatura',
+      lx:   isEn ? 'Temperature (°C)'        : 'Temperatura (°C)',
+      ly:   isEn ? 'Consumption (kWh)'       : 'Consumo (kWh)',
       xs: [10,12,15,18,20,22,24,26,28,30,32,34,36,38,10,15,20,25,30,35],
       ys: [320,290,260,230,210,240,280,340,420,510,580,650,720,810,350,270,195,380,490,700] },
   ];

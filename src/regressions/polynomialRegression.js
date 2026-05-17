@@ -126,12 +126,19 @@ export function poUpdateCount() {
 }
 
 export function poLoadExample() {
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   const examples = [
-    { name: 'Crescimento Planta', lx: 'Semanas', ly: 'Altura (cm)',
+    { name: isEn ? 'Plant Growth'        : 'Crescimento Planta',
+      lx:   isEn ? 'Weeks'              : 'Semanas',
+      ly:   isEn ? 'Height (cm)'        : 'Altura (cm)',
       xs: [1,2,3,4,5,6,7,8,9,10], ys: [2.1,5.8,11.2,18.5,24.1,28.3,30.9,32.1,32.8,33.0] },
-    { name: 'Consumo de Combustível', lx: 'Velocidade (km/h)', ly: 'Consumo (L/100km)',
+    { name: isEn ? 'Fuel Consumption'    : 'Consumo de Combustível',
+      lx:   isEn ? 'Speed (km/h)'       : 'Velocidade (km/h)',
+      ly:   isEn ? 'Consumption (L/100km)' : 'Consumo (L/100km)',
       xs: [40,50,60,70,80,90,100,110,120,130], ys: [9.2,7.5,6.4,5.8,5.5,5.8,6.5,7.8,9.6,12.0] },
-    { name: 'Lucro vs Preço', lx: 'Preço (R$)', ly: 'Lucro (R$k)',
+    { name: isEn ? 'Profit vs Price'     : 'Lucro vs Preço',
+      lx:   isEn ? 'Price (R$)'         : 'Preço (R$)',
+      ly:   isEn ? 'Profit ($k)'        : 'Lucro (R$k)',
       xs: [10,15,20,25,30,35,40,45,50,55], ys: [5,18,35,52,68,75,72,60,40,15] },
   ];
   const ex = examples[Math.floor(Math.random() * examples.length)];
