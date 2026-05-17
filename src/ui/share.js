@@ -25,6 +25,10 @@ function _initials(name, email) {
   return (name || email || '?').split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
 }
 
+function _locale() {
+  return localStorage.getItem('slope-lang') === 'en' ? 'en-US' : 'pt-BR';
+}
+
 async function _loadAcceptedFriends() {
   const uid = await _uid();
   const { data: friendships } = await db
@@ -43,7 +47,7 @@ async function _loadAcceptedFriends() {
 export async function loadShareList() {
   const container = document.getElementById('share-list');
   if (!container) return;
-  container.innerHTML = '<p style="color:var(--txt3);font-size:13px">Carregando...</p>';
+  container.innerHTML = `<p style="color:var(--txt3);font-size:13px">${window.t('share-loading')}</p>`;
 
   try {
     _analyses = await fetchAnalyses();
@@ -51,14 +55,14 @@ export async function loadShareList() {
       container.innerHTML = `
         <div style="text-align:center;padding:40px 20px;color:var(--txt3)">
           <div style="font-size:36px;margin-bottom:12px">📤</div>
-          <div style="font-size:14px;font-weight:600;margin-bottom:6px">Nenhuma análise salva</div>
-          <div style="font-size:13px">Execute e salve uma análise primeiro para poder compartilhá-la.</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:6px">${window.t('share-empty-title')}</div>
+          <div style="font-size:13px">${window.t('share-empty-desc')}</div>
         </div>`;
     } else {
       container.innerHTML = _analyses.map(a => _renderShareCard(a)).join('');
     }
   } catch {
-    container.innerHTML = '<p style="color:var(--acc);font-size:13px">Erro ao carregar análises.</p>';
+    container.innerHTML = `<p style="color:var(--acc);font-size:13px">${window.t('share-error-load')}</p>`;
   }
 
   _loadReceivedShares();
@@ -69,7 +73,7 @@ function _renderShareCard(a) {
   const tipoLabel = _tipoLabel(a);
   const badgeClass = _badgeClass(a);
   const metric = _keyMetric(a);
-  const date = new Date(a.created_at).toLocaleString('pt-BR');
+  const date = new Date(a.created_at).toLocaleString(_locale());
 
   return `
     <div class="share-card" id="scard-${a.id}">
@@ -79,14 +83,14 @@ function _renderShareCard(a) {
           <span class="history-badge ${badgeClass}" style="margin-bottom:6px;display:inline-block">${tipoLabel}</span>
           <div class="history-title">${esc(a.nome)}</div>
           <div class="history-desc">${metric.label} = <b style="color:var(--y)">${metric.val}</b> &nbsp;•&nbsp; n = ${d.n ?? '—'}</div>
-          <div class="history-date">Salvo em ${date}</div>
+          <div class="history-date">${window.t('share-saved-on')} ${date}</div>
         </div>
       </div>
       <div class="share-actions">
-        <button class="share-btn" onclick="copyShareLink('${a.id}')">🔗 Copiar link</button>
-        <button class="share-btn" onclick="copyShareText('${a.id}')">📋 Copiar resumo</button>
-        <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.35)" onclick="openShareWithFriendModal('${a.id}')">👤 Enviar a amigo</button>
-        <button class="share-btn share-btn-preview" onclick="previewShareCard('${a.id}')">👁 Pré-visualizar</button>
+        <button class="share-btn" onclick="copyShareLink('${a.id}')">${window.t('share-btn-link')}</button>
+        <button class="share-btn" onclick="copyShareText('${a.id}')">${window.t('share-btn-summary')}</button>
+        <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.35)" onclick="openShareWithFriendModal('${a.id}')">${window.t('share-btn-friend')}</button>
+        <button class="share-btn share-btn-preview" onclick="previewShareCard('${a.id}')">${window.t('share-btn-preview')}</button>
       </div>
     </div>
   `;
@@ -100,10 +104,10 @@ export function copyShareLink(id) {
   try {
     const url = _buildShareUrl(a);
     navigator.clipboard.writeText(url).then(() => {
-      showToast('Link copiado! Cole em qualquer lugar.', 'ok');
+      showToast(window.t('share-toast-link'), 'ok');
     });
   } catch {
-    showToast('Erro ao gerar link.', 'err');
+    showToast(window.t('share-toast-link-err'), 'err');
   }
 }
 
@@ -111,7 +115,7 @@ export function copyShareText(id) {
   const a = _analyses.find(x => x.id === id);
   if (!a) return;
   navigator.clipboard.writeText(_buildTextSummary(a)).then(() => {
-    showToast('Resumo copiado!', 'ok');
+    showToast(window.t('share-toast-summary'), 'ok');
   });
 }
 
@@ -125,14 +129,14 @@ export function previewShareCard(id) {
 export function copyOverlayLink() {
   if (!_overlayAnalysis) return;
   navigator.clipboard.writeText(_buildShareUrl(_overlayAnalysis)).then(() => {
-    showToast('Link copiado!', 'ok');
+    showToast(window.t('share-overlay-link'), 'ok');
   });
 }
 
 export function copyOverlayText() {
   if (!_overlayAnalysis) return;
   navigator.clipboard.writeText(_buildTextSummary(_overlayAnalysis)).then(() => {
-    showToast('Resumo copiado!', 'ok');
+    showToast(window.t('share-toast-summary'), 'ok');
   });
 }
 
@@ -149,7 +153,7 @@ export async function openShareWithFriendModal(analysisId) {
   const content = document.getElementById('friend-pick-content');
   const a = _analyses.find(x => x.id === analysisId);
 
-  content.innerHTML = '<p style="color:var(--txt3);font-size:13px;text-align:center;padding:24px">Carregando amigos...</p>';
+  content.innerHTML = `<p style="color:var(--txt3);font-size:13px;text-align:center;padding:24px">${window.t('share-friends-loading')}</p>`;
   overlay.classList.add('open');
 
   const friends = await _loadAcceptedFriends();
@@ -158,9 +162,9 @@ export async function openShareWithFriendModal(analysisId) {
     content.innerHTML = `
       <div style="text-align:center;padding:24px">
         <div style="font-size:36px;margin-bottom:10px">👥</div>
-        <div style="font-size:14px;font-weight:700;color:var(--txt);margin-bottom:6px">Sem amigos adicionados</div>
-        <div style="font-size:13px;color:var(--txt3)">Adicione amigos na aba 👥 para poder enviar análises.</div>
-        <button class="btn-ghost" style="margin-top:16px" onclick="closeFriendPickOverlay()">Fechar</button>
+        <div style="font-size:14px;font-weight:700;color:var(--txt);margin-bottom:6px">${window.t('share-no-friends-title')}</div>
+        <div style="font-size:13px;color:var(--txt3)">${window.t('share-no-friends-desc')}</div>
+        <button class="btn-ghost" style="margin-top:16px" onclick="closeFriendPickOverlay()">${window.t('share-close')}</button>
       </div>`;
     return;
   }
@@ -168,15 +172,15 @@ export async function openShareWithFriendModal(analysisId) {
   content.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
       <div>
-        <div style="font-size:15px;font-weight:700;color:var(--txt)">Enviar para amigo</div>
+        <div style="font-size:15px;font-weight:700;color:var(--txt)">${window.t('share-send-title')}</div>
         <div style="font-size:12px;color:var(--txt3);margin-top:3px">
-          Análise: <b style="color:var(--txt2)">${esc(a?.nome || '')}</b>
+          ${window.t('share-send-analysis')} <b style="color:var(--txt2)">${esc(a?.nome || '')}</b>
         </div>
       </div>
       <button class="btn-ghost" style="font-size:18px;padding:4px 10px;line-height:1" onclick="closeFriendPickOverlay()">×</button>
     </div>
     <div class="interp-box" style="margin-bottom:14px;font-size:12px">
-      📦 Os <strong>dados brutos e resultados completos</strong> serão enviados. Seu amigo verá exatamente a mesma análise.
+      ${window.t('share-send-info')}
     </div>
     ${friends.map(f => `
       <div class="friend-card" style="cursor:pointer" onclick="sendToFriend('${analysisId}','${f.id}','${esc(f.full_name || f.email || 'Usuário')}')">
@@ -185,7 +189,7 @@ export async function openShareWithFriendModal(analysisId) {
           <div class="friend-name">${esc(f.full_name || 'Usuário')}</div>
           <div class="friend-email">${esc(f.email || '')}</div>
         </div>
-        <span style="font-size:12px;color:var(--y);font-weight:600;flex-shrink:0">Enviar →</span>
+        <span style="font-size:12px;color:var(--y);font-weight:600;flex-shrink:0">${window.t('share-send-btn')}</span>
       </div>
     `).join('')}
   `;
@@ -209,9 +213,9 @@ export async function sendToFriend(analysisId, receiverId, receiverName) {
     label_x: a.label_x || null,
     label_y: a.label_y || null,
   });
-  if (error) { showToast('Erro ao enviar para amigo.', 'err'); return; }
+  if (error) { showToast(window.t('share-send-err'), 'err'); return; }
   closeFriendPickOverlay();
-  showToast(`Análise enviada para ${receiverName}! 📬`, 'ok');
+  showToast(`${window.t('share-send-title')} → ${receiverName} 📬`, 'ok');
 }
 
 async function _loadReceivedShares() {
@@ -228,7 +232,7 @@ async function _loadReceivedShares() {
     .order('created_at', { ascending: false });
 
   if (error || !shares?.length) {
-    container.innerHTML = '<p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">Nenhuma análise recebida.</p>';
+    container.innerHTML = `<p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">${window.t('share-received-none')}</p>`;
     return;
   }
 
@@ -238,24 +242,32 @@ async function _loadReceivedShares() {
 
   container.innerHTML = shares.map(s => {
     const sender = profileMap[s.sender_id] || {};
-    const tipoLabel = { simples:'Linear', multipla:'Múltipla', logistica:'Logística', polinomial:'Polinomial', serie:'Série Temp.', quantilica:'Quantílica', regularizada:'Regularizada' }[s.analysis_tipo] || s.analysis_tipo;
+    const tipoLabel = {
+      simples:     window.t('share-tipo-simples'),
+      multipla:    window.t('share-tipo-multipla'),
+      logistica:   window.t('share-tipo-logistica'),
+      polinomial:  window.t('share-tipo-polinomial'),
+      serie:       window.t('share-tipo-serie'),
+      quantilica:  window.t('share-tipo-quantilica'),
+      regularizada:window.t('share-tipo-regularizada'),
+    }[s.analysis_tipo] || s.analysis_tipo;
     const icon = { simples:'📈', multipla:'📊', logistica:'🎯', polinomial:'〰️', serie:'📅', quantilica:'🎻', regularizada:'⚖️' }[s.analysis_tipo] || '📊';
-    const date = new Date(s.created_at).toLocaleString('pt-BR');
+    const date = new Date(s.created_at).toLocaleString(_locale());
     return `
       <div class="share-card">
         <div style="display:flex;align-items:flex-start;gap:10px">
           <div style="font-size:26px;margin-top:2px">${icon}</div>
           <div style="flex:1;min-width:0">
             <div style="font-size:11px;color:var(--txt3);margin-bottom:4px">
-              De <strong style="color:var(--txt2)">${esc(sender.full_name || sender.email || 'Usuário')}</strong> · ${date}
+              ${window.t('share-received-from')} <strong style="color:var(--txt2)">${esc(sender.full_name || sender.email || 'Usuário')}</strong> · ${date}
             </div>
             <div class="history-title">${esc(s.analysis_nome)}</div>
             <div class="history-desc">${tipoLabel}</div>
           </div>
         </div>
         <div class="share-actions">
-          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="loadReceivedShare('${s.id}')">📥 Carregar análise</button>
-          <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="deleteReceivedShare('${s.id}',this)">🗑 Remover</button>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="loadReceivedShare('${s.id}')">${window.t('share-received-load-btn')}</button>
+          <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="deleteReceivedShare('${s.id}',this)">${window.t('share-remove-btn')}</button>
         </div>
       </div>`;
   }).join('');
@@ -269,7 +281,7 @@ export async function loadReceivedShare(shareId) {
     .eq('id', shareId)
     .eq('receiver_id', uid)
     .single();
-  if (error || !data) { showToast('Erro ao carregar análise.', 'err'); return; }
+  if (error || !data) { showToast(window.t('share-received-err'), 'err'); return; }
   await _doLoadAnalysis({
     nome: data.analysis_nome,
     tipo: data.analysis_tipo,
@@ -281,10 +293,10 @@ export async function loadReceivedShare(shareId) {
 }
 
 export async function deleteReceivedShare(shareId, btn) {
-  if (!confirm('Remover esta análise recebida?')) return;
+  if (!confirm(window.t('share-remove-confirm'))) return;
   btn.closest('.share-card').remove();
   await db.from('friend_shares').delete().eq('id', shareId);
-  showToast('Análise removida.', 'info');
+  showToast(window.t('share-removed-toast'), 'info');
 }
 
 // ── Geração de conteúdo ──
@@ -305,38 +317,38 @@ function _buildShareUrl(a) {
 function _buildTextSummary(a) {
   const d = a.dados || {};
   const tipoLabel = _tipoLabel(a);
-  const date = new Date(a.created_at).toLocaleString('pt-BR');
+  const date = new Date(a.created_at).toLocaleString(_locale());
   const div = '─'.repeat(38);
   const lines = [`${_tipoIcon(a.tipo)} ${tipoLabel} — "${a.nome}"`, div];
 
   if (a.tipo === 'simples') {
-    lines.push(`Equação: Ŷ = ${fmt(d.b0)} + ${fmt(d.b1)}·${esc(a.label_x || 'X')}`);
+    lines.push(`${window.t('share-summary-equacao')}: Ŷ = ${fmt(d.b0)} + ${fmt(d.b1)}·${esc(a.label_x || 'X')}`);
     lines.push(`R² = ${fmt(d.r2)}  |  R² adj = ${fmt(d.r2adj)}`);
-    lines.push(`p-valor = ${d.pF < 0.001 ? '<0.001' : fmt(d.pF)}  |  n = ${d.n}`);
+    lines.push(`${window.t('share-summary-pvalor')} = ${d.pF < 0.001 ? '<0.001' : fmt(d.pF)}  |  n = ${d.n}`);
   } else if (a.tipo === 'multipla') {
     lines.push(`R² = ${fmt(d.r2)}  |  R² adj = ${fmt(d.r2adj)}`);
     lines.push(`F = ${fmt(d.Fstat)}  |  p = ${d.pF < 0.001 ? '<0.001' : fmt(d.pF)}`);
-    lines.push(`n = ${d.n}  |  k = ${d.k} preditores`);
+    lines.push(`n = ${d.n}  |  k = ${d.k} ${window.t('share-summary-preditores')}`);
   } else if (a.tipo === 'logistica') {
     lines.push(`R² McFadden = ${fmt(d.mcFaddenR2)}`);
-    lines.push(`AUC-ROC = ${fmt(d.auc)}  |  Acurácia = ${d.cm?.acc != null ? (d.cm.acc * 100).toFixed(1) + '%' : '—'}`);
-    lines.push(`n = ${d.n}  |  k = ${d.k} preditores`);
+    lines.push(`AUC-ROC = ${fmt(d.auc)}  |  ${window.t('share-summary-acuracia')} = ${d.cm?.acc != null ? (d.cm.acc * 100).toFixed(1) + '%' : '—'}`);
+    lines.push(`n = ${d.n}  |  k = ${d.k} ${window.t('share-summary-preditores')}`);
   } else if (a.tipo === 'polinomial') {
-    lines.push(`Grau ${d.degree}  |  R² = ${fmt(d.r2)}  |  R² adj = ${fmt(d.r2adj)}`);
+    lines.push(`${window.t('share-metric-grau')} ${d.degree}  |  R² = ${fmt(d.r2)}  |  R² adj = ${fmt(d.r2adj)}`);
     lines.push(`n = ${d.n}`);
   } else if (a.tipo === 'serie') {
-    lines.push(`Tendência = ${fmt(d.b1)}/período  |  CV = ${d.cv?.toFixed(1) ?? '—'}%`);
-    lines.push(`Média = ${fmt(d.ym)}  |  Cresc. médio = ${d.avgGrowth?.toFixed(2) ?? '—'}%`);
+    lines.push(`${window.t('share-summary-tendencia')} = ${fmt(d.b1)}/${window.t('share-summary-periodo')}  |  CV = ${d.cv?.toFixed(1) ?? '—'}%`);
+    lines.push(`${window.t('share-summary-media')} = ${fmt(d.ym)}  |  ${window.t('share-summary-cresc')} = ${d.avgGrowth?.toFixed(2) ?? '—'}%`);
     lines.push(`n = ${d.n}`);
   } else if (a.tipo === 'quantilica') {
-    lines.push(`Perda Pinball (τ=0.5) = ${fmt(d.pinballLosses?.['0.5'] ?? d.pinballLosses?.[0.5])}`);
+    lines.push(`${window.t('share-summary-pinball')} (τ=0.5) = ${fmt(d.pinballLosses?.['0.5'] ?? d.pinballLosses?.[0.5])}`);
     lines.push(`n = ${d.n}`);
   } else if (a.tipo === 'regularizada') {
     lines.push(`Ridge R² = ${fmt(d.ridge?.r2)}  |  Lasso R² = ${fmt(d.lasso?.r2)}`);
     lines.push(`λ = ${fmt(d.lambda)}  |  n = ${d.n}`);
   }
 
-  lines.push(div, `Salvo em ${date}`, 'Gerado via Slope');
+  lines.push(div, `${window.t('share-summary-saved')} ${date}`, window.t('share-summary-footer'));
   return lines.join('\n');
 }
 
@@ -352,12 +364,12 @@ function _buildMetricCards(a) {
     items = [
       { label: 'AUC-ROC', val: fmt(d.auc) },
       { label: 'R² McF', val: fmt(d.mcFaddenR2) },
-      { label: 'Acurácia', val: d.cm?.acc != null ? (d.cm.acc * 100).toFixed(1) + '%' : '—' },
+      { label: window.t('share-metric-acuracia'), val: d.cm?.acc != null ? (d.cm.acc * 100).toFixed(1) + '%' : '—' },
     ];
   } else if (a.tipo === 'polinomial') {
-    items = [{ label: 'Grau', val: d.degree }, { label: 'R²', val: fmt(d.r2) }, { label: 'n', val: d.n }];
+    items = [{ label: window.t('share-metric-grau'), val: d.degree }, { label: 'R²', val: fmt(d.r2) }, { label: 'n', val: d.n }];
   } else if (a.tipo === 'serie') {
-    items = [{ label: 'CV', val: (d.cv?.toFixed(1) ?? '—') + '%' }, { label: 'Tendência', val: fmt(d.b1) }, { label: 'n', val: d.n }];
+    items = [{ label: 'CV', val: (d.cv?.toFixed(1) ?? '—') + '%' }, { label: window.t('share-metric-tendencia'), val: fmt(d.b1) }, { label: 'n', val: d.n }];
   } else if (a.tipo === 'quantilica') {
     items = [{ label: 'PB (τ=0.5)', val: fmt(d.pinballLosses?.['0.5']) }, { label: 'n', val: d.n }];
   } else if (a.tipo === 'regularizada') {
@@ -377,7 +389,7 @@ function _buildMetricCards(a) {
 
 function _openShareOverlay(a) {
   const tipoLabel = _tipoLabel(a);
-  const date = new Date(a.created_at).toLocaleString('pt-BR');
+  const date = new Date(a.created_at).toLocaleString(_locale());
   const text = _buildTextSummary(a);
 
   document.getElementById('share-overlay-content').innerHTML = `
@@ -399,9 +411,9 @@ function _openShareOverlay(a) {
     <div class="share-text-block">${esc(text)}</div>
 
     <div class="modal-actions">
-      <button class="btn-primary" style="flex:1;min-width:140px" onclick="copyOverlayLink()">🔗 Copiar link</button>
-      <button class="btn-ghost" style="flex:1;min-width:140px" onclick="copyOverlayText()">📋 Copiar texto</button>
-      <button class="btn-ghost" onclick="closeShareOverlay()">Fechar</button>
+      <button class="btn-primary" style="flex:1;min-width:140px" onclick="copyOverlayLink()">🔗 ${window.t('share-btn-link').replace('🔗 ','')}</button>
+      <button class="btn-ghost" style="flex:1;min-width:140px" onclick="copyOverlayText()">${window.t('share-overlay-text-btn')}</button>
+      <button class="btn-ghost" onclick="closeShareOverlay()">${window.t('share-close')}</button>
     </div>
   `;
   document.getElementById('share-overlay').classList.add('open');
@@ -432,7 +444,7 @@ export function triggerLoadShared() {
     _incomingShared = null;
   } else {
     sessionStorage.setItem(PENDING_KEY, JSON.stringify(a));
-    showToast('Faça login para carregar a análise compartilhada.', 'info');
+    showToast(window.t('share-login-toast'), 'info');
   }
 }
 
@@ -458,15 +470,15 @@ async function _doLoadAnalysis(a) {
     const tab = a.tipo;
     const btn = document.querySelector(`[onclick*="'${tab}'"]`);
     window.switchTab?.(tab, btn);
-    showToast('Dados carregados — clique em Executar para ver os resultados.', 'info');
+    showToast(window.t('share-data-loaded-toast'), 'info');
     return;
   }
-  showToast(`Análise "${a.nome}" carregada com sucesso! ✓`, 'ok');
+  showToast(`"${a.nome}" ✓`, 'ok');
 }
 
 function _showReadonlyShared(a) {
   const tipoLabel = _tipoLabel(a);
-  const date = new Date(a.created_at).toLocaleString('pt-BR');
+  const date = new Date(a.created_at).toLocaleString(_locale());
   const text = _buildTextSummary(a);
   const hasRawData = !!(a.dados?.xs?.length || a.dados?.ys?.length
     || a.dados?.labels?.length || a.dados?.matrix?.length);
@@ -478,7 +490,7 @@ function _showReadonlyShared(a) {
       <div style="text-align:center;margin-bottom:20px">
         <div style="font-size:42px;margin-bottom:8px">${_tipoIcon(a.tipo)}</div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:6px">
-          Análise Compartilhada
+          ${window.t('share-readonly-badge')}
         </div>
         <div style="font-size:22px;font-weight:700;color:var(--txt);margin-bottom:4px">${esc(a.nome)}</div>
         <div style="font-size:12px;color:var(--txt3)">${tipoLabel} • ${date}</div>
@@ -492,25 +504,25 @@ function _showReadonlyShared(a) {
 
       ${hasRawData ? `
       <div style="background:rgba(0,212,160,.07);border:1px solid rgba(0,212,160,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--txt2);line-height:1.5">
-        💡 <strong style="color:var(--y)">Dados disponíveis!</strong>
-        Você pode carregar esta análise diretamente no app — os dados e resultados serão preenchidos automaticamente.
+        💡 <strong style="color:var(--y)">${window.t('share-readonly-data-title')}</strong>
+        ${window.t('share-readonly-data-desc')}
       </div>` : ''}
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px">
         ${hasRawData ? `
         <button class="btn-primary" style="flex:1;min-width:180px" onclick="triggerLoadShared()">
-          📥 Carregar esta análise
+          ${window.t('share-readonly-load-btn')}
         </button>` : ''}
         <button class="btn-ghost" style="flex:1;min-width:140px" onclick="history.pushState('','',location.pathname);this.closest('.shared-readonly-overlay').remove()">
-          📊 Nova análise
+          ${window.t('share-readonly-new-btn')}
         </button>
         <button class="btn-ghost" onclick="this.closest('.shared-readonly-overlay').remove()">
-          Fechar
+          ${window.t('share-close')}
         </button>
       </div>
 
       <p style="text-align:center;font-size:11px;color:var(--txt3)">
-        Gerado via <strong style="color:var(--x)">Slope</strong>
+        ${window.t('share-readonly-footer')} <strong style="color:var(--x)">Slope</strong>
       </p>
     </div>
   `;
@@ -522,13 +534,13 @@ function _showReadonlyShared(a) {
 function _tipoLabel(a) {
   const d = a.dados || {};
   return {
-    simples:     'Regressão Linear',
-    multipla:    'Regressão Múltipla',
-    logistica:   'Regressão Logística',
-    polinomial:  `Reg. Polinomial Grau ${d.degree ?? '?'}`,
-    serie:       'Série Temporal',
-    quantilica:  'Reg. Quantílica',
-    regularizada:'Reg. Regularizada',
+    simples:     window.t('share-tipo-simples'),
+    multipla:    window.t('share-tipo-multipla'),
+    logistica:   window.t('share-tipo-logistica'),
+    polinomial:  `${window.t('share-tipo-polinomial')} ${d.degree ?? '?'}`,
+    serie:       window.t('share-tipo-serie'),
+    quantilica:  window.t('share-tipo-quantilica'),
+    regularizada:window.t('share-tipo-regularizada'),
   }[a.tipo] || a.tipo;
 }
 
