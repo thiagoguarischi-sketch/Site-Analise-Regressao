@@ -5714,6 +5714,440 @@ const CURSO_MODELS = {
   },
 };
 
+// ── Conteúdo dos modelos em INGLÊS ──
+const CURSO_MODELS_EN = {
+  linear: {
+    panel:'nova', icon:'📈', name:'Simple Linear Regression',
+    category:'Continuous Regression', level:'Beginner', levelColor:'#4CAF50',
+    badgeStyle:'background:rgba(124,131,253,.12);color:#7C83FD;border-color:rgba(124,131,253,.3)',
+    sub:'The most fundamental model in statistics. Estimates the relationship between a single predictor variable and a continuous response variable.',
+    chips:['1 predictor variable','Continuous response','OLS','Direct interpretation'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>Simple Linear Regression describes the relationship between <strong>one independent variable X</strong> and <strong>one dependent variable Y</strong> through a straight line. The goal is to find the line that best fits the data, minimizing the vertical distance between the points and the line — a method called <strong>Ordinary Least Squares (OLS)</strong>.</p><p>The resulting line serves both to <strong>understand the relationship</strong> between X and Y and to <strong>make predictions</strong> of Y for new values of X.</p>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Regression line equation', eq:`Ŷ = β₀ + β₁·X + ε\n\nβ₁ = Σ(xᵢ − x̄)(yᵢ − ȳ) / Σ(xᵢ − x̄)²\nβ₀ = ȳ − β₁·x̄`, note:`<code>β₀</code> is the intercept, <code>β₁</code> is the slope (how much Y changes per unit of X) and <code>ε</code> is the residual.` },
+        html:`<p>OLS minimizes the <strong>Residual Sum of Squares (RSS)</strong>: Σ(yᵢ − Ŷᵢ)². By the Gauss-Markov Theorem, the estimators β₀ and β₁ are the Best Linear Unbiased Estimators (BLUE) — provided the model assumptions are met.</p>` },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Compute the means', desc:'Calculate x̄ (mean of X) and ȳ (mean of Y) from the data.' },
+          { title:'Estimate β₁ (slope)', desc:'Divide the covariance of X and Y by the variance of X. Measures how much Y grows per unit of X.' },
+          { title:'Estimate β₀ (intercept)', desc:'Ensures the line passes through the point (x̄, ȳ), which is always the center of any OLS regression.' },
+          { title:'Compute the residuals', desc:'eᵢ = yᵢ − Ŷᵢ. Residuals should be approximately normally distributed with constant variance.' },
+          { title:'Evaluate with metrics', desc:"Compute R², p-value, 95% CI, F-statistic and Cook's Distance to validate the model." },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'The expected relationship between X and Y is approximately linear' },
+          { yes:true, text:'Y is a continuous variable (weight, price, temperature, salary)' },
+          { yes:true, text:'Only one predictor and you want simple interpretation' },
+          { yes:false, text:'Y is binary or categorical → use Logistic Regression' },
+          { yes:false, text:'Relationship is clearly curved → use Polynomial Regression' },
+          { yes:false, text:'Multiple predictor variables → use Multiple Regression' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Linearity', desc:'The relationship between X and Y must be linear. Check with the scatter plot and the residuals plot.' },
+          { title:'Independence of errors', desc:'Residuals must not be correlated with each other. Especially important in time series.' },
+          { title:'Homoscedasticity', desc:'The variance of residuals must be constant across all values of X.' },
+          { title:'Normality of residuals', desc:'Residuals should approximately follow a normal distribution. Required for valid confidence intervals.' },
+        ]},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'R²', desc:'Proportion of variance in Y explained by the model. R²=1 is a perfect fit. R²=0 means the model explains nothing.', range:'0 to 1 (higher = better)' },
+          { name:'Adjusted R²', desc:'Penalized version of R² that discounts unnecessary variables. Always use in models with multiple predictors.', range:'≤ R²' },
+          { name:'p-value', desc:'Probability of observing β₁ this extreme if the true coefficient were zero. p < 0.05 → significant effect.', range:'< 0.05 for significance' },
+          { name:'95% CI', desc:'95% confidence interval for β₁. If it does not include zero, the coefficient is significant.', range:'Narrower = better' },
+          { name:'F-statistic', desc:'Tests whether the model as a whole is significant.', range:'p(F) < 0.05 for a valid model' },
+          { name:"Cook's Distance", desc:"Measures the influence of each observation on the fit. Values > 0.5 indicate highly influential points.", range:'< 0.5 is healthy' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Correlation ≠ Causation', desc:"High R² does not mean X causes Y. Always validate with domain knowledge." },
+          { title:'Dangerous extrapolation', desc:'Predicting Y for X far outside the training data range is risky — linearity may not hold.' },
+          { title:'Outliers inflate errors', desc:"A single extreme point can pull the entire line. Check Cook's Distance." },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: Predicting salary based on years of experience',
+          tableHeaders:['Experience (years)','Salary ($k)'],
+          tableRows:[['1','38'],['2','42'],['3','46'],['5','54'],['7','62'],['10','74']],
+          resultHtml:`Model: <strong>Ŷ = 34.8 + 3.9 · X</strong><br>For 8 years → Ŷ = 34.8 + 3.9×8 = <strong>$66.0k</strong><br>R² = 0.998` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'What is the minimum sample size?', a:'A rule of thumb is at least 10–20 observations per predictor. For simple regression, n ≥ 30 is usually sufficient.' },
+          { q:'What should I do if R² is low?', a:'Check whether the relationship is linear. You may need polynomial regression or more predictors (multiple). A low R² does not invalidate the model if the p-value is significant.' },
+          { q:'How do I interpret a negative β₁?', a:'It means Y decreases as X increases. β₁ = −2 indicates that each extra unit of X is associated with a reduction of 2 units in Y.' },
+        ]},
+    ]
+  },
+
+  multipla: {
+    panel:'multipla', icon:'📊', name:'Multiple Regression',
+    category:'Continuous Regression', level:'Basic', levelColor:'#8BC34A',
+    badgeStyle:'background:rgba(0,212,160,.1);color:#00D4A0;border-color:rgba(0,212,160,.3)',
+    sub:'Extends linear regression to multiple predictors, measuring the effect of each variable while controlling for the others.',
+    chips:['N predictor variables','Matrix algebra','VIF','ANOVA'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>Multiple Regression includes <strong>two or more simultaneous predictors</strong>, estimating the effect of each variable on Y while <strong>controlling for the others</strong>. For example: when predicting house prices with area and rooms, the coefficient for area measures the impact of 1 extra m² <em>holding the number of rooms constant</em>.</p><p>Parameters are estimated via <strong>matrix OLS algebra</strong>: β = (XᵀX)⁻¹Xᵀy, where X is the design matrix with a column of 1s and one column per predictor.</p>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Equation and matrix estimation', eq:`Ŷ = β₀ + β₁X₁ + β₂X₂ + … + βₙXₙ\n\nMatrix form:   y = Xβ + ε\nOLS estimate:  β = (XᵀX)⁻¹Xᵀy`, note:`The matrix <code>XᵀX</code> must be invertible. In the presence of perfect multicollinearity, OLS fails — use Ridge.` },
+        html:`<p>The <strong>VIF (Variance Inflation Factor)</strong> measures how much the variance of βⱼ is inflated by correlation with the other predictors. VIF = 1/(1 − R²ⱼ). VIF > 10 indicates severe multicollinearity.</p>` },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Build the design matrix X', desc:'First column = 1 (intercept). Remaining columns = values of each predictor.' },
+          { title:'Estimate β via matrix OLS', desc:'β = (XᵀX)⁻¹Xᵀy. The inversion is performed using LU or SVD decomposition.' },
+          { title:'Compute VIF per predictor', desc:'Regress each Xⱼ on the others and calculate VIF = 1/(1−R²ⱼ). VIF > 5 warrants attention.' },
+          { title:'ANOVA of the regression', desc:'Decomposes TSS = RSS + ESS. The global F-test checks whether at least one predictor is significant.' },
+          { title:'Individual t-tests', desc:'Each βⱼ has its own t = βⱼ / SE(βⱼ) and p-value to test whether the individual effect is significant.' },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'Continuous Y influenced by two or more factors simultaneously' },
+          { yes:true, text:'You want to control for confounding variables' },
+          { yes:true, text:'Testing hypotheses about individual coefficients with t-tests' },
+          { yes:false, text:'Many correlated predictors → Ridge or Lasso are more stable' },
+          { yes:false, text:'More predictors than observations (p > n) → regularization is mandatory' },
+          { yes:false, text:'Y is binary → use Logistic Regression' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Linearity', desc:'Each predictor has a linear effect on Y given the others are held constant.' },
+          { title:'No perfect multicollinearity', desc:'No variable can be an exact linear combination of the others. Monitor with VIF.' },
+          { title:'Homoscedasticity', desc:'Constant residual variance across all fitted values.' },
+          { title:'Normality of residuals', desc:'Required for validity of t- and F-tests in small samples.' },
+        ]},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'Adjusted R²', desc:'R² penalized by the number of predictors. Increases only if the new predictor improves the model.', range:'≤ R², higher = better' },
+          { name:'VIF', desc:'Variance Inflation Factor. Above 5 indicates concerning correlation; above 10 is severe.', range:'1 (ideal) to ∞' },
+          { name:'Global F', desc:'Tests whether all βⱼ = 0. p(F) < 0.05 → at least one predictor is useful.', range:'p < 0.05 → model valid' },
+          { name:'t-test per β', desc:'Tests whether the individual effect of each predictor is significant, conditioned on the others.', range:'p < 0.05 per β' },
+          { name:'ANOVA', desc:'Decomposes total variance into explained and unexplained. Globally validates the model.', range:'Significant F = useful model' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Multicollinearity', desc:'Highly correlated predictors inflate standard errors and make coefficients unstable. Monitor VIF.' },
+          { title:'Overfitting with many variables', desc:'Adding predictors always increases R², but may hurt generalization. Use Adjusted R².' },
+          { title:'Interpreting coefficients without context', desc:'β₁ = 5 means "holding others fixed, +1 in X₁ is associated with +5 in Y". It is not the total effect.' },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: Predicting house price with area and rooms',
+          tableHeaders:['Area (m²)','Rooms','Price ($k)'],
+          tableRows:[['50','1','280'],['80','2','370'],['100','3','450'],['120','3','510'],['150','4','620']],
+          resultHtml:`Model: <strong>Ŷ = 80 + 3.2·Area + 25·Rooms</strong><br>110m² and 3 rooms → <strong>$507k</strong><br>R² = 0.994 · VIF ≈ 2.1` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'How many variables can I include?', a:'Rule of thumb: at least 10–20 observations per predictor. With n=100, use no more than 5–10 without regularization.' },
+          { q:'What should I do when VIF > 10?', a:'(1) Remove one of the correlated variables; (2) Combine via PCA; (3) Use Ridge, which stabilizes coefficients.' },
+          { q:'Adjusted R² dropped when I added a variable — what does that mean?', a:"The variable doesn't contribute enough to compensate for the penalty. Remove it from the model." },
+        ]},
+    ]
+  },
+
+  logistica: {
+    panel:'logistica', icon:'🎯', name:'Logistic Regression',
+    category:'Binary Classification', level:'Intermediate', levelColor:'#FF9800',
+    badgeStyle:'background:rgba(255,107,138,.1);color:#FF6B8A;border-color:rgba(255,107,138,.3)',
+    sub:'Models the probability of a binary event occurring. Uses the sigmoid function and maximum likelihood estimation.',
+    chips:['0 or 1 output','Probability','Sigmoid','AUC-ROC'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>Logistic Regression is the standard model for <strong>binary classification</strong> — when Y takes only 0 (did not occur) or 1 (occurred). Rather than predicting Y directly, it models the <strong>probability P(Y=1|X)</strong> via the <strong>sigmoid function</strong>, which maps any real value to (0, 1).</p><p>Parameters are estimated by <strong>Maximum Likelihood Estimation (MLE)</strong> using gradient descent — there is no closed-form analytic solution as in OLS.</p>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Sigmoid and log-odds', eq:`P(Y=1) = σ(z) = 1 / (1 + e^−z)\nz = β₀ + β₁X₁ + … + βₙXₙ\n\nLog-odds: ln[P/(1−P)] = z = Xβ\nDecision: Ŷ = 1 if P ≥ 0.5, else Ŷ = 0`, note:`Coefficients β are interpreted as <code>log-odds</code>: eᵝ¹ is the odds ratio for a 1-unit increase in X₁.` },
+        html:`<p>Cost function: <strong>Log-Loss</strong> = −Σ[yᵢ·log(p̂ᵢ) + (1−yᵢ)·log(1−p̂ᵢ)]. Gradient descent minimizes this function iteratively.</p>` },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Initialize coefficients', desc:'β starts at zero or with small random values.' },
+          { title:'Compute probabilities', desc:'For each observation: P(Y=1) = σ(Xβ) with the current β values.' },
+          { title:'Compute the gradient', desc:'∇L = Xᵀ(p̂ − y). Indicates the direction of greatest loss increase.' },
+          { title:'Update β', desc:'β ← β − α·∇L, where α is the learning rate. Repeat until convergence.' },
+          { title:'Apply decision threshold', desc:'With the final β values, compute P for new data and apply the threshold (default 0.5) to decide class 0 or 1.' },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'Y is binary (yes/no, 0/1, true/false)' },
+          { yes:true, text:'You need calibrated probabilities, not just the class label' },
+          { yes:true, text:'Interpretability via odds ratios is important' },
+          { yes:false, text:'Y has more than 2 classes → use Multinomial Logistic or another classifier' },
+          { yes:false, text:'Y is continuous → use Linear Regression' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Log-odds linear in the predictors', desc:'The relationship between predictors and the log-odds of Y must be linear.' },
+          { title:'Independence of observations', desc:'Observations must be independent from each other.' },
+          { title:'No severe multicollinearity', desc:'Highly correlated predictors inflate the standard errors of the coefficients.' },
+          { title:'Adequate sample size', desc:'At least 10 events per included predictor. Very small samples with MLE can produce unstable estimates.' },
+        ]},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'AUC-ROC', desc:'Area under the ROC curve. Measures the ability to distinguish between the two classes. AUC=0.5 is random; AUC=1 is perfect.', range:'0.5 (poor) to 1.0 (perfect)' },
+          { name:"McFadden R²", desc:'Analogous to R² for MLE. R²M = 1 − (LL_model/LL_null). Values 0.2–0.4 indicate a good fit.', range:'0 to 1 (0.2–0.4 = good)' },
+          { name:'Deviance', desc:'Deviance = −2·LL. Lower is better. Differences in deviance follow χ² for likelihood ratio tests.', range:'Lower is better' },
+          { name:'Calibration', desc:'Checks whether predicted probabilities correspond to observed frequencies.', range:'Closer to the diagonal = better' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Perfect separation', desc:'If a predictor perfectly separates the classes, MLE diverges (coefficient → ±∞). Use L2 regularization.' },
+          { title:'Class imbalance', desc:'With 95% negatives, the model may always predict 0 and reach 95% accuracy — but low AUC. Address with oversampling or threshold adjustment.' },
+          { title:'Using only accuracy as a metric', desc:'With imbalanced classes, accuracy is misleading. Prefer AUC-ROC, precision, recall, and F1.' },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: Predicting whether a customer will buy (Y=1) or not (Y=0)',
+          tableHeaders:['Time on site (min)','Pages visited','Purchased?'],
+          tableRows:[['2','3','0'],['5','7','0'],['8','10','1'],['12','15','1'],['15','20','1']],
+          resultHtml:`Model: <strong>P(purchase) = σ(−4.2 + 0.18·Time + 0.22·Pages)</strong><br>Time=10, Pages=13 → <strong>P = 61.3%</strong> → Class 1<br>AUC-ROC = 0.91` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'How do I interpret an odds ratio of 2.5?', a:'For each 1-unit increase in X, the odds of the event occurring multiply by 2.5.' },
+          { q:'What is the best decision threshold?', a:'It depends on the problem. If false negatives are very costly, use a lower threshold (e.g., 0.3). Analyze the ROC curve and choose the point that balances sensitivity and specificity.' },
+          { q:'Can I use it with more than 2 classes?', a:'Yes, with the Multinomial version (Softmax), which simultaneously estimates K−1 logistic functions for K classes.' },
+        ]},
+    ]
+  },
+
+  polinomial: {
+    panel:'polinomial', icon:'〰️', name:'Polynomial Regression',
+    category:'Non-linear Relationships', level:'Basic', levelColor:'#8BC34A',
+    badgeStyle:'background:rgba(255,179,71,.1);color:#FFC254;border-color:rgba(255,179,71,.3)',
+    sub:'Captures curvilinear relationships between X and Y using powers of X as predictors. Degree automatically selected by the highest adjusted R².',
+    chips:['Degree 1 to 6','Curvilinear','Adjusted R²','Vandermonde'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>Polynomial Regression adds <strong>powers of X</strong> (X², X³, …) as predictors, enabling it to capture non-linear relationships. Despite the non-linear terms of X, the model is still <strong>linear in the parameters β</strong> — which allows OLS to be used after transforming X into a <strong>Vandermonde matrix</strong>.</p><p>The ideal degree is automatically selected by comparing the adjusted R² from degree 1 to 6: the degree with the highest adjusted R² is chosen, balancing fit and complexity.</p>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Polynomial equation of degree n', eq:`Ŷ = β₀ + β₁X + β₂X² + β₃X³ + … + βₙXⁿ\n\nVandermonde matrix V:\nV[i,j] = xᵢʲ  (i=observation, j=degree)\n\nEstimation: β = (VᵀV)⁻¹Vᵀy`, note:`Optimal degree = argmax R²_adj(d) for d ∈ {1..6}. High degrees cause <code>overfitting</code>.` },
+        html:`<p>It is essential to <strong>standardize X</strong> before raising it to high powers to avoid numerical issues. The platform does this automatically.</p>` },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Standardize X', desc:'X ← (X − μX) / σX for numerical stability.' },
+          { title:'Build the Vandermonde matrix', desc:'For each degree d from 1 to 6, create the matrix [1, X, X², …, Xᵈ].' },
+          { title:'Fit OLS for each degree', desc:'Estimate β via OLS for each of the 6 candidate models.' },
+          { title:'Select degree by Adjusted R²', desc:'Compare the 6 models and choose the one with the highest adjusted R².' },
+          { title:'Generate forecasts with intervals', desc:'Use the optimal-degree model to predict Ŷ and compute 95% CI.' },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'Scatter plot shows clear curvature (parabola, S-curve, inverted U)' },
+          { yes:true, text:'Residuals from linear regression show a systematic (non-random) pattern' },
+          { yes:true, text:'Physical or biological phenomena with a maximum or inflection point' },
+          { yes:false, text:'More than one predictor → use Multiple or Regularized Regression' },
+          { yes:false, text:'Very small sample with high degrees → severe overfitting' },
+          { yes:false, text:'Extrapolation beyond the data → the curve can diverge rapidly' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Relationship approximable by a polynomial', desc:'The true curve must be capturable by a low-degree polynomial (up to 6).' },
+          { title:'Homoscedasticity', desc:'Constant residual variance along the fitted curve.' },
+          { title:'No extreme outliers', desc:'Outliers affect polynomial regression even more than linear regression, especially at high degrees.' },
+        ]},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'R² per degree', desc:'R² for each degree from 1 to 6. Always increases with degree — use adjusted R² to choose.', range:'Always grows with degree' },
+          { name:'Adjusted R²', desc:'Penalizes unnecessary polynomial terms. It is the criterion for selecting the optimal degree.', range:'Higher = better, with penalty' },
+          { name:'Residuals', desc:'Residuals from the optimal model should be random. Residual curvature indicates the degree needs to be higher.', range:'No systematic pattern' },
+          { name:'QQ-plot', desc:'Checks normality of residuals. Points close to the diagonal indicate normality.', range:'Close to the diagonal' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Overfitting with high degree', desc:'Degree 5 or 6 may fit the training data perfectly but generalize poorly. Prefer the lowest degree with satisfactory adjusted R².' },
+          { title:'Dangerous extrapolation', desc:'High-degree polynomials oscillate violently outside the data domain. Never extrapolate far beyond observed X.' },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: Speed vs fuel consumption',
+          tableHeaders:['Speed (km/h)','Consumption (L/100km)'],
+          tableRows:[['40','7.2'],['60','5.8'],['80','5.1'],['100','5.9'],['120','7.4'],['140','9.8']],
+          resultHtml:`Selected degree: <strong>2 (parabola)</strong> with adjusted R² = 0.982<br>Ŷ = 12.3 − 0.14·v + 0.001·v² → minimum at ~70 km/h<br>For 110 km/h → <strong>6.5 L/100km</strong>` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'Why did the adjusted R² drop when I increased the degree?', a:'The extra degree did not improve the fit enough to compensate for the complexity. The previous degree was optimal.' },
+          { q:'What is the maximum advisable degree?', a:'In practice, degree 3 or 4 is sufficient for most phenomena. Degree ≥ 5 is rarely justifiable.' },
+        ]},
+    ]
+  },
+
+  serie: {
+    panel:'serie', icon:'📅', name:'Time Series',
+    category:'Temporal Data', level:'Intermediate', levelColor:'#FF9800',
+    badgeStyle:'background:rgba(79,195,247,.1);color:#4FC3F7;border-color:rgba(79,195,247,.3)',
+    sub:'Decomposes time-ordered data into Trend, Seasonality, and Residual, and projects future values based on these components.',
+    chips:['Trend','Seasonality','Projection','Moving average'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>A time series is a sequence of values measured at <strong>regular time intervals</strong>. The model decomposes the series into three additive components:</p><ul><li><strong>Trend</strong>: long-term direction (growth, decline, stability)</li><li><strong>Seasonality</strong>: periodic pattern that repeats regularly</li><li><strong>Residual</strong>: random variation after removing trend and seasonality</li></ul>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Additive decomposition and projection', eq:`Yₜ = Tₜ + Sₜ + Rₜ\n\nTrend Tₜ: linear regression over time t\nSeasonality Sₜ: mean of residuals by period\nResidual Rₜ: Yₜ − Tₜ − Sₜ\n\nProjection: Ŷₜ₊ₖ = T(t+k) + S(t+k mod period)`, note:`Moving average with window <code>w</code>: MAₜ = (1/w)·Σ Yₜ₋ᵢ — smooths short-term noise.` } },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Sort by date', desc:'Data must be in chronological order. Dates are converted to index t = 1, 2, 3, …' },
+          { title:'Estimate the Trend', desc:'Regress Y on t via OLS: Ŷ = α + β·t. β > 0 → increasing; β < 0 → decreasing.' },
+          { title:'Extract the Seasonality', desc:'Compute detrended residuals = Y − Trend. Group by period and compute the mean of each group.' },
+          { title:'Compute the Residual', desc:'Rₜ = Yₜ − Tₜ − Sₜ. Should be white noise with no detectable pattern.' },
+          { title:'Project future values', desc:'For k steps ahead: extrapolate the trend and reuse the corresponding seasonal pattern.' },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'Data collected at regular time intervals (daily, monthly, annual)' },
+          { yes:true, text:'Clear trend or repetitive seasonal pattern is present' },
+          { yes:false, text:'Data without a time order → use linear or multiple regression' },
+          { yes:false, text:'Very short series (< 2 complete cycles) to detect seasonality' },
+          { yes:false, text:'Series with a structural break → ARIMA or Prophet models are more appropriate' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Additive decomposition valid', desc:'The amplitude of seasonality must be approximately constant. If it grows proportionally, use multiplicative decomposition.' },
+          { title:'Linear trend', desc:'If the series has an exponential trend, the residuals will have a systematic pattern.' },
+          { title:'Stable seasonality', desc:'The seasonal pattern must repeat in a similar fashion in each cycle.' },
+        ]},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'Trend (β)', desc:'Average growth per unit of time. β = 500 → grows $500/month on average.', range:'Sign indicates direction' },
+          { name:'Seasonal amplitude', desc:'Difference between the peak and trough of the seasonal pattern. Indicates the impact of seasonality.', range:'Higher = more seasonal' },
+          { name:'CV (%)', desc:'Coefficient of variation of residuals = std(R)/mean(Y). Measures residual noise.', range:'< 10% = well-behaved series' },
+          { name:'Moving average', desc:'Smoothing with a moving window. Reveals the trend by filtering seasonality and noise.', range:'Larger window = more smoothing' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Very long extrapolation', desc:'Distant projections accumulate uncertainty rapidly. Use short horizons (1–3 cycles) and revise with new data.' },
+          { title:'Very short series', desc:'For monthly seasonality, at least 24 months are needed. With fewer, the pattern is estimated with high imprecision.' },
+          { title:'Ignoring structural breaks', desc:'Crises or policy changes break the historical trend. The model does not capture this automatically.' },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: Monthly ice cream sales (Jan–Jun)',
+          tableHeaders:['Month','Sales ($k)'],
+          tableRows:[['Jan','120'],['Feb','115'],['Mar','130'],['Apr','145'],['May','160'],['Jun','175']],
+          resultHtml:`Trend: <strong>Ŷₜ = 105 + 11.4·t</strong> (+$11.4k/month)<br>Projection Jul (t=7): <strong>~$190k</strong>` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'How much historical data is needed?', a:'At least 2–3 complete cycles. For annual seasonality: minimum 24 months, ideally 36+.' },
+          { q:'What is the difference between additive and multiplicative decomposition?', a:'Additive: Yₜ = T + S + R — constant seasonal amplitude. Multiplicative: Yₜ = T × S × R — seasonality grows with the trend.' },
+        ]},
+    ]
+  },
+
+  quantilica: {
+    panel:'quantilica', icon:'🎻', name:'Quantile Regression',
+    category:'Full Distribution', level:'Advanced', levelColor:'#F44336',
+    badgeStyle:'background:rgba(186,104,200,.12);color:#CE93D8;border-color:rgba(186,104,200,.3)',
+    sub:'Estimates different quantiles of the conditional distribution of Y. Robust to outliers and ideal when the mean is insufficient to describe the phenomenon.',
+    chips:['Quantiles τ','Pinball loss','Robust to outliers','VaR'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>While OLS estimates the <strong>conditional mean</strong> of Y, Quantile Regression estimates <strong>specific quantiles</strong> — such as the median (τ=0.5), the 90th percentile (τ=0.9), or any other. This is powerful when the mean is misleading: in asymmetric distributions with heavy tails (salaries, insurance claims, response times), the median and extreme percentiles tell very different stories.</p>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Pinball loss function', eq:`L(u, τ) = u·(τ − 𝟙[u < 0])\n\nwhere u = y − ŷ  and  τ ∈ (0, 1)\n\nτ = 0.5 → equivalent to MAE (median)\nτ = 0.9 → penalizes underestimates 9× more\n\nβ(τ) = argmin Σ L(yᵢ − Xᵢβ, τ)`, note:`Each quantile τ produces a different set of coefficients <code>β(τ)</code>. Optimization uses subdifferential gradient descent.` } },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Define the target quantiles', desc:'Select τ ∈ {0.1, 0.25, 0.5, 0.75, 0.9} (or another set of interest).' },
+          { title:'Minimize pinball loss for each τ', desc:'Use gradient descent to find β(τ) that minimizes Σ L(yᵢ − Xᵢβ, τ).' },
+          { title:'Verify empirical coverage', desc:'The fraction of points below Ŷ(τ) should correspond to τ. E.g.: ~90% below Ŷ(0.9).' },
+          { title:'Interpret the quantile spread', desc:'The difference between Ŷ(0.9) and Ŷ(0.1) is the predicted inter-quantile range — measures conditional dispersion.' },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'Distribution of Y is asymmetric (salaries, insurance claims, response times)' },
+          { yes:true, text:'Outliers are common and the mean is distorted' },
+          { yes:true, text:'Interest lies in the extremes (e.g., financial VaR at the 5th percentile)' },
+          { yes:true, text:'You want a non-parametric, robust prediction interval' },
+          { yes:false, text:'Distribution of Y is symmetric with no outliers → OLS is simpler and equivalent' },
+          { yes:false, text:'Y is binary → use Logistic Regression' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Linear relationship in the quantiles', desc:'The τ-th quantile of Y must be linear in X. Less restrictive than OLS — each quantile can have a different relationship.' },
+          { title:'Independence of observations', desc:'Observations must be independent.' },
+          { title:'Sufficiently large sample', desc:'Extreme quantiles (τ=0.05 or 0.95) require more data — they estimate the tail of the distribution.' },
+        ]},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'Coverage (%)', desc:'Fraction of observations below the quantile τ forecast. For τ=0.9, ideal coverage is 90%.', range:'Should be close to τ×100%' },
+          { name:'Pinball loss', desc:'Asymmetric cost function. Lower is better for the specific quantile fit.', range:'Lower is better' },
+          { name:'β per quantile', desc:'Each quantile has its own coefficients. Comparing β(0.1) with β(0.9) reveals heterogeneity of the effect.', range:'Varies by quantile' },
+          { name:'Quantile interval', desc:'Difference between Ŷ(0.75) and Ŷ(0.25). Measures conditional dispersion of Y.', range:'Lower = more precise' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Quantile crossing', desc:'In some regions, Ŷ(0.9) may fall below Ŷ(0.75) — a numerical artifact. Apply monotone post-processing if necessary.' },
+          { title:'Small samples at the extremes', desc:'For τ=0.05 with n=100, you estimate the tail with ~5 observations. Results are very unstable.' },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: IT salaries by years of experience',
+          tableHeaders:['Experience','P10 ($k)','Median ($k)','P90 ($k)'],
+          tableRows:[['1 year','4.2','6.0','9.5'],['3 years','5.8','8.5','14.2'],['5 years','7.1','11.0','19.8'],['10 years','9.0','15.5','32.0']],
+          resultHtml:`For 7 years: P10 → <strong>$7.9k</strong> | Median → <strong>$12.8k</strong> | P90 → <strong>$25.1k</strong><br>The growing spread shows that salary inequality <strong>increases</strong> with experience.` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'How do I interpret β(0.9) vs β(0.1)?', a:'If β(0.9) > β(0.1), the effect of X on Y is larger for those already at the top of the distribution.' },
+          { q:'What is VaR and how does quantile regression relate to it?', a:'VaR (Value at Risk) is the loss quantile at 5% or 1%. Quantile regression allows estimating the conditional VaR based on portfolio characteristics.' },
+        ]},
+    ]
+  },
+
+  regularizada: {
+    panel:'regularizada', icon:'⚖️', name:'Regularized Regression',
+    category:'Anti-Overfitting', level:'Advanced', levelColor:'#F44336',
+    badgeStyle:'background:rgba(38,198,218,.1);color:#4DD0E1;border-color:rgba(38,198,218,.3)',
+    sub:'Ridge (L2) and Lasso (L1) add penalties to the OLS cost function to control overfitting and multicollinearity.',
+    chips:['Ridge L2','Lasso L1','Hyperparameter λ','Variable selection'],
+    sections:[
+      { id:'oque', icon:'🔍', title:'What it is', html:`<p>When there are many variables — especially correlated ones — OLS produces unstable coefficients. Regularization adds a <strong>penalty on the magnitude of coefficients</strong>:</p><ul><li><strong>Ridge (L2)</strong>: shrinks all β uniformly toward zero but never sets them to zero. Ideal for stabilizing with multicollinearity.</li><li><strong>Lasso (L1)</strong>: can <strong>zero out irrelevant coefficients</strong>, performing automatic variable selection. Ideal when you suspect many variables are spurious.</li></ul>` },
+      { id:'matematica', icon:'📐', title:'Mathematical foundations',
+        formula:{ label:'Cost functions: Ridge and Lasso', eq:`Standard OLS:  min ‖y − Xβ‖²\n\nRidge (L2): min ‖y − Xβ‖² + λ·Σβⱼ²\n           Solution: β = (XᵀX + λI)⁻¹Xᵀy\n\nLasso (L1): min ‖y − Xβ‖² + λ·Σ|βⱼ|`, note:`<code>λ</code> controls regularization strength: λ=0 → pure OLS; λ→∞ → all β→0. The optimal λ is selected by cross-validation.` } },
+      { id:'como-funciona', icon:'⚙️', title:'How it works step by step',
+        steps:[
+          { title:'Standardize the variables', desc:'Essential: regularization is scale-sensitive. Standardize X to mean 0 and std 1.' },
+          { title:'Define the λ grid', desc:'Test λ on a log scale (e.g., 0.001 to 100). The platform does this automatically.' },
+          { title:'Estimate β for each λ', desc:'Ridge: closed-form solution. Lasso: coordinate descent (since the L1 norm is not differentiable at β=0).' },
+          { title:'Select λ by cross-validation', desc:'Minimize the cross-validation RMSE. The λ with the lowest CV-RMSE is chosen.' },
+          { title:'Report coefficients and zeroed vars (Lasso)', desc:'With the optimal λ, Lasso zero coefficients indicate variables the model considered irrelevant.' },
+        ]},
+      { id:'quando-usar', icon:'✅', title:'When to use (and when not to)',
+        uses:[
+          { yes:true, text:'Many predictor variables and suspected overfitting' },
+          { yes:true, text:'Severe multicollinearity (high VIF) → Ridge stabilizes' },
+          { yes:true, text:'Automatic variable selection → Lasso zeros out irrelevant ones' },
+          { yes:true, text:'More predictors than observations (p > n)' },
+          { yes:false, text:'Few predictors without multicollinearity → OLS is more interpretable' },
+          { yes:false, text:'Causal inference of coefficients → regularization introduces bias in β' },
+        ]},
+      { id:'suposicoes', icon:'📋', title:'Model assumptions',
+        assumptions:[
+          { title:'Linear relationship', desc:'As in multiple regression, the relationship between Y and each Xⱼ must be linear.' },
+          { title:'Standardized variables', desc:'Regularization does not work correctly with variables on different scales. Always standardize first.' },
+          { title:'λ selected by cross-validation', desc:'λ cannot be chosen by looking at training data — that would be data leakage. Use k-fold CV.' },
+        ]},
+      { id:'ridge-vs-lasso', icon:'⚖️', title:'Ridge vs. Lasso: comparison',
+        compareTable:{ headers:['Feature','Ridge (L2)','Lasso (L1)'],
+          rows:[
+            ['Penalty','Σβⱼ²','Σ|βⱼ|'],
+            ['Zeros coefficients?','❌ Never','✅ Yes (automatic selection)'],
+            ['Multicollinearity','✅ Stabilizes well','⚠️ Picks one arbitrarily'],
+            ['Solution','Closed-form analytic','Coordinate descent (iterative)'],
+            ['Best when','All predictors matter','Many irrelevant predictors'],
+          ]}},
+      { id:'metricas', icon:'📊', title:'Metrics explained',
+        metrics:[
+          { name:'Optimal λ', desc:'Hyperparameter selected by CV that minimizes the validation RMSE.', range:'Defined by cross-validation' },
+          { name:'RMSE per λ', desc:'RMSE computed in CV for each λ in the grid. The curve has a U-shaped minimum.', range:'Lower is better' },
+          { name:'Shrunk β', desc:'Coefficients after regularization — smaller than their OLS equivalents (intentional bias to reduce variance).', range:'Closer to 0 for large λ' },
+          { name:'Zeroed vars (Lasso)', desc:'Coefficients exactly zeroed by Lasso — automatically discarded variables.', range:'More zeroing = simpler model' },
+        ]},
+      { id:'armadilhas', icon:'⚠️', title:'Common pitfalls',
+        pitfalls:[
+          { title:'Not standardizing variables', desc:'The penalty is applied equally to all β — variables on different scales are penalized unfairly.' },
+          { title:'Data leakage in λ selection', desc:'Selecting λ using the full dataset and evaluating on the same set overestimates performance. Use k-fold CV.' },
+          { title:'Interpreting regularized β as causal', desc:'Regularization intentionally introduces bias. For causal inference, use OLS with manual selection.' },
+        ]},
+      { id:'exemplo', icon:'🧪', title:'Practical example',
+        example:{ header:'Case: Predicting grade with 5 educational variables',
+          tableHeaders:['Variable','OLS β','Ridge β','Lasso β'],
+          tableRows:[['Study hours','4.2','3.8','3.5'],['Attendance (%)','3.1','2.9','2.6'],['Distance to school','−0.8','−0.6','0.0 ← zeroed'],['Family income','1.2','0.9','0.0 ← zeroed']],
+          resultHtml:`Lasso selected only <strong>2 relevant variables</strong> (hours + attendance)<br>CV RMSE: OLS=8.2 · Ridge=6.9 · <strong>Lasso=6.7</strong>` }},
+      { id:'faq', icon:'❓', title:'Frequently asked questions',
+        faqs:[
+          { q:'Is there a version that combines Ridge and Lasso?', a:'Yes — Elastic Net: λ₁·‖β‖₁ + λ₂·‖β‖²₂. Useful when there are groups of correlated variables and you want sparsity with group stability.' },
+          { q:'Why does regularization improve generalization?', a:'Bias-variance tradeoff: OLS has high variance with many predictors. Regularization introduces bias but greatly reduces variance — the total MSE drops.' },
+          { q:'Should the intercept be regularized?', a:'No — by convention, β₀ is never penalized. The platform applies this correctly.' },
+        ]},
+    ]
+  },
+};
+
 // ── Renderiza uma seção ──
 function _renderCursoSection(sec) {
   let h = `<div class="curso-section" id="cs-${sec.id}"><h2 class="curso-section-title"><span>${sec.icon}</span>${sec.title}</h2>`;
@@ -5753,7 +6187,8 @@ function _renderCursoSection(sec) {
 
 // ── Abre o painel de curso ──
 function openCurso(modelId) {
-  const model = CURSO_MODELS[modelId];
+  const curLang = localStorage.getItem('slope-lang') || 'pt';
+  const model = (curLang === 'en' ? CURSO_MODELS_EN : CURSO_MODELS)[modelId];
   if (!model) return;
 
   // Atualiza topbar
@@ -5774,7 +6209,7 @@ function openCurso(modelId) {
     <div class="curso-hero-sub">${model.sub}</div>
     <div class="curso-hero-chips">
       ${model.chips.map(c=>`<span class="curso-hero-chip">${c}</span>`).join('')}
-      <span class="curso-hero-chip" style="color:${model.levelColor};border-color:${model.levelColor}22;background:${model.levelColor}15">Nível: ${model.level}</span>
+      <span class="curso-hero-chip" style="color:${model.levelColor};border-color:${model.levelColor}22;background:${model.levelColor}15">${curLang==='en'?'Level':'Nível'}: ${model.level}</span>
     </div>
   </div>`;
 
@@ -5783,9 +6218,9 @@ function openCurso(modelId) {
 
   // CTA
   html += `<div class="curso-cta">
-    <div class="curso-cta-title">Pronto para experimentar?</div>
-    <div class="curso-cta-sub">Importe seus dados e aplique ${model.name} com um clique.</div>
-    <button class="curso-cta-btn" onclick="switchTab('${model.panel}', null)">Usar modelo →</button>
+    <div class="curso-cta-title">${curLang==='en'?'Ready to try it?':'Pronto para experimentar?'}</div>
+    <div class="curso-cta-sub">${curLang==='en'?`Import your data and apply ${model.name} with one click.`:`Importe seus dados e aplique ${model.name} com um clique.`}</div>
+    <button class="curso-cta-btn" onclick="switchTab('${model.panel}', null)">${curLang==='en'?'Use model →':'Usar modelo →'}</button>
   </div>`;
 
   document.getElementById('curso-content').innerHTML = html;
