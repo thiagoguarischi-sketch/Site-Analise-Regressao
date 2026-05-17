@@ -429,13 +429,13 @@ function stRenderResults(res) {
 
   document.getElementById('st-main-chart-title').textContent = '📈 Série + Tendência + Média Móvel + Projeção';
   document.getElementById('st-metrics').innerHTML = `
-    <div class="metric"><div class="metric-val metric-y">${ym.toFixed(2)}</div><div class="metric-lab">Média</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--x)">${stdev.toFixed(2)}</div><div class="metric-lab">Desvio padrão</div></div>
+    <div class="metric"><div class="metric-val metric-y">${ym.toFixed(2)}</div><div class="metric-lab">${window.t('ts-mean-lbl')}</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--x)">${stdev.toFixed(2)}</div><div class="metric-lab">${window.t('ts-stddev-lbl')}</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--y)">${cv.toFixed(1)}%</div><div class="metric-lab">CV (%)</div></div>
-    <div class="metric"><div class="metric-val" style="color:${b1 >= 0 ? 'var(--y)' : 'var(--acc)'}">${b1 >= 0 ? '↑' : '↓'} ${Math.abs(b1).toFixed(3)}</div><div class="metric-lab">Tendência/período</div></div>
-    <div class="metric"><div class="metric-val" style="color:${avgGrowth >= 0 ? 'var(--y)' : 'var(--acc)'}">${avgGrowth >= 0 ? '+' : ''}${avgGrowth.toFixed(1)}%</div><div class="metric-lab">Crescimento médio</div></div>
-    <div class="metric"><div class="metric-val metric-y">${maxVal.toFixed(2)}</div><div class="metric-lab">Melhor: ${esc(labels[maxIdx] || String(maxIdx + 1))}</div></div>
-    <div class="metric"><div class="metric-val" style="color:var(--acc)">${minVal.toFixed(2)}</div><div class="metric-lab">Pior: ${esc(labels[minIdx] || String(minIdx + 1))}</div></div>
+    <div class="metric"><div class="metric-val" style="color:${b1 >= 0 ? 'var(--y)' : 'var(--acc)'}">${b1 >= 0 ? '↑' : '↓'} ${Math.abs(b1).toFixed(3)}</div><div class="metric-lab">${window.t('ts-trend-period')}</div></div>
+    <div class="metric"><div class="metric-val" style="color:${avgGrowth >= 0 ? 'var(--y)' : 'var(--acc)'}">${avgGrowth >= 0 ? '+' : ''}${avgGrowth.toFixed(1)}%</div><div class="metric-lab">${window.t('ts-avg-growth')}</div></div>
+    <div class="metric"><div class="metric-val metric-y">${maxVal.toFixed(2)}</div><div class="metric-lab">${window.t('ts-best-lbl')} ${esc(labels[maxIdx] || String(maxIdx + 1))}</div></div>
+    <div class="metric"><div class="metric-val" style="color:var(--acc)">${minVal.toFixed(2)}</div><div class="metric-lab">${window.t('ts-worst-lbl')} ${esc(labels[minIdx] || String(minIdx + 1))}</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--txt2)">${n}</div><div class="metric-lab">n</div></div>
   `;
 
@@ -461,7 +461,7 @@ function stRenderResults(res) {
   </tr>`).join('');
   document.getElementById('st-proj-tbl').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>Período</th><th>Projeção</th><th>Só tendência</th><th>vs. Média</th></tr></thead>
+      <thead><tr><th>${window.t('ts-period-lbl')}</th><th>${window.t('ts-projection-lbl')}</th><th>${window.t('ts-trend-only')}</th><th>${window.t('ts-vs-mean')}</th></tr></thead>
       <tbody>${projRows}</tbody>
     </table>`;
 }
@@ -480,11 +480,11 @@ function arimaRenderResults(res) {
     `<div class="metric"><div class="metric-val" style="color:${col}">${v}</div><div class="metric-lab">${lbl}</div></div>`;
   const phiStr = phi.map((v, i) => `φ${i + 1}=${v.toFixed(3)}`).join(', ') || '—';
   const thetaStr = theta.map((v, i) => `θ${i + 1}=${v.toFixed(3)}`).join(', ') || '—';
-  const qTest = ljungBoxQ > 0 ? (ljungBoxQ > 18.3 ? '⚠️ Autocorrelação residual' : '✅ Resíduos OK') : '—';
+  const qTest = ljungBoxQ > 0 ? (ljungBoxQ > 18.3 ? window.t('ts-autocorr') : window.t('ts-resid-ok')) : '—';
 
   document.getElementById('st-metrics').innerHTML = `
-    ${badge(`ARIMA(${p},${d},${q})`, 'Modelo')}
-    ${badge(sigma.toFixed(4), 'σ (erro padrão)')}
+    ${badge(`ARIMA(${p},${d},${q})`, window.t('ts-model-lbl'))}
+    ${badge(sigma.toFixed(4), window.t('ts-se-lbl'))}
     ${badge(aic.toFixed(2), 'AIC')}
     ${badge(bic.toFixed(2), 'BIC')}
     ${badge(cv.toFixed(1) + '%', 'CV (série)', cv >= 30 ? 'var(--acc)' : cv >= 15 ? 'var(--y)' : 'var(--y)')}
@@ -648,66 +648,38 @@ async function stGenerateAI(res) {
   const box = document.getElementById('st-ai-box');
   box.innerHTML = aiLoadingHTML();
 
+  const isEn = (localStorage.getItem('slope-lang') || 'pt') === 'en';
   let prompt, fallback;
   if (res.model === 'arima') {
-    const phiStr = res.phi.map((v, i) => `φ${i + 1}=${v.toFixed(3)}`).join(', ') || 'nenhum';
-    const thetaStr = res.theta.map((v, i) => `θ${i + 1}=${v.toFixed(3)}`).join(', ') || 'nenhum';
-    prompt = `Você é especialista em econometria e séries temporais. Analise em português (3-4 parágrafos curtos):
-
-Série: ${esc(res.labelY)} | Período: ${esc(res.labelX)}
-Modelo ajustado: ARIMA(${res.p},${res.d},${res.q}) | n = ${res.n}
-Parâmetros AR: ${esc(phiStr)}
-Parâmetros MA: ${esc(thetaStr)}
-σ = ${res.sigma.toFixed(4)} | AIC = ${res.aic.toFixed(2)} | BIC = ${res.bic.toFixed(2)}
-Ljung-Box Q(${res.lbLags}) = ${res.ljungBoxQ.toFixed(2)} (crítico ~18.3 para α=5%)
-Previsão próx. ${res.futureN} períodos: ${res.forecastY.map(v => v.toFixed(2)).join(', ')}
-IC 95% 1° período: [${res.ciLower[0].toFixed(2)}, ${res.ciUpper[0].toFixed(2)}]
-
-Inclua: 1) qualidade do ajuste e diagnóstico dos resíduos 2) interpretação dos parâmetros AR e MA 3) avaliação das previsões e incerteza 4) quando usar ARIMA vs outros modelos.`;
+    const phiStr = res.phi.map((v, i) => `φ${i + 1}=${v.toFixed(3)}`).join(', ') || (isEn ? 'none' : 'nenhum');
+    const thetaStr = res.theta.map((v, i) => `θ${i + 1}=${v.toFixed(3)}`).join(', ') || (isEn ? 'none' : 'nenhum');
+    const statsArima = `Series: ${esc(res.labelY)} | Period: ${esc(res.labelX)}\nFitted model: ARIMA(${res.p},${res.d},${res.q}) | n = ${res.n}\nAR params: ${esc(phiStr)}\nMA params: ${esc(thetaStr)}\nσ = ${res.sigma.toFixed(4)} | AIC = ${res.aic.toFixed(2)} | BIC = ${res.bic.toFixed(2)}\nLjung-Box Q(${res.lbLags}) = ${res.ljungBoxQ.toFixed(2)} (critical ~18.3 at α=5%)\nForecast next ${res.futureN} periods: ${res.forecastY.map(v => v.toFixed(2)).join(', ')}\n95% CI 1st period: [${res.ciLower[0].toFixed(2)}, ${res.ciUpper[0].toFixed(2)}]`;
+    prompt = isEn
+      ? `You are a time series econometrics expert. Analyze in English (3-4 short paragraphs):\n\n${statsArima}\n\nInclude: 1) fit quality and residual diagnostics 2) interpretation of AR and MA parameters 3) forecast assessment and uncertainty 4) when to use ARIMA vs other models.`
+      : `Você é especialista em econometria e séries temporais. Analise em português (3-4 parágrafos curtos):\n\nSérie: ${esc(res.labelY)} | Período: ${esc(res.labelX)}\nModelo ajustado: ARIMA(${res.p},${res.d},${res.q}) | n = ${res.n}\nParâmetros AR: ${esc(phiStr)}\nParâmetros MA: ${esc(thetaStr)}\nσ = ${res.sigma.toFixed(4)} | AIC = ${res.aic.toFixed(2)} | BIC = ${res.bic.toFixed(2)}\nLjung-Box Q(${res.lbLags}) = ${res.ljungBoxQ.toFixed(2)} (crítico ~18.3 para α=5%)\nPrevisão próx. ${res.futureN} períodos: ${res.forecastY.map(v => v.toFixed(2)).join(', ')}\nIC 95% 1° período: [${res.ciLower[0].toFixed(2)}, ${res.ciUpper[0].toFixed(2)}]\n\nInclua: 1) qualidade do ajuste e diagnóstico dos resíduos 2) interpretação dos parâmetros AR e MA 3) avaliação das previsões e incerteza 4) quando usar ARIMA vs outros modelos.`;
     fallback = `ARIMA(${res.p},${res.d},${res.q}): σ=${res.sigma.toFixed(3)}, AIC=${res.aic.toFixed(1)}, Q(${res.lbLags})=${res.ljungBoxQ.toFixed(2)}.`;
   } else if (res.model === 'garch') {
     const hl = isFinite(res.halfLife) ? res.halfLife.toFixed(1) : '> 100';
-    prompt = `Você é especialista em finanças quantitativas e modelos de volatilidade. Analise em português (3-4 parágrafos curtos):
-
-Série: ${esc(res.labelY)} | Período: ${esc(res.labelX)}
-Modelo ajustado: GARCH(1,1) | n = ${res.n}
-ω = ${res.omega.toFixed(6)}, α = ${res.alpha.toFixed(4)}, β = ${res.beta.toFixed(4)}
-Persistência (α+β) = ${res.persistence.toFixed(4)} | Meia-vida = ${hl} períodos
-σ incondicional (longo prazo) = ${Math.sqrt(res.uncondVar).toFixed(4)}
-AIC = ${res.aic.toFixed(2)} | BIC = ${res.bic.toFixed(2)}
-Volatilidade prevista (próx. 3 per.): ${res.sigmaForecast.slice(0, 3).map(v => v.toFixed(4)).join(', ')}
-
-Inclua: 1) clustering de volatilidade e o que a persistência implica 2) interpretação de α (impacto de choques) e β (memória da variância) 3) perspectiva de volatilidade futura 4) quando usar GARCH vs ARIMA.`;
-    fallback = `GARCH(1,1): α=${res.alpha.toFixed(3)}, β=${res.beta.toFixed(3)}, persistência=${res.persistence.toFixed(3)}, meia-vida=${hl} períodos.`;
+    const statsGarch = `Series: ${esc(res.labelY)} | Period: ${esc(res.labelX)}\nFitted model: GARCH(1,1) | n = ${res.n}\nω = ${res.omega.toFixed(6)}, α = ${res.alpha.toFixed(4)}, β = ${res.beta.toFixed(4)}\nPersistence (α+β) = ${res.persistence.toFixed(4)} | Half-life = ${hl} periods\nUnconditional σ (long-run) = ${Math.sqrt(res.uncondVar).toFixed(4)}\nAIC = ${res.aic.toFixed(2)} | BIC = ${res.bic.toFixed(2)}\nForecast volatility (next 3 per.): ${res.sigmaForecast.slice(0, 3).map(v => v.toFixed(4)).join(', ')}`;
+    prompt = isEn
+      ? `You are a quantitative finance and volatility modeling expert. Analyze in English (3-4 short paragraphs):\n\n${statsGarch}\n\nInclude: 1) volatility clustering and what persistence implies 2) interpretation of α (shock impact) and β (variance memory) 3) outlook for future volatility 4) when to use GARCH vs ARIMA.`
+      : `Você é especialista em finanças quantitativas e modelos de volatilidade. Analise em português (3-4 parágrafos curtos):\n\nSérie: ${esc(res.labelY)} | Período: ${esc(res.labelX)}\nModelo ajustado: GARCH(1,1) | n = ${res.n}\nω = ${res.omega.toFixed(6)}, α = ${res.alpha.toFixed(4)}, β = ${res.beta.toFixed(4)}\nPersistência (α+β) = ${res.persistence.toFixed(4)} | Meia-vida = ${hl} períodos\nσ incondicional (longo prazo) = ${Math.sqrt(res.uncondVar).toFixed(4)}\nAIC = ${res.aic.toFixed(2)} | BIC = ${res.bic.toFixed(2)}\nVolatilidade prevista (próx. 3 per.): ${res.sigmaForecast.slice(0, 3).map(v => v.toFixed(4)).join(', ')}\n\nInclua: 1) clustering de volatilidade e o que a persistência implica 2) interpretação de α (impacto de choques) e β (memória da variância) 3) perspectiva de volatilidade futura 4) quando usar GARCH vs ARIMA.`;
+    fallback = `GARCH(1,1): α=${res.alpha.toFixed(3)}, β=${res.beta.toFixed(3)}, ${isEn ? 'persistence' : 'persistência'}=${res.persistence.toFixed(3)}, ${isEn ? 'half-life' : 'meia-vida'}=${hl} ${isEn ? 'periods' : 'períodos'}.`;
   } else if (res.model === 'var') {
     const grangerSig = res.granger.filter(g => g.sig).map(g =>
       `${res.varNames[g.from]} → ${res.varNames[g.to]} (F=${g.fStat.toFixed(2)}, ${g.sig})`
-    ).join('; ') || 'nenhuma relação significativa';
-    prompt = `Você é especialista em econometria e modelos VAR. Analise em português (3-4 parágrafos curtos):
-
-Modelo: VAR(${res.p}) com ${res.k} variáveis | T = ${res.T} | Obs. efetivas = ${res.nObs}
-Variáveis: ${res.varNames.join(', ')}
-Médias: ${res.ymArr.map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}
-AIC = ${res.aic.toFixed(3)} | BIC = ${res.bic.toFixed(3)}
-Causalidade de Granger significativa: ${esc(grangerSig)}
-Previsão próx. ${res.futureN} períodos (última): ${res.forecast[res.futureN - 1].map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}
-
-Inclua: 1) dinâmica das relações entre variáveis e Granger-causalidade 2) IRF esperado e persistência dos choques 3) qualidade do ajuste e limitações do VAR 4) quando usar VAR vs modelos univariados.`;
-    fallback = `VAR(${res.p}), ${res.k} variáveis. AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}. Causalidade: ${grangerSig}.`;
+    ).join('; ') || (isEn ? 'no significant relationship' : 'nenhuma relação significativa');
+    const statsVar = `Model: VAR(${res.p}) with ${res.k} variables | T = ${res.T} | Effective obs. = ${res.nObs}\nVariables: ${res.varNames.join(', ')}\nMeans: ${res.ymArr.map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}\nAIC = ${res.aic.toFixed(3)} | BIC = ${res.bic.toFixed(3)}\nSignificant Granger causality: ${esc(grangerSig)}\nForecast next ${res.futureN} periods (last): ${res.forecast[res.futureN - 1].map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}`;
+    prompt = isEn
+      ? `You are an econometrics and VAR model expert. Analyze in English (3-4 short paragraphs):\n\n${statsVar}\n\nInclude: 1) dynamics of variable relationships and Granger causality 2) expected IRF and shock persistence 3) fit quality and VAR limitations 4) when to use VAR vs univariate models.`
+      : `Você é especialista em econometria e modelos VAR. Analise em português (3-4 parágrafos curtos):\n\nModelo: VAR(${res.p}) com ${res.k} variáveis | T = ${res.T} | Obs. efetivas = ${res.nObs}\nVariáveis: ${res.varNames.join(', ')}\nMédias: ${res.ymArr.map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}\nAIC = ${res.aic.toFixed(3)} | BIC = ${res.bic.toFixed(3)}\nCausalidade de Granger significativa: ${esc(grangerSig)}\nPrevisão próx. ${res.futureN} períodos (última): ${res.forecast[res.futureN - 1].map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}\n\nInclua: 1) dinâmica das relações entre variáveis e Granger-causalidade 2) IRF esperado e persistência dos choques 3) qualidade do ajuste e limitações do VAR 4) quando usar VAR vs modelos univariados.`;
+    fallback = `VAR(${res.p}), ${res.k} ${isEn ? 'variables' : 'variáveis'}. AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}. ${isEn ? 'Causality' : 'Causalidade'}: ${grangerSig}.`;
   } else {
-    prompt = `Você é especialista em séries temporais. Analise em português (3-4 parágrafos curtos):
-
-Série: ${esc(res.labelY)} | Período: ${esc(res.labelX)}
-n = ${res.n} períodos
-Tendência: b₀=${res.b0.toFixed(4)}, b₁=${res.b1.toFixed(4)} por período
-Média=${res.ym.toFixed(4)}, DP=${res.stdev.toFixed(4)}, CV=${res.cv.toFixed(1)}%
-Crescimento médio=${res.avgGrowth.toFixed(2)}% por período
-Melhor: ${esc(res.labels[res.maxIdx] || String(res.maxIdx + 1))} (${res.maxVal.toFixed(2)})
-Pior: ${esc(res.labels[res.minIdx] || String(res.minIdx + 1))} (${res.minVal.toFixed(2)})
-Projeção próximos ${res.futureN} períodos: ${res.projValues.map(v => v.toFixed(2)).join(', ')}
-
-Inclua: 1) direção e força da tendência 2) padrão sazonal 3) perspectivas futuras 4) limitações do modelo.`;
-    fallback = `Tendência: ${res.b1 >= 0 ? 'crescente' : 'decrescente'} (${res.b1.toFixed(3)}/período). Cresc. médio: ${res.avgGrowth.toFixed(1)}%. Próx. projeção: ${res.projValues[0]?.toFixed(2) ?? '—'}.`;
+    const statsClassic = `Series: ${esc(res.labelY)} | Period: ${esc(res.labelX)}\nn = ${res.n} periods\nTrend: b₀=${res.b0.toFixed(4)}, b₁=${res.b1.toFixed(4)} per period\nMean=${res.ym.toFixed(4)}, SD=${res.stdev.toFixed(4)}, CV=${res.cv.toFixed(1)}%\nAvg growth=${res.avgGrowth.toFixed(2)}% per period\nBest: ${esc(res.labels[res.maxIdx] || String(res.maxIdx + 1))} (${res.maxVal.toFixed(2)})\nWorst: ${esc(res.labels[res.minIdx] || String(res.minIdx + 1))} (${res.minVal.toFixed(2)})\nProjection next ${res.futureN} periods: ${res.projValues.map(v => v.toFixed(2)).join(', ')}`;
+    prompt = isEn
+      ? `You are a time series expert. Analyze in English (3-4 short paragraphs):\n\n${statsClassic}\n\nInclude: 1) trend direction and strength 2) seasonal pattern 3) future outlook 4) model limitations.`
+      : `Você é especialista em séries temporais. Analise em português (3-4 parágrafos curtos):\n\nSérie: ${esc(res.labelY)} | Período: ${esc(res.labelX)}\nn = ${res.n} períodos\nTendência: b₀=${res.b0.toFixed(4)}, b₁=${res.b1.toFixed(4)} por período\nMédia=${res.ym.toFixed(4)}, DP=${res.stdev.toFixed(4)}, CV=${res.cv.toFixed(1)}%\nCrescimento médio=${res.avgGrowth.toFixed(2)}% por período\nMelhor: ${esc(res.labels[res.maxIdx] || String(res.maxIdx + 1))} (${res.maxVal.toFixed(2)})\nPior: ${esc(res.labels[res.minIdx] || String(res.minIdx + 1))} (${res.minVal.toFixed(2)})\nProjeção próximos ${res.futureN} períodos: ${res.projValues.map(v => v.toFixed(2)).join(', ')}\n\nInclua: 1) direção e força da tendência 2) padrão sazonal 3) perspectivas futuras 4) limitações do modelo.`;
+    fallback = `${isEn ? 'Trend' : 'Tendência'}: ${res.b1 >= 0 ? (isEn ? 'upward' : 'crescente') : (isEn ? 'downward' : 'decrescente')} (${res.b1.toFixed(3)}/${isEn ? 'period' : 'período'}). ${isEn ? 'Avg growth' : 'Cresc. médio'}: ${res.avgGrowth.toFixed(1)}%. ${isEn ? 'Next projection' : 'Próx. projeção'}: ${res.projValues[0]?.toFixed(2) ?? '—'}.`;
   }
 
   try {
@@ -1038,6 +1010,15 @@ export function stExportExcel() {
 
   XLSX.writeFile(wb, name.replace(/[^a-zA-Z0-9_-]/g, '_') + `_${res.model.toUpperCase()}_BI.xlsx`);
 }
+
+window.timeSeriesRerender = () => {
+  if (!stLastResult) return;
+  const res = stLastResult;
+  if (res.model === 'classic') stRenderResults(res);
+  else if (res.model === 'arima') arimaRenderResults(res);
+  else if (res.model === 'garch') garchRenderResults(res);
+  else varRenderResults(res);
+};
 
 export function stExportCSV() {
   if (!stLastResult) return;
