@@ -437,7 +437,7 @@ function stRenderResults(res) {
   const { n, ym, stdev, cv, maxVal, minVal, maxIdx, minIdx, avgGrowth, b1,
     labels, values, projValues, projTrend, futureN } = res;
 
-  document.getElementById('st-main-chart-title').textContent = '📈 Série + Tendência + Média Móvel + Projeção';
+  document.getElementById('st-main-chart-title').textContent = window.t('ts-main');
   document.getElementById('st-metrics').innerHTML = `
     <div class="metric"><div class="metric-val metric-y">${ym.toFixed(2)}</div><div class="metric-lab">${window.t('ts-mean-lbl')}</div></div>
     <div class="metric"><div class="metric-val" style="color:var(--x)">${stdev.toFixed(2)}</div><div class="metric-lab">${window.t('ts-stddev-lbl')}</div></div>
