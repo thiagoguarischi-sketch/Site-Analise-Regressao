@@ -78,7 +78,7 @@ export function getData() {
 
 export function updateCount() {
   const { xs } = getData();
-  document.getElementById('data-count').textContent = `${xs.length} par${xs.length !== 1 ? 'es' : ''} de dados`;
+  document.getElementById('data-count').textContent = `${xs.length} ${window.t(xs.length !== 1 ? 'par-plural' : 'par-single')}`;
   document.getElementById('dh-x').textContent = document.getElementById('label-x').value || 'X';
   document.getElementById('dh-y').textContent = document.getElementById('label-y').value || 'Y';
 }
@@ -135,7 +135,7 @@ export async function processFile(file) {
     showPreview(data);
   } catch (err) {
     console.warn('processFile error:', err);
-    showToast('Erro ao ler arquivo.', 'err');
+    showToast(window.t('toast-file-read-err'), 'err');
   }
 }
 
@@ -147,17 +147,17 @@ export async function importURL() {
     if (m) url = `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;
   }
   try {
-    showToast('Buscando dados...', 'info');
+    showToast(window.t('toast-fetching'), 'info');
     const r = await fetch(url);
     const text = await r.text();
     showPreview(parseCSVText(text));
   } catch (e) {
-    showToast('Erro ao importar. Verifique a URL e permissões.', 'err');
+    showToast(window.t('toast-import-url-err'), 'err');
   }
 }
 
 export function showPreview(data) {
-  if (!data || data.length < 2) { showToast('Arquivo inválido ou vazio.', 'err'); return; }
+  if (!data || data.length < 2) { showToast(window.t('toast-invalid-file'), 'err'); return; }
   importPreviewData = data;
   const headers = data[0].map(String);
   const selX = document.getElementById('col-x');
@@ -182,14 +182,14 @@ export function confirmImport(switchTabFn) {
   const headers = importPreviewData[0].map(String);
   const cx = headers.indexOf(document.getElementById('col-x').value);
   const cy = headers.indexOf(document.getElementById('col-y').value);
-  if (cx === -1 || cy === -1) { showToast('Colunas inválidas.', 'err'); return; }
+  if (cx === -1 || cy === -1) { showToast(window.t('toast-cols-invalid'), 'err'); return; }
 
   const xs = [], ys = [];
   importPreviewData.slice(1).forEach(r => {
     const x = parseFloat(r[cx]), y = parseFloat(r[cy]);
     if (!isNaN(x) && !isNaN(y)) { xs.push(x); ys.push(y); }
   });
-  if (xs.length < 3) { showToast('Dados insuficientes (mín. 3 pares).', 'err'); return; }
+  if (xs.length < 3) { showToast(window.t('toast-min3-import'), 'err'); return; }
 
   document.getElementById('label-x').value = document.getElementById('col-x').value;
   document.getElementById('label-y').value = document.getElementById('col-y').value;
@@ -198,7 +198,7 @@ export function confirmImport(switchTabFn) {
     switchTabFn('nova', document.querySelector('[onclick*="nova"]'));
   }
   cancelImport();
-  showToast(`${xs.length} pares importados com sucesso!`, 'ok');
+  showToast(`${xs.length} ${window.t(xs.length !== 1 ? 'par-plural' : 'par-single')} ${window.t('toast-imported')}`, 'ok');
 }
 
 export function cancelImport() {

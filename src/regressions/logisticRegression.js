@@ -29,9 +29,9 @@ export function lgInitState() {
 export function lgAddVar() {
   const inp = document.getElementById('lg-new-var-name');
   const name = inp.value.trim();
-  if (!name) { showToast('Digite o nome da variável.', 'err'); return; }
-  if (lgVars.find(v => v.name === name)) { showToast('Variável já existe.', 'err'); return; }
-  if (lgVars.length >= 8) { showToast('Máximo 8 variáveis.', 'err'); return; }
+  if (!name) { showToast(window.t('toast-var-name-req'), 'err'); return; }
+  if (lgVars.find(v => v.name === name)) { showToast(window.t('toast-var-exists'), 'err'); return; }
+  if (lgVars.length >= 8) { showToast(window.t('toast-var-max'), 'err'); return; }
   lgVars.push({ name });
   inp.value = '';
   lgRenderVarChips();
@@ -49,7 +49,7 @@ export function lgRemoveVar(name) {
 function lgRenderVarChips() {
   const el = document.getElementById('lg-var-list');
   if (!lgVars.length) {
-    el.innerHTML = '<span style="font-size:12px;color:var(--txt3)">Nenhuma variável adicionada.</span>';
+    el.innerHTML = `<span style="font-size:12px;color:var(--txt3)">${window.t('chip-no-vars')}</span>`;
     return;
   }
   el.innerHTML = lgVars.map((v, i) => `
@@ -63,7 +63,7 @@ function lgRenderTableHeader() {
   const el = document.getElementById('lg-table-header');
   const ly = document.getElementById('lg-label-y').value || 'Y (0/1)';
   if (!lgVars.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:8px 0">Adicione variáveis independentes primeiro.</div>';
+    el.innerHTML = `<div style="font-size:12px;color:var(--txt3);padding:8px 0">${window.t('chip-add-vars-first')}</div>`;
     return;
   }
   const cols = ['#', ...lgVars.map((v, i) => `X${i + 1}: ${v.name}`), ly];
@@ -132,7 +132,7 @@ function lgGetData() {
 
 export function lgUpdateCount() {
   const { Y } = lgGetData();
-  document.getElementById('lg-data-count').textContent = `${Y.length} observação${Y.length !== 1 ? 'ões' : ''}`;
+  document.getElementById('lg-data-count').textContent = `${Y.length} ${window.t(Y.length !== 1 ? 'obs-plural' : 'obs-single')}`;
 }
 
 export function lgLoadExample() {
@@ -165,14 +165,14 @@ export function lgLoadExample() {
 
 export async function runLogistic() {
   const { Xs, Y, k } = lgGetData();
-  if (k === 0) { showToast('Adicione variáveis independentes.', 'err'); return; }
-  if (Y.length < k + 2) { showToast(`Insira pelo menos ${k + 2} observações.`, 'err'); return; }
-  if (!Y.some(y => y === 0) || !Y.some(y => y === 1)) { showToast('Y deve conter valores 0 e 1.', 'err'); return; }
+  if (k === 0) { showToast(window.t('toast-add-vars'), 'err'); return; }
+  if (Y.length < k + 2) { showToast(`${window.t('lbl-enter-at-least')} ${k + 2} ${window.t('obs-plural')}.`, 'err'); return; }
+  if (!Y.some(y => y === 0) || !Y.some(y => y === 1)) { showToast(window.t('toast-y-binary'), 'err'); return; }
 
   let res;
   try {
     res = await analyze('logistic', {}, { Xs, Y });
-  } catch (e) { showToast('Erro no servidor: ' + e.message, 'err'); return; }
+  } catch (e) { showToast(window.t('toast-server-err') + e.message, 'err'); return; }
   res.varNames = lgVars.map(v => v.name);
   res.labelY = document.getElementById('lg-label-y').value || 'Y';
   res.Xs = Xs; res.Y = Y;
@@ -183,7 +183,7 @@ export async function runLogistic() {
   document.getElementById('lg-btn-save').style.display = 'inline-flex';
   lgBuildPredInputs(res);
   lgGenerateAI(res);
-  showToast('Regressão logística concluída!', 'ok');
+  showToast(window.t('toast-done-log'), 'ok');
 }
 
 function renderLogisticResults(res) {
@@ -281,10 +281,10 @@ function lgBuildPredInputs(res) {
 }
 
 export function runLogisticPrediction() {
-  if (!lgLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!lgLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   const res = lgLastResult;
   const xVals = res.varNames.map((_, i) => parseFloat(document.getElementById(`lg-px-${i}`).value));
-  if (xVals.some(isNaN)) { showToast('Preencha todos os valores.', 'err'); return; }
+  if (xVals.some(isNaN)) { showToast(window.t('toast-fill-vals'), 'err'); return; }
   const threshold = parseFloat(document.getElementById('lg-threshold').value);
   const z = res.beta[0] + xVals.reduce((s, v, j) => s + res.beta[j + 1] * v, 0);
   const prob = sigmoid(z);
@@ -297,7 +297,7 @@ export function runLogisticPrediction() {
         Previsão para: ${res.varNames.map((n, i) => `${esc(n)}=${xVals[i]}`).join(', ')}
       </div>
       <div class="pred-val" style="color:${pred === 1 ? 'var(--y)' : 'var(--acc)'}">
-        ${res.labelY} = ${pred} (${pred === 1 ? 'Classe 1' : 'Classe 0'})
+        ${res.labelY} = ${pred} (${pred === 1 ? window.t('lbl-class-1') : window.t('lbl-class-0')})
       </div>
       <div class="pred-interval">
         P(Y=1) = <b>${(prob * 100).toFixed(2)}%</b> &nbsp;|&nbsp; Limiar: ${threshold}<br>
@@ -325,7 +325,7 @@ async function lgGenerateAI(res) {
 }
 
 export async function lgSaveAnalysis() {
-  if (!lgLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!lgLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   document.getElementById('lg-cloud-saving').style.display = 'flex';
   try {
     const res = lgLastResult;
@@ -341,11 +341,11 @@ export async function lgSaveAnalysis() {
         Xs: res.Xs, Y: res.Y,
       },
     });
-    showToast('Regressão logística salva 🚀', 'ok');
+    showToast(window.t('toast-saved-log'), 'ok');
     await loadHistory();
     await updateProfileStats();
   } catch (err) {
-    showToast('Erro ao salvar: ' + (err.message || err), 'err');
+    showToast(window.t('toast-save-err') + (err.message || err), 'err');
   } finally {
     document.getElementById('lg-cloud-saving').style.display = 'none';
   }
@@ -374,7 +374,7 @@ export async function loadLogisticAnalysis(a) {
       lgUpdateCount();
     }
   }
-  showToast('Regressão logística carregada para edição ✏️', 'info');
+  showToast(window.t('toast-loaded-log'), 'info');
 }
 
 export function lgExportExcel() {

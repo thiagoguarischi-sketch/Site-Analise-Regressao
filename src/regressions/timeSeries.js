@@ -86,7 +86,7 @@ function stGetData() {
 
 export function stUpdateCount() {
   const { values } = stGetData();
-  document.getElementById('st-data-count').textContent = `${values.length} período${values.length !== 1 ? 's' : ''}`;
+  document.getElementById('st-data-count').textContent = `${values.length} ${window.t(values.length !== 1 ? 'periodo-plural' : 'periodo-single')}`;
   const elX = document.getElementById('st-dh-x');
   const elY = document.getElementById('st-dh-y');
   if (elX) elX.textContent = document.getElementById('st-label-x').value || 'Período';
@@ -164,14 +164,14 @@ function varSyncKDisplay() {
 }
 
 export function varAddVariable() {
-  if (varK >= 8) { showToast('Máximo de 8 variáveis no VAR.', 'err'); return; }
+  if (varK >= 8) { showToast(window.t('toast-var-max-var'), 'err'); return; }
   varK++;
   varRebuildTable();
   varSyncKDisplay();
 }
 
 export function varRemoveVariable() {
-  if (varK <= 2) { showToast('VAR requer pelo menos 2 variáveis.', 'err'); return; }
+  if (varK <= 2) { showToast(window.t('toast-var-min2'), 'err'); return; }
   varK--;
   varRebuildTable();
   varSyncKDisplay();
@@ -309,7 +309,7 @@ export function varUpdateVarCountDisplay() {
   const { labelsList } = varGetData();
   const n = labelsList.length;
   const el = document.getElementById('var-data-count');
-  if (el) el.textContent = `${n} período${n !== 1 ? 's' : ''}`;
+  if (el) el.textContent = `${n} ${window.t(n !== 1 ? 'periodo-plural' : 'periodo-single')}`;
 }
 
 function varGetData() {
@@ -381,23 +381,23 @@ export async function runSerie() {
       const { labelsList, matrix } = varGetData();
       const p = Math.max(1, parseInt(document.getElementById('st-var-p').value) || 1);
       if (matrix.length < p * varK + p + 2) {
-        showToast(`VAR(${p}) com ${varK} variáveis requer pelo menos ${p * varK + p + 2} períodos.`, 'err'); return;
+        showToast(`VAR(${p}) — ${window.t('lbl-enter-at-least')} ${p * varK + p + 2} ${window.t('periodo-plural')}.`, 'err'); return;
       }
       res = await analyze('var', { p, futureN, varNames: varNames.slice(0, varK) }, { matrix, labelsList });
-      if (!res) { showToast('Matriz singular — reduza p ou adicione mais dados.', 'err'); return; }
+      if (!res) { showToast(window.t('toast-singular-var'), 'err'); return; }
     } else {
       const { labels, values } = stGetData();
-      if (values.length < 6) { showToast('Insira pelo menos 6 períodos.', 'err'); return; }
+      if (values.length < 6) { showToast(window.t('toast-min6-periods'), 'err'); return; }
       if (stCurrentModel === 'arima') {
         const p = Math.max(0, parseInt(document.getElementById('st-arima-p').value) || 1);
         const d = Math.max(0, Math.min(2, parseInt(document.getElementById('st-arima-d').value) || 1));
         const q = Math.max(0, parseInt(document.getElementById('st-arima-q').value) || 1);
         if (values.length < p + d + q + 5) {
-          showToast(`Dados insuficientes para ARIMA(${p},${d},${q}). Necessário: ${p+d+q+5} períodos.`, 'err'); return;
+          showToast(`${window.t('lbl-enter-at-least')} ${p+d+q+5} ${window.t('periodo-plural')} (ARIMA(${p},${d},${q})).`, 'err'); return;
         }
         res = await analyze('arima', { p, d, q, futureN }, { values, labels });
       } else if (stCurrentModel === 'garch') {
-        if (values.length < 10) { showToast('GARCH requer pelo menos 10 períodos.', 'err'); return; }
+        if (values.length < 10) { showToast(window.t('toast-min10-garch'), 'err'); return; }
         res = await analyze('garch', { futureN }, { values, labels });
       } else {
         const windowSize = parseInt(document.getElementById('st-window').value) || 3;
@@ -407,7 +407,7 @@ export async function runSerie() {
       res.values = values;
     }
   } catch (e) {
-    showToast('Erro no servidor: ' + e.message, 'err'); return;
+    showToast(window.t('toast-server-err') + e.message, 'err'); return;
   }
 
   res.labelY = labelY;
@@ -428,7 +428,7 @@ export async function runSerie() {
   document.getElementById('st-results').style.display = 'block';
   document.getElementById('st-btn-save').style.display = 'inline-flex';
   stGenerateAI(res);
-  showToast('Análise concluída!', 'ok');
+  showToast(window.t('toast-done-ts'), 'ok');
 }
 
 // ─── RENDER: DECOMPOSIÇÃO CLÁSSICA ───────────────────────────────────────────
@@ -703,7 +703,7 @@ async function stGenerateAI(res) {
 // ─── SAVE / LOAD ──────────────────────────────────────────────────────────────
 
 export async function stSaveAnalysis() {
-  if (!stLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!stLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   document.getElementById('st-cloud-saving').style.display = 'flex';
   try {
     const res = stLastResult;
@@ -743,11 +743,11 @@ export async function stSaveAnalysis() {
       tipo: 'serie',
       dados: base,
     });
-    showToast('Série temporal salva 🚀', 'ok');
+    showToast(window.t('toast-saved-ts'), 'ok');
     await loadHistory();
     await updateProfileStats();
   } catch (err) {
-    showToast('Erro ao salvar: ' + (err.message || err), 'err');
+    showToast(window.t('toast-save-err') + (err.message || err), 'err');
   } finally {
     document.getElementById('st-cloud-saving').style.display = 'none';
   }
@@ -853,7 +853,7 @@ export async function loadSerieAnalysis(a) {
     document.getElementById('st-btn-save').style.display = 'inline-flex';
   }
 
-  showToast('Série temporal carregada ✏️', 'info');
+  showToast(window.t('toast-loaded-ts'), 'info');
 }
 
 // ─── EXPORT ───────────────────────────────────────────────────────────────────

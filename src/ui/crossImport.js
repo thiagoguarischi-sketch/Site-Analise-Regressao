@@ -89,13 +89,13 @@ export function crossImportPair(switchTabFn) {
   const yCol  = document.getElementById('cross-y-col')?.value || 'close';
   const model = document.getElementById('cross-model')?.value || 'nova';
 
-  if (!xId || !yId) { showToast('Selecione as variáveis X e Y.', 'err'); return; }
+  if (!xId || !yId) { showToast(window.t('toast-select-xy'), 'err'); return; }
 
   const effXCol = xSrc === 'bcb' ? 'valor' : xCol;
   const effYCol = ySrc === 'bcb' ? 'valor' : yCol;
 
   if (xSrc === ySrc && xId === yId && effXCol === effYCol) {
-    showToast('X e Y são idênticos. Escolha séries ou colunas diferentes.', 'err');
+    showToast(window.t('toast-xy-same-series'), 'err');
     return;
   }
 
@@ -116,19 +116,19 @@ export function crossImportPair(switchTabFn) {
     .filter(Boolean);
 
   if (pairs.length < 3) {
-    showToast('Datas não se alinham (mín. 3 obs. coincidentes entre as fontes).', 'err');
+    showToast(window.t('toast-dates-no-align-cross'), 'err');
     return;
   }
 
   const cfg = _REG_CFG[model];
   const fns = _REG_FNS[model];
-  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!cfg) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   const xLabel = xSrc === 'yf' ? `${xId} — ${_YF_COLS[xCol] || xCol}` : sX.label;
   const yLabel = ySrc === 'yf' ? `${yId} — ${_YF_COLS[yCol] || yCol}` : sY.label;
 
   const container = document.getElementById(cfg.rowsId);
-  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   container.innerHTML = '';
   if (model === 'nova') {
@@ -181,7 +181,7 @@ export function crossVarSrcChange(idx, src) {
 }
 
 export function crossAddVarSeries() {
-  if (_varRows.length >= 8) { showToast('Máximo de 8 variáveis no VAR.', 'info'); return; }
+  if (_varRows.length >= 8) { showToast(window.t('toast-var-max-var'), 'info'); return; }
   const yf = yfGetLoadedSeries();
   _varRows.push({ src: yf.length > 0 ? 'yf' : 'bcb' });
   _renderVarList();
@@ -248,7 +248,7 @@ export function crossImportST(switchTabFn) {
   const id  = document.getElementById('cross-st-id')?.value;
   const col = document.getElementById('cross-st-col')?.value || 'close';
 
-  if (!id) { showToast('Selecione uma série.', 'err'); return; }
+  if (!id) { showToast(window.t('toast-select-serie'), 'err'); return; }
 
   const effCol = src === 'bcb' ? 'valor' : col;
   const s = (src === 'yf' ? yfGetLoadedSeries() : bcbGetLoadedSeries()).find(x => x.id === id);
@@ -256,12 +256,12 @@ export function crossImportST(switchTabFn) {
   if (!s?.rows?.length) { showToast(`Dados não carregados para ${id}.`, 'err'); return; }
 
   const valid = s.rows.filter(r => r[effCol] != null && !isNaN(r[effCol]));
-  if (valid.length < 3) { showToast('Dados insuficientes (mín. 3 obs.).', 'err'); return; }
+  if (valid.length < 3) { showToast(window.t('toast-data-insuf-obs'), 'err'); return; }
 
   window.stSetModel?.(model);
 
   const container = document.getElementById('st-data-rows');
-  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   container.innerHTML = '';
   valid.forEach(() => window.stAddRow?.());
@@ -294,7 +294,7 @@ function _crossImportVAR(switchTabFn) {
     }))
     .filter(r => r.id);
 
-  if (rows.length < 2) { showToast('Selecione ao menos 2 séries para o VAR.', 'err'); return; }
+  if (rows.length < 2) { showToast(window.t('toast-var-min2-series'), 'err'); return; }
 
   const maps = rows.map(r => {
     const s = (r.src === 'yf' ? yfGetLoadedSeries() : bcbGetLoadedSeries()).find(x => x.id === r.id);
@@ -304,10 +304,10 @@ function _crossImportVAR(switchTabFn) {
     return { id: r.id, label: s.label, map, ts };
   });
 
-  if (maps.some(m => !m)) { showToast('Dados não carregados para uma ou mais séries selecionadas.', 'err'); return; }
+  if (maps.some(m => !m)) { showToast(window.t('toast-data-not-loaded'), 'err'); return; }
 
   const refTs = maps[0].ts;
-  if (refTs.length < 3) { showToast('Dados insuficientes na primeira série (mín. 3 obs.).', 'err'); return; }
+  if (refTs.length < 3) { showToast(window.t('toast-data-insuf-first'), 'err'); return; }
 
   if (typeof switchTabFn === 'function')
     switchTabFn('serie', document.querySelector('[onclick*="serie"]'));
@@ -316,7 +316,7 @@ function _crossImportVAR(switchTabFn) {
   window.varSetK?.(maps.length);
 
   const rowsEl = document.getElementById('var-data-rows');
-  if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+  if (!rowsEl) { showToast(window.t('toast-var-unavail'), 'err'); return; }
 
   rowsEl.innerHTML = '';
   refTs.forEach(() => window.varAddRow?.());
