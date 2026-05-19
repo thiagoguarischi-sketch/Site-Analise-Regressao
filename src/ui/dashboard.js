@@ -92,7 +92,7 @@ export async function doLogin(e) {
     const user = await signIn(email, pw);
     await loginUser(user);
   } catch (error) {
-    errEl.textContent = error.message || 'E-mail ou senha incorretos.';
+    errEl.textContent = error.message || window.t('err-login');
     errEl.classList.add('show');
     document.getElementById('auth-card').classList.add('shake');
     setTimeout(() => document.getElementById('auth-card').classList.remove('shake'), 300);
@@ -113,10 +113,10 @@ export async function doSignup(e) {
   const errEl = document.getElementById('signup-error');
   errEl.classList.remove('show');
 
-  if (!name || name.length < 2) { errEl.textContent = 'Nome deve ter pelo menos 2 caracteres.'; errEl.classList.add('show'); return; }
-  if (!email)                   { errEl.textContent = 'Digite seu e-mail.';                       errEl.classList.add('show'); return; }
-  if (pw.length < 8)            { errEl.textContent = 'Senha deve ter mínimo 8 caracteres.';      errEl.classList.add('show'); return; }
-  if (pw !== pw2)               { errEl.textContent = 'As senhas não coincidem.';                 errEl.classList.add('show'); return; }
+  if (!name || name.length < 2) { errEl.textContent = window.t('err-name-short');  errEl.classList.add('show'); return; }
+  if (!email)                   { errEl.textContent = window.t('err-email-empty'); errEl.classList.add('show'); return; }
+  if (pw.length < 8)            { errEl.textContent = window.t('err-pw-short');    errEl.classList.add('show'); return; }
+  if (pw !== pw2)               { errEl.textContent = window.t('err-pw-mismatch'); errEl.classList.add('show'); return; }
 
   setAuthLoading('form-signup', true);
   try {
@@ -124,7 +124,7 @@ export async function doSignup(e) {
     await loginUser(user);
     showToast(`${window.t('toast-welcome')} ${name}! 🎉`, 'ok');
   } catch (error) {
-    errEl.textContent = error.message || 'Erro ao criar conta.';
+    errEl.textContent = error.message || window.t('err-signup');
     errEl.classList.add('show');
   }
   setAuthLoading('form-signup', false);
@@ -153,7 +153,7 @@ function _showVerifyStep(email) {
   document.getElementById('verify-error').classList.remove('show');
   document.getElementById('verify-code-input').value = '';
   document.getElementById('verify-btn').disabled = false;
-  document.getElementById('verify-btn').textContent = 'Verificar e criar conta';
+  document.getElementById('verify-btn').textContent = window.t('btn-verify');
   document.getElementById('verify-code-input').focus();
   _startResendCountdown();
 }
@@ -178,7 +178,7 @@ export async function verifySignupCode() {
   errEl.classList.remove('show');
 
   if (code.length !== 6) {
-    errEl.textContent = 'Digite os 6 dígitos do código.';
+    errEl.textContent = window.t('err-verify-length');
     errEl.classList.add('show');
     return;
   }
@@ -203,8 +203,8 @@ export async function verifySignupCode() {
   } catch (err) {
     const msg = err.message || '';
     errEl.textContent = msg.toLowerCase().includes('token') || msg.toLowerCase().includes('otp') || msg.toLowerCase().includes('invalid')
-      ? 'Código inválido ou expirado. Tente novamente.'
-      : (msg || 'Erro ao verificar código.');
+      ? window.t('err-verify-invalid')
+      : (msg || window.t('err-verify'));
     errEl.classList.add('show');
     btn.disabled = false;
     btn.textContent = window.t('btn-verify');
@@ -235,13 +235,13 @@ export async function doForgot() {
   const errEl = document.getElementById('forgot-error');
   const okEl = document.getElementById('forgot-success');
   errEl.classList.remove('show'); okEl.classList.remove('show');
-  if (!email) { errEl.textContent = 'Digite seu e-mail.'; errEl.classList.add('show'); return; }
+  if (!email) { errEl.textContent = window.t('err-email-empty'); errEl.classList.add('show'); return; }
   try {
     await db.auth.resetPasswordForEmail(email);
-    okEl.textContent = 'Link de redefinição enviado para seu e-mail.';
+    okEl.textContent = window.t('ok-forgot');
     okEl.classList.add('show');
   } catch (error) {
-    errEl.textContent = error.message || 'Erro ao enviar link.';
+    errEl.textContent = error.message || window.t('err-forgot');
     errEl.classList.add('show');
   }
 }
