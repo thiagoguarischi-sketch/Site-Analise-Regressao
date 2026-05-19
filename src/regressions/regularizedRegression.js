@@ -82,7 +82,7 @@ function rrGetData() {
 export function rrUpdateCount() {
   const { xs } = rrGetData();
   const el = document.getElementById('rr-data-count');
-  if (el) el.textContent = `${xs.length} par${xs.length !== 1 ? 'es' : ''} de dados`;
+  if (el) el.textContent = `${xs.length} ${window.t(xs.length !== 1 ? 'par-plural' : 'par-single')}`;
   const elX = document.getElementById('rr-dh-x');
   const elY = document.getElementById('rr-dh-y');
   if (elX) elX.textContent = document.getElementById('rr-label-x').value || 'X';
@@ -122,7 +122,7 @@ export function rrLoadExample() {
 
 export async function runRegularized() {
   const { xs, ys } = rrGetData();
-  if (xs.length < 3) { showToast('Mínimo 3 pares.', 'err'); return; }
+  if (xs.length < 3) { showToast(window.t('toast-min3-pairs-rr'), 'err'); return; }
 
   const lambda = parseFloat(document.getElementById('rr-lambda').value) || 0.1;
   const lr     = parseFloat(document.getElementById('rr-lr').value) || 0.001;
@@ -143,13 +143,13 @@ export async function runRegularized() {
     rrRenderResults(rrLastResult);
     document.getElementById('rr-results').style.display = 'block';
     document.getElementById('rr-btn-save').style.display = 'inline-flex';
-    showToast('Análise concluída!', 'ok');
+    showToast(window.t('toast-done-rr'), 'ok');
   } catch (e) {
-    showToast('Erro: ' + e.message, 'err');
+    showToast(window.t('toast-server-err') + e.message, 'err');
   }
 
   btn.disabled = false;
-  btn.textContent = '▶ Gerar análise';
+  btn.textContent = window.t('btn-run');
 }
 
 function rrRenderResults(res) {
@@ -242,7 +242,7 @@ function rrRenderResults(res) {
 }
 
 export async function rrSaveAnalysis() {
-  if (!rrLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!rrLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   document.getElementById('rr-cloud-saving').style.display = 'flex';
   try {
     const res = rrLastResult;
@@ -259,11 +259,11 @@ export async function rrSaveAnalysis() {
         xs: res.xs, ys: res.ys,
       },
     });
-    showToast('Análise salva 🚀', 'ok');
+    showToast(window.t('toast-saved-rr'), 'ok');
     await loadHistory();
     await updateProfileStats();
   } catch (err) {
-    showToast('Erro ao salvar: ' + (err.message || err), 'err');
+    showToast(window.t('toast-save-err') + (err.message || err), 'err');
   } finally {
     document.getElementById('rr-cloud-saving').style.display = 'none';
   }

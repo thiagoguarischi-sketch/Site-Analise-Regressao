@@ -74,7 +74,7 @@ function setAuthLoading(formId, loading) {
     btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
   } else {
     btn.disabled = false;
-    btn.textContent = formId === 'form-login' ? 'Entrar na conta' : 'Criar conta grátis';
+    btn.textContent = formId === 'form-login' ? window.t('btn-login') : window.t('btn-signup');
   }
 }
 
@@ -122,7 +122,7 @@ export async function doSignup(e) {
   try {
     const user = await signUp(email, pw, name);
     await loginUser(user);
-    showToast(`Bem-vindo, ${name}! 🎉`, 'ok');
+    showToast(`${window.t('toast-welcome')} ${name}! 🎉`, 'ok');
   } catch (error) {
     errEl.textContent = error.message || 'Erro ao criar conta.';
     errEl.classList.add('show');
@@ -199,7 +199,7 @@ export async function verifySignupCode() {
     const saved = _pendingSignup;
     _pendingSignup = null;
     await loginUser(data.user || (await db.auth.getUser()).data.user);
-    showToast(`Bem-vindo, ${saved.name}! 🎉`, 'ok');
+    showToast(`${window.t('toast-welcome')} ${saved.name}! 🎉`, 'ok');
   } catch (err) {
     const msg = err.message || '';
     errEl.textContent = msg.toLowerCase().includes('token') || msg.toLowerCase().includes('otp') || msg.toLowerCase().includes('invalid')
@@ -207,7 +207,7 @@ export async function verifySignupCode() {
       : (msg || 'Erro ao verificar código.');
     errEl.classList.add('show');
     btn.disabled = false;
-    btn.textContent = 'Verificar e criar conta';
+    btn.textContent = window.t('btn-verify');
   }
 }
 
@@ -217,8 +217,8 @@ export async function resendSignupCode() {
     type: 'signup',
     email: _pendingSignup.email,
   });
-  if (error) { showToast('Erro ao reenviar. Tente novamente.', 'err'); return; }
-  showToast('Novo código enviado! Verifique sua caixa de entrada.', 'ok');
+  if (error) { showToast(window.t('toast-resend-err'), 'err'); return; }
+  showToast(window.t('toast-resend-ok'), 'ok');
   _startResendCountdown();
 }
 
@@ -304,7 +304,7 @@ export async function deleteAccount() {
   if (!confirm('Tem certeza? Isso irá excluir sua conta e TODAS as análises permanentemente.')) return;
   if (!confirm('Esta ação é IRREVERSÍVEL. Confirma a exclusão definitiva?')) return;
 
-  showToast('Excluindo conta...', 'info');
+  showToast(window.t('toast-deleting'), 'info');
   try {
     await deleteAccountRequest();
   } catch (err) {
@@ -318,7 +318,7 @@ export async function deleteAccount() {
   currentUser = null;
   document.getElementById('auth-overlay').classList.remove('hidden');
   document.getElementById('app-container').classList.remove('visible');
-  showToast('Conta excluída permanentemente.', 'info');
+  showToast(window.t('toast-deleted'), 'info');
 }
 
 // ── Profile ──
@@ -326,8 +326,8 @@ export async function deleteAccount() {
 export async function saveProfile() {
   const name = document.getElementById('edit-name').value.trim();
   const email = document.getElementById('edit-email').value.trim().toLowerCase();
-  if (!name || !email) { showToast('Preencha todos os campos.', 'err'); return; }
-  if (name.length < 2) { showToast('Nome muito curto.', 'err'); return; }
+  if (!name || !email) { showToast(window.t('toast-fill-all'), 'err'); return; }
+  if (name.length < 2) { showToast(window.t('toast-name-short'), 'err'); return; }
 
   try {
     await db.auth.updateUser({ email, data: { full_name: name } });
@@ -341,7 +341,7 @@ export async function saveProfile() {
     document.getElementById('profile-avatar-big').textContent = initials;
     document.getElementById('profile-name-display').textContent = name;
     document.getElementById('profile-email-display').textContent = email;
-    showToast('Perfil atualizado!', 'ok');
+    showToast(window.t('toast-profile-ok'), 'ok');
   } catch (error) {
     showToast(error.message || 'Erro ao atualizar perfil.', 'err');
   }
@@ -351,16 +351,16 @@ export async function changePw() {
   const oldPw = document.getElementById('old-pw').value;
   const newPw = document.getElementById('new-pw').value;
   const newPw2 = document.getElementById('new-pw2').value;
-  if (!oldPw || !newPw || !newPw2) { showToast('Preencha todos os campos.', 'err'); return; }
-  if (newPw.length < 8) { showToast('Nova senha muito curta (mín. 8 chars).', 'err'); return; }
-  if (newPw !== newPw2) { showToast('Senhas não coincidem.', 'err'); return; }
+  if (!oldPw || !newPw || !newPw2) { showToast(window.t('toast-fill-all'), 'err'); return; }
+  if (newPw.length < 8) { showToast(window.t('toast-pw-short'), 'err'); return; }
+  if (newPw !== newPw2) { showToast(window.t('toast-pw-mismatch'), 'err'); return; }
 
   try {
     await db.auth.updateUser({ password: newPw });
     document.getElementById('old-pw').value = '';
     document.getElementById('new-pw').value = '';
     document.getElementById('new-pw2').value = '';
-    showToast('Senha alterada com sucesso!', 'ok');
+    showToast(window.t('toast-pw-ok'), 'ok');
   } catch (error) {
     showToast(error.message || 'Erro ao alterar senha.', 'err');
   }

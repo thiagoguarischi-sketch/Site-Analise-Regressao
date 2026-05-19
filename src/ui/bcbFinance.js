@@ -149,13 +149,13 @@ function _renderChips() {
 
 // ── Carregar todos ────────────────────────────────────────────────────────────
 export async function bcbLoadAll() {
-  if (!_series.length) { showToast('Adicione ao menos uma série.', 'err'); return; }
+  if (!_series.length) { showToast(window.t('toast-add-serie'), 'err'); return; }
 
   const fromVal = document.getElementById('bcb-date-from')?.value;
   const toVal   = document.getElementById('bcb-date-to')?.value;
 
-  if (!fromVal || !toVal) { showToast('Selecione o intervalo de datas.', 'err'); return; }
-  if (fromVal >= toVal)   { showToast('A data inicial deve ser anterior à data final.', 'err'); return; }
+  if (!fromVal || !toVal) { showToast(window.t('toast-select-dates'), 'err'); return; }
+  if (fromVal >= toVal)   { showToast(window.t('toast-date-order'), 'err'); return; }
 
   const btn = document.getElementById('bcb-load-btn');
   if (btn) { btn.disabled = true; btn.textContent = window.t?.('mf-carregando') ?? 'Carregando…'; }
@@ -185,7 +185,7 @@ export async function bcbLoadAll() {
     _renderResults();
     window.crossRefresh?.();
   } catch {
-    showToast('Erro ao carregar dados.', 'err');
+    showToast(window.t('toast-load-data-err'), 'err');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = window.t?.('mf-carregar') ?? 'Carregar dados'; }
   }
@@ -412,10 +412,10 @@ export function bcbImportOne(codigo, switchTabFn) {
 
   const cfg = _MODEL_CFG[effKey];
   const fns = _MODEL_FNS[effKey];
-  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!cfg) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   const valid = d.rows.filter(r => r.valor != null && !isNaN(r.valor));
-  if (valid.length < 3) { showToast('Dados insuficientes (mín. 3 obs.).', 'err'); return; }
+  if (valid.length < 3) { showToast(window.t('toast-data-insuf-obs'), 'err'); return; }
 
   const serie  = _series.find(s => s.codigo === codigo);
   const yLabel = serie?.nome || `BCB ${codigo}`;
@@ -438,7 +438,7 @@ export function bcbImportOne(codigo, switchTabFn) {
     window.stSetModel?.('var');
     window.varInitRows?.();
     const rowsEl = document.getElementById('var-data-rows');
-    if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+    if (!rowsEl) { showToast(window.t('toast-var-unavail'), 'err'); return; }
     rowsEl.innerHTML = '';
     valid.forEach(() => window.varAddRow?.());
     Array.from(rowsEl.children).forEach((row, i) => {
@@ -454,7 +454,7 @@ export function bcbImportOne(codigo, switchTabFn) {
   } else if (cfg.isSerie) {
     window.stSetModel?.(effKey);
     const container = document.getElementById(cfg.rowsId);
-    if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+    if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
     container.innerHTML = '';
     valid.forEach(() => window[fns.addRow]?.());
     Array.from(container.children).forEach((row, i) => {
@@ -468,7 +468,7 @@ export function bcbImportOne(codigo, switchTabFn) {
 
   } else {
     const container = document.getElementById(cfg.rowsId);
-    if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+    if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
     container.innerHTML = '';
     if (effKey === 'nova') {
       window.setRows(valid.map((_, i) => i + 1), valid.map(r => r.valor));
@@ -533,7 +533,7 @@ function _importMultipleToVar(series, switchTabFn) {
   window.varSetK?.(k);
 
   const rowsEl = document.getElementById('var-data-rows');
-  if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+  if (!rowsEl) { showToast(window.t('toast-var-unavail'), 'err'); return; }
 
   rowsEl.innerHTML = '';
   refTs.forEach(() => window.varAddRow?.());
@@ -591,8 +591,8 @@ export function bcbImportPair(switchTabFn) {
   const yCod  = document.getElementById('bcb-pair-y')?.value;
   const model = document.getElementById('bcb-pair-model')?.value || 'nova';
 
-  if (!xCod || !yCod) { showToast('Selecione as duas séries.', 'err'); return; }
-  if (xCod === yCod)  { showToast('X e Y são idênticos. Escolha séries diferentes.', 'err'); return; }
+  if (!xCod || !yCod) { showToast(window.t('toast-select-2series'), 'err'); return; }
+  if (xCod === yCod)  { showToast(window.t('toast-xy-same-series'), 'err'); return; }
 
   const dX = _datasets[xCod], dY = _datasets[yCod];
   if (!dX?.rows?.length) { showToast(`Dados não carregados para série ${xCod}.`, 'err'); return; }
@@ -627,13 +627,13 @@ export function bcbImportPair(switchTabFn) {
     .filter(Boolean);
 
   if (pairs.length < 3) {
-    showToast('Datas não se alinham (mín. 3 obs. coincidentes).', 'err');
+    showToast(window.t('toast-dates-no-align'), 'err');
     return;
   }
 
   const cfg = _MODEL_CFG[model];
   const fns = _MODEL_FNS[model];
-  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!cfg) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   const sX = _series.find(s => s.codigo === xCod);
   const sY = _series.find(s => s.codigo === yCod);
@@ -641,7 +641,7 @@ export function bcbImportPair(switchTabFn) {
   const yLabel = sY?.nome || `BCB ${yCod}`;
 
   const container = document.getElementById(cfg.rowsId);
-  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   container.innerHTML = '';
   if (model === 'nova') {

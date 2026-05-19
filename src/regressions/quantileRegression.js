@@ -76,7 +76,7 @@ function qrGetData() {
 export function qrUpdateCount() {
   const { xs } = qrGetData();
   const countEl = document.getElementById('qr-data-count');
-  if (countEl) countEl.textContent = `${xs.length} par${xs.length !== 1 ? 'es' : ''} de dados`;
+  if (countEl) countEl.textContent = `${xs.length} ${window.t(xs.length !== 1 ? 'par-plural' : 'par-single')}`;
   const elX = document.getElementById('qr-dh-x');
   const elY = document.getElementById('qr-dh-y');
   if (elX) elX.textContent = document.getElementById('qr-label-x').value || 'X';
@@ -125,9 +125,9 @@ export function qrLoadExample() {
 
 export async function runQuantile() {
   const { xs, ys } = qrGetData();
-  if (xs.length < 5) { showToast('Mínimo 5 pares de dados.', 'err'); return; }
+  if (xs.length < 5) { showToast(window.t('toast-min5-pairs'), 'err'); return; }
   const taus = qrGetActiveTaus();
-  if (taus.length === 0) { showToast('Selecione ao menos 1 quantil.', 'err'); return; }
+  if (taus.length === 0) { showToast(window.t('toast-select-quantile'), 'err'); return; }
 
   const lr    = parseFloat(document.getElementById('qr-lr').value) || 0.001;
   const iters = parseInt(document.getElementById('qr-iters').value) || 5000;
@@ -147,13 +147,13 @@ export async function runQuantile() {
     document.getElementById('qr-results').style.display = 'block';
     document.getElementById('qr-btn-save').style.display = 'inline-flex';
     qrGenerateAI(qrLastResult);
-    showToast('Análise quantílica concluída!', 'ok');
+    showToast(window.t('toast-done-qr'), 'ok');
   } catch (e) {
-    showToast('Erro no cálculo: ' + e.message, 'err');
+    showToast(window.t('toast-calc-err') + e.message, 'err');
   }
 
   btn.disabled = false;
-  btn.textContent = '▶ Gerar análise';
+  btn.textContent = window.t('btn-run');
 }
 
 function qrRenderResults(res) {
@@ -209,9 +209,9 @@ function qrRenderResults(res) {
 }
 
 export function qrRunPrediction() {
-  if (!qrLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!qrLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   const xNew = parseFloat(document.getElementById('qr-pred-x').value);
-  if (isNaN(xNew)) { showToast('Digite um valor de X.', 'err'); return; }
+  if (isNaN(xNew)) { showToast(window.t('toast-enter-x'), 'err'); return; }
   const { taus, quantileResults, lx, ly } = qrLastResult;
 
   const rows = taus.map(tau => {
@@ -264,7 +264,7 @@ async function qrGenerateAI(res) {
 }
 
 export async function qrSaveAnalysis() {
-  if (!qrLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!qrLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   document.getElementById('qr-cloud-saving').style.display = 'flex';
   try {
     const res = qrLastResult;
@@ -289,12 +289,12 @@ export async function qrSaveAnalysis() {
       },
     });
 
-    showToast('Análise quantílica salva 🚀', 'ok');
+    showToast(window.t('toast-saved-qr'), 'ok');
     await loadHistory();
     await updateProfileStats();
   } catch (err) {
     console.error('ERRO QUANTILICA:', err);
-    showToast('Erro ao salvar: ' + (err.message || err), 'err');
+    showToast(window.t('toast-save-err') + (err.message || err), 'err');
   } finally {
     document.getElementById('qr-cloud-saving').style.display = 'none';
   }

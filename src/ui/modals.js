@@ -146,7 +146,7 @@ export async function viewAnalysis(id) {
     `;
     document.getElementById('modal-overlay').classList.add('open');
   } catch (err) {
-    showToast('Erro ao carregar análise.', 'err');
+    showToast(window.t('toast-load-analysis-err'), 'err');
   }
 }
 
@@ -168,7 +168,7 @@ export async function editAnalysis(id) {
     else if (a.tipo === 'serie')      await loadSerieAnalysis(a);
   } catch (err) {
     console.error('editAnalysis error:', err);
-    showToast('Erro ao carregar análise.', 'err');
+    showToast(window.t('toast-load-analysis-err'), 'err');
   }
 }
 
@@ -193,11 +193,11 @@ export async function deleteAnalysis(id, refreshHistoryFn, updateProfileStatsFn)
       if (count <= 0) badge.style.display = 'none';
     }
 
-    showToast('Análise excluída.', 'ok');
+    showToast(window.t('toast-deleted-analysis'), 'ok');
     if (typeof updateProfileStatsFn === 'function') await updateProfileStatsFn();
   } catch (err) {
     console.error('deleteAnalysis error:', err);
-    showToast('Erro ao excluir: ' + (err.message || err), 'err');
+    showToast(window.t('toast-delete-err') + (err.message || err), 'err');
     if (typeof refreshHistoryFn === 'function') await refreshHistoryFn();
   }
 }

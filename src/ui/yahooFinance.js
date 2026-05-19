@@ -146,14 +146,14 @@ function _renderChips() {
 
 // ── Carregar todos ────────────────────────────────────────────────────────────
 export async function yfLoadAll() {
-  if (!_tickers.length) { showToast('Adicione ao menos um ativo.', 'err'); return; }
+  if (!_tickers.length) { showToast(window.t('toast-add-ativo'), 'err'); return; }
 
   const fromVal  = document.getElementById('yf-date-from')?.value;
   const toVal    = document.getElementById('yf-date-to')?.value;
   const interval = document.getElementById('yf-interval')?.value || '1d';
 
-  if (!fromVal || !toVal) { showToast('Selecione o intervalo de datas.', 'err'); return; }
-  if (fromVal >= toVal)   { showToast('A data inicial deve ser anterior à data final.', 'err'); return; }
+  if (!fromVal || !toVal) { showToast(window.t('toast-select-dates'), 'err'); return; }
+  if (fromVal >= toVal)   { showToast(window.t('toast-date-order'), 'err'); return; }
 
   const btn = document.getElementById('yf-load-btn');
   if (btn) { btn.disabled = true; btn.textContent = window.t?.('mf-carregando') ?? 'Carregando…'; }
@@ -176,7 +176,7 @@ export async function yfLoadAll() {
     _renderResults();
     window.crossRefresh?.();
   } catch {
-    showToast('Erro ao carregar dados.', 'err');
+    showToast(window.t('toast-load-data-err'), 'err');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = window.t?.('mf-carregar') ?? 'Carregar dados'; }
   }
@@ -427,10 +427,10 @@ export function yfImportOne(symbol, switchTabFn) {
 
   const cfg = _MODEL_CFG[effKey];
   const fns = _MODEL_FNS[effKey];
-  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!cfg) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   const valid = d.rows.filter(r => r[colY] != null && !isNaN(r[colY]));
-  if (valid.length < 3) { showToast('Dados insuficientes (mín. 3 obs.).', 'err'); return; }
+  if (valid.length < 3) { showToast(window.t('toast-data-insuf-obs'), 'err'); return; }
 
   const yLabel = `${symbol} — ${_ynames()[colY] || colY}`;
 
@@ -454,7 +454,7 @@ export function yfImportOne(symbol, switchTabFn) {
     window.stSetModel?.('var');   // card visível → varRebuildTable usa largura real
     window.varInitRows?.();
     const rowsEl = document.getElementById('var-data-rows');
-    if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+    if (!rowsEl) { showToast(window.t('toast-var-unavail'), 'err'); return; }
     rowsEl.innerHTML = '';
     valid.forEach(() => window.varAddRow?.());
     Array.from(rowsEl.children).forEach((row, i) => {
@@ -471,7 +471,7 @@ export function yfImportOne(symbol, switchTabFn) {
     // ── Décomposição clássica / ARIMA / GARCH ─────────────────────────────
     window.stSetModel?.(effKey);
     const container = document.getElementById(cfg.rowsId);
-    if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+    if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
     container.innerHTML = '';
     valid.forEach(() => window[fns.addRow]?.());
     Array.from(container.children).forEach((row, i) => {
@@ -486,7 +486,7 @@ export function yfImportOne(symbol, switchTabFn) {
   } else {
     // ── Regressões (linear, polinomial, quantílica, regularizada) ─────────
     const container = document.getElementById(cfg.rowsId);
-    if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+    if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
     container.innerHTML = '';
     if (effKey === 'nova') {
       window.setRows(valid.map((_, i) => i + 1), valid.map(r => r[colY]));
@@ -557,7 +557,7 @@ function _importMultipleToVar(assets, colY, switchTabFn) {
   window.varSetK?.(k);
 
   const rowsEl = document.getElementById('var-data-rows');
-  if (!rowsEl) { showToast('Modelo VAR indisponível.', 'err'); return; }
+  if (!rowsEl) { showToast(window.t('toast-var-unavail'), 'err'); return; }
 
   rowsEl.innerHTML = '';
   refTs.forEach(() => window.varAddRow?.());
@@ -619,8 +619,8 @@ export function yfImportPair(switchTabFn) {
   const yCol  = document.getElementById('yf-pair-y-col')?.value || 'close';
   const model = document.getElementById('yf-pair-model')?.value || 'nova';
 
-  if (!xSym || !ySym) { showToast('Selecione os dois ativos.', 'err'); return; }
-  if (xSym === ySym && xCol === yCol) { showToast('X e Y são idênticos. Escolha ativos ou colunas diferentes.', 'err'); return; }
+  if (!xSym || !ySym) { showToast(window.t('toast-select-2assets'), 'err'); return; }
+  if (xSym === ySym && xCol === yCol) { showToast(window.t('toast-xy-same-assets'), 'err'); return; }
 
   const dX = _datasets[xSym], dY = _datasets[ySym];
   if (!dX?.rows?.length) { showToast(`Dados não carregados para ${xSym}.`, 'err'); return; }
@@ -656,19 +656,19 @@ export function yfImportPair(switchTabFn) {
     .filter(Boolean);
 
   if (pairs.length < 3) {
-    showToast('Datas não se alinham (mín. 3 obs. coincidentes).', 'err');
+    showToast(window.t('toast-dates-no-align'), 'err');
     return;
   }
 
   const cfg = _MODEL_CFG[model];
   const fns = _MODEL_FNS[model];
-  if (!cfg) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!cfg) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   const xLabel = `${xSym} — ${_YNAMES[xCol] || xCol}`;
   const yLabel = `${ySym} — ${_YNAMES[yCol] || yCol}`;
 
   const container = document.getElementById(cfg.rowsId);
-  if (!container) { showToast('Modelo indisponível.', 'err'); return; }
+  if (!container) { showToast(window.t('toast-model-unavail'), 'err'); return; }
 
   container.innerHTML = '';
   if (model === 'nova') {

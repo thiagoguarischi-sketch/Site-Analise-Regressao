@@ -41,11 +41,11 @@ export async function compute(xs, ys) {
 
 export async function runRegression() {
   const { xs, ys } = getData();
-  if (xs.length < 3) { showToast('Insira pelo menos 3 pares de dados.', 'err'); return; }
+  if (xs.length < 3) { showToast(window.t('toast-min3-pairs'), 'err'); return; }
 
   try {
     lastResult = await analyze('linear', {}, { xs, ys });
-  } catch (e) { showToast('Erro no servidor: ' + e.message, 'err'); return; }
+  } catch (e) { showToast(window.t('toast-server-err') + e.message, 'err'); return; }
   lastResult.labelX = document.getElementById('label-x').value || 'X';
   lastResult.labelY = document.getElementById('label-y').value || 'Y';
 
@@ -58,7 +58,7 @@ export async function runRegression() {
   document.getElementById('export-section').style.display = 'block';
   document.getElementById('cloud-saving').style.display = 'none';
 
-  showToast('Análise concluída!', 'ok');
+  showToast(window.t('toast-done-linear'), 'ok');
 }
 
 function renderPadrao(res) {
@@ -161,11 +161,11 @@ function renderAvancado(res) {
   document.getElementById('tests-avancado').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
       <div class="alert ${res.p_b1 < 0.05 ? 'alert-ok' : 'alert-warn'}">
-        <b>β₁:</b> t=${fmt(res.t_b1)}, p=${fmtP(res.p_b1)} ${res.p_b1 < 0.05 ? '✓ significativo' : '✗ não significativo'}<br>
+        <b>β₁:</b> t=${fmt(res.t_b1)}, p=${fmtP(res.p_b1)} ${res.p_b1 < 0.05 ? window.t('stat-sig') : window.t('stat-not-sig')}<br>
         ${window.t('tbl-ci95')}: [${fmt(ciB1Lo)}, ${fmt(ciB1Hi)}]
       </div>
       <div class="alert ${res.p_b0 < 0.05 ? 'alert-ok' : 'alert-warn'}">
-        <b>β₀:</b> t=${fmt(res.t_b0)}, p=${fmtP(res.p_b0)} ${res.p_b0 < 0.05 ? '✓ significativo' : '✗ não significativo'}<br>
+        <b>β₀:</b> t=${fmt(res.t_b0)}, p=${fmtP(res.p_b0)} ${res.p_b0 < 0.05 ? window.t('stat-sig') : window.t('stat-not-sig')}<br>
         ${window.t('tbl-ci95')}: [${fmt(ciB0Lo)}, ${fmt(ciB0Hi)}]
       </div>
     </div>
@@ -213,10 +213,10 @@ async function generateAIInsight(res) {
 }
 
 export function runPrediction() {
-  if (!lastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!lastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   const xNew = parseFloat(document.getElementById('pred-x').value);
   const conf = parseFloat(document.getElementById('pred-conf').value);
-  if (isNaN(xNew)) { showToast('Digite um valor de X.', 'err'); return; }
+  if (isNaN(xNew)) { showToast(window.t('toast-enter-x'), 'err'); return; }
 
   const res = lastResult;
   const alpha = 1 - conf;
@@ -231,11 +231,11 @@ export function runPrediction() {
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
-      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Previsão para ${res.labelX} = ${xNew}</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">${window.t('lbl-forecast-for')} ${res.labelX} = ${xNew}</div>
       <div class="pred-val">${res.labelY} ≈ ${yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IC ${(conf * 100).toFixed(0)}% (média): [${icLo.toFixed(4)}, ${icHi.toFixed(4)}]<br>
-        IP ${(conf * 100).toFixed(0)}% (individual): [${ipLo.toFixed(4)}, ${ipHi.toFixed(4)}]
+        ${window.t('lbl-ic')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-mean-interval')}: [${icLo.toFixed(4)}, ${icHi.toFixed(4)}]<br>
+        ${window.t('lbl-ip')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-ind-interval')}: [${ipLo.toFixed(4)}, ${ipHi.toFixed(4)}]
       </div>
     </div>`;
 }
@@ -260,7 +260,7 @@ function buildDiagnostic(res) {
         ${dw > 1.5 && dw < 2.5 ? window.t('diag-dw-ok') : window.t('diag-dw-fail')}
       </div>
       <div class="alert alert-ok">
-        <b>${window.t('diag-influential-pts')}:</b> ${res.cooks_d.filter(c => c > 4 / res.n).length} ponto(s) com Cook's D > 4/n<br>
+        <b>${window.t('diag-influential-pts')}:</b> ${res.cooks_d.filter(c => c > 4 / res.n).length} ${window.t('lbl-cook-pts')}<br>
         Leverage: ${res.hi.filter(h => h > 2 * 2 / res.n).length} ${window.t('diag-leverage-high')}
       </div>
     </div>`;
@@ -285,7 +285,7 @@ function buildDiagnostic(res) {
       <td>${res.hi[i].toFixed(4)}</td>
       <td style="color:${isOut ? 'var(--acc)' : 'inherit'}">${res.resid_std[i].toFixed(3)}</td>
       <td style="color:${isInfl ? 'var(--acc)' : 'inherit'}">${res.cooks_d[i].toFixed(4)}</td>
-      <td>${isOut ? '<span style="color:var(--acc)">Outlier</span>' : ''}${isInfl ? '<span style="color:var(--acc2)"> Influente</span>' : ''}</td>
+      <td>${isOut ? `<span style="color:var(--acc)">${window.t('lbl-outlier')}</span>` : ''}${isInfl ? ` <span style="color:var(--acc2)">${window.t('lbl-influential')}</span>` : ''}</td>
     </tr>`;
   }).join('');
   document.getElementById('influential-tbl').innerHTML = `
@@ -309,8 +309,8 @@ export function setViewMode(mode) {
   document.getElementById('vt-padrao').classList.toggle('active', mode === 'padrao');
   document.getElementById('vt-avancado').classList.toggle('active', mode === 'avancado');
   document.getElementById('mode-hint').textContent = mode === 'padrao'
-    ? 'Modo padrão: gráfico + métricas básicas'
-    : 'Modo avançado: IC/IP, testes t, ANOVA, previsão, IA';
+    ? window.t('hint-padrao')
+    : window.t('hint-avancado');
   if (lastResult) {
     if (mode === 'padrao') renderPadrao(lastResult);
     else renderAvancado(lastResult);
@@ -320,7 +320,7 @@ export function setViewMode(mode) {
 // ── Save / Load (linear simples) ──
 
 export async function saveAnalysis() {
-  if (!lastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!lastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   showCloudSaving(true);
   try {
     const name = document.getElementById('analysis-name').value || 'Análise sem nome';
@@ -331,10 +331,10 @@ export async function saveAnalysis() {
       label_x: lx, label_y: ly,
       dados: lastResult,
     });
-    showToast('Análise salva 🚀', 'ok');
+    showToast(window.t('toast-saved-linear'), 'ok');
   } catch (err) {
     console.error('ERRO SALVAR:', err);
-    showToast('Erro ao salvar análise 😢', 'err');
+    showToast(window.t('toast-save-err-linear'), 'err');
   } finally {
     showCloudSaving(false);
   }
@@ -365,10 +365,10 @@ export async function loadSimpleAnalysis(a) {
       buildDiagnostic(lastResult);
     }
 
-    showToast('Análise carregada para edição ✏️', 'info');
+    showToast(window.t('toast-loaded-linear'), 'info');
   } catch (err) {
     console.error('loadSimpleAnalysis error:', err);
-    showToast('Erro ao carregar análise.', 'err');
+    showToast(window.t('toast-load-err-linear'), 'err');
   }
 }
 
@@ -517,9 +517,9 @@ export function mInitState() {
 export function mAddVar() {
   const inp = document.getElementById('m-new-var-name');
   const name = inp.value.trim();
-  if (!name) { showToast('Digite o nome da variável.', 'err'); return; }
-  if (mVars.find(v => v.name === name)) { showToast('Variável já existe.', 'err'); return; }
-  if (mVars.length >= 8) { showToast('Máximo 8 variáveis.', 'err'); return; }
+  if (!name) { showToast(window.t('toast-var-name-req'), 'err'); return; }
+  if (mVars.find(v => v.name === name)) { showToast(window.t('toast-var-exists'), 'err'); return; }
+  if (mVars.length >= 8) { showToast(window.t('toast-var-max'), 'err'); return; }
   mVars.push({ name });
   inp.value = '';
   mRenderVarChips();
@@ -537,7 +537,7 @@ export function mRemoveVar(name) {
 function mRenderVarChips() {
   const el = document.getElementById('m-var-list');
   if (!mVars.length) {
-    el.innerHTML = '<span style="font-size:12px;color:var(--txt3)">Nenhuma variável adicionada.</span>';
+    el.innerHTML = `<span style="font-size:12px;color:var(--txt3)">${window.t('chip-no-vars')}</span>`;
     return;
   }
   el.innerHTML = mVars.map((v, i) => `
@@ -551,7 +551,7 @@ function mRenderTableHeader() {
   const el = document.getElementById('m-table-header');
   const ly = document.getElementById('m-label-y').value || 'Y';
   if (!mVars.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:8px 0">Adicione variáveis independentes primeiro.</div>';
+    el.innerHTML = `<div style="font-size:12px;color:var(--txt3);padding:8px 0">${window.t('chip-add-vars-first')}</div>`;
     return;
   }
   const cols = ['#', ...mVars.map((v, i) => `X${i + 1}: ${v.name}`), ly];
@@ -618,7 +618,7 @@ function mGetData() {
 
 export function mUpdateCount() {
   const { Y } = mGetData();
-  document.getElementById('m-data-count').textContent = `${Y.length} observação${Y.length !== 1 ? 'ões' : ''}`;
+  document.getElementById('m-data-count').textContent = `${Y.length} ${window.t(Y.length !== 1 ? 'obs-plural' : 'obs-single')}`;
 }
 
 export function mLoadExample() {
@@ -671,15 +671,15 @@ async function computeMultiple(Xs, Y) {
 
 export async function runMultiple() {
   const { Xs, Y, k } = mGetData();
-  if (k === 0) { showToast('Adicione variáveis independentes.', 'err'); return; }
-  if (Y.length < k + 2) { showToast(`Insira pelo menos ${k + 2} observações.`, 'err'); return; }
+  if (k === 0) { showToast(window.t('toast-add-vars'), 'err'); return; }
+  if (Y.length < k + 2) { showToast(`${window.t('lbl-enter-at-least')} ${k + 2} ${window.t('obs-plural')}.`, 'err'); return; }
 
   const ly = document.getElementById('m-label-y').value || 'Y';
   let res;
   try {
     res = await analyze('multiple', {}, { Xs, Y });
   } catch (e) {
-    showToast(e.message.includes('singular') ? 'Matriz singular. Verifique multicolinearidade.' : 'Erro no servidor: ' + e.message, 'err');
+    showToast(e.message.includes('singular') ? window.t('toast-singular') : window.t('toast-server-err') + e.message, 'err');
     return;
   }
   res.varNames = mVars.map(v => v.name);
@@ -693,7 +693,7 @@ export async function runMultiple() {
   document.getElementById('m-btn-save').style.display = 'inline-flex';
   buildMultiplePredInputs(res);
   mGenerateAI(res);
-  showToast('Análise múltipla concluída!', 'ok');
+  showToast(window.t('toast-done-mult'), 'ok');
 }
 
 function renderMultipleResults(res) {
@@ -812,7 +812,7 @@ function buildMultipleDiagnostic(res) {
         ${dw > 1.5 && dw < 2.5 ? window.t('diag-dw-ok') : window.t('diag-dw-fail')}
       </div>
       <div class="alert alert-ok">
-        <b>${window.t('diag-influential-pts')}:</b> ${cooks_d.filter(c => c > 4 / n).length} ponto(s) com Cook's D > 4/n<br>
+        <b>${window.t('diag-influential-pts')}:</b> ${cooks_d.filter(c => c > 4 / n).length} ${window.t('lbl-cook-pts')}<br>
         Leverage: ${hi.filter(h => h > 2 * (k + 1) / n).length} ${window.t('diag-leverage-high')}
       </div>
     </div>`;
@@ -827,7 +827,7 @@ function buildMultipleDiagnostic(res) {
       <td>${hi[i].toFixed(4)}</td>
       <td style="color:${isOut ? 'var(--acc)' : 'inherit'}">${resid_std[i].toFixed(3)}</td>
       <td style="color:${isInfl ? 'var(--acc)' : 'inherit'}">${cooks_d[i].toFixed(4)}</td>
-      <td>${isOut ? '<span style="color:var(--acc)">Outlier</span>' : ''}${isInfl ? '<span style="color:var(--acc2)"> Influente</span>' : ''}</td>
+      <td>${isOut ? `<span style="color:var(--acc)">${window.t('lbl-outlier')}</span>` : ''}${isInfl ? ` <span style="color:var(--acc2)">${window.t('lbl-influential')}</span>` : ''}</td>
     </tr>`;
   }).join('');
   document.getElementById('m-influential-tbl').innerHTML = `
@@ -882,28 +882,28 @@ function buildMultiplePredInputs(res) {
 }
 
 export async function runMultiplePrediction() {
-  if (!mLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!mLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   const res = mLastResult;
   const xVals = res.varNames.map((_, i) => parseFloat(document.getElementById(`m-px-${i}`).value));
-  if (xVals.some(isNaN)) { showToast('Preencha todos os valores.', 'err'); return; }
+  if (xVals.some(isNaN)) { showToast(window.t('toast-fill-vals'), 'err'); return; }
 
   const conf = parseFloat(document.getElementById('m-pred-conf').value);
   let pred;
   try {
     pred = await analyze('multiple_pred', { xVals, conf, beta: res.beta, se: res.se, df_resid: res.df_resid, XtXinv: res.XtXinv }, {});
-  } catch (e) { showToast('Erro na previsão: ' + e.message, 'err'); return; }
+  } catch (e) { showToast(window.t('toast-pred-err') + e.message, 'err'); return; }
 
   const box = document.getElementById('m-pred-result');
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
       <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">
-        Previsão para: ${res.varNames.map((n, i) => `${esc(n)}=${xVals[i]}`).join(', ')}
+        ${window.t('lbl-forecast-for')}: ${res.varNames.map((n, i) => `${esc(n)}=${xVals[i]}`).join(', ')}
       </div>
       <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IC ${(conf * 100).toFixed(0)}% (média): [${pred.icLo.toFixed(4)}, ${pred.icHi.toFixed(4)}]<br>
-        IP ${(conf * 100).toFixed(0)}% (individual): [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]
+        ${window.t('lbl-ic')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-mean-interval')}: [${pred.icLo.toFixed(4)}, ${pred.icHi.toFixed(4)}]<br>
+        ${window.t('lbl-ip')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-ind-interval')}: [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]
       </div>
     </div>`;
 }
@@ -929,7 +929,7 @@ async function mGenerateAI(res) {
 }
 
 export async function mSaveAnalysis() {
-  if (!mLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!mLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   document.getElementById('m-cloud-saving').style.display = 'flex';
   try {
     const res = mLastResult;
@@ -943,10 +943,10 @@ export async function mSaveAnalysis() {
         se: res.se, Xs: res.Xs, Y: res.Y,
       },
     });
-    showToast('Regressão múltipla salva 🚀', 'ok');
+    showToast(window.t('toast-saved-mult'), 'ok');
   } catch (err) {
     console.error('ERRO MULTIPLA:', err);
-    showToast('Erro ao salvar regressão múltipla', 'err');
+    showToast(window.t('toast-save-err-mult'), 'err');
   } finally {
     document.getElementById('m-cloud-saving').style.display = 'none';
   }
@@ -981,10 +981,10 @@ export async function loadMultipleAnalysis(a) {
         mUpdateCount();
       }
     }
-    showToast('Regressão múltipla carregada ✏️', 'info');
+    showToast(window.t('toast-loaded-mult'), 'info');
   } catch (err) {
     console.error('loadMultipleAnalysis error:', err);
-    showToast('Erro ao carregar regressão múltipla.', 'err');
+    showToast(window.t('toast-load-err-mult'), 'err');
   }
 }
 

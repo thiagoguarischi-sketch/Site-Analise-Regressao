@@ -47,7 +47,7 @@ function poEval(beta, x) {
 
 export async function poAutoSelectDegree() {
   const { xs, ys } = poGetData();
-  if (xs.length < 4) { showToast('Insira pelo menos 4 pares.', 'err'); return; }
+  if (xs.length < 4) { showToast(window.t('toast-min4-pairs'), 'err'); return; }
   let bestDeg = 1, bestR2adj = -Infinity;
   for (let d = 1; d <= Math.min(6, xs.length - 2); d++) {
     try {
@@ -59,8 +59,8 @@ export async function poAutoSelectDegree() {
   document.querySelectorAll('#po-degree-btns .degree-btn').forEach((b, i) => {
     b.classList.toggle('active', i + 1 === bestDeg);
   });
-  document.getElementById('po-degree-hint').textContent = `✓ Melhor grau: ${bestDeg} (R²adj = ${bestR2adj.toFixed(4)})`;
-  showToast(`Melhor grau: ${bestDeg}`, 'ok');
+  document.getElementById('po-degree-hint').textContent = `${window.t('poly-best-degree')}${bestDeg} (R²adj = ${bestR2adj.toFixed(4)})`;
+  showToast(`${window.t('toast-poly-best-degree')}${bestDeg}`, 'ok');
 }
 
 export function poInitRows(n = 8) {
@@ -120,7 +120,7 @@ function poGetData() {
 
 export function poUpdateCount() {
   const { xs } = poGetData();
-  document.getElementById('po-data-count').textContent = `${xs.length} par${xs.length !== 1 ? 'es' : ''} de dados`;
+  document.getElementById('po-data-count').textContent = `${xs.length} ${window.t(xs.length !== 1 ? 'par-plural' : 'par-single')}`;
   document.getElementById('po-dh-x').textContent = document.getElementById('po-label-x').value || 'X';
   document.getElementById('po-dh-y').textContent = document.getElementById('po-label-y').value || 'Y';
 }
@@ -159,15 +159,15 @@ export function poLoadExample() {
 
 export async function runPolynomial() {
   const { xs, ys } = poGetData();
-  if (xs.length < poDegree + 2) { showToast(`Insira pelo menos ${poDegree + 2} pares para grau ${poDegree}.`, 'err'); return; }
+  if (xs.length < poDegree + 2) { showToast(`${window.t('lbl-enter-at-least')} ${poDegree + 2} ${window.t('par-plural')} (${window.t('lbl-degree')} ${poDegree}).`, 'err'); return; }
 
   const lx = document.getElementById('po-label-x').value || 'X';
   const ly = document.getElementById('po-label-y').value || 'Y';
   let res;
   try {
     res = await computePolynomial(xs, ys, poDegree);
-  } catch (e) { showToast('Erro no servidor: ' + e.message, 'err'); return; }
-  if (!res) { showToast('Erro de cálculo (dados colineares?).', 'err'); return; }
+  } catch (e) { showToast(window.t('toast-server-err') + e.message, 'err'); return; }
+  if (!res) { showToast(window.t('toast-calc-err-poly'), 'err'); return; }
   res.xs = xs; res.ys = ys; res.labelX = lx; res.labelY = ly;
   poLastResult = res;
 
@@ -175,7 +175,7 @@ export async function runPolynomial() {
   document.getElementById('po-results').style.display = 'block';
   document.getElementById('po-btn-save').style.display = 'inline-flex';
   poGenerateAI(res);
-  showToast('Análise polinomial concluída!', 'ok');
+  showToast(window.t('toast-done-poly'), 'ok');
 }
 
 async function renderPolynomialResults(res, xs, ys, lx, ly) {
@@ -290,24 +290,24 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
 }
 
 export async function poRunPrediction() {
-  if (!poLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!poLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   const xNew = parseFloat(document.getElementById('po-pred-x').value);
-  if (isNaN(xNew)) { showToast('Digite um valor de X.', 'err'); return; }
+  if (isNaN(xNew)) { showToast(window.t('toast-enter-x'), 'err'); return; }
   const res = poLastResult;
   let pred;
   try {
     pred = await analyze('poly_pred', { xNew, beta: res.beta, se: res.se, df_resid: res.df_resid, degree: res.degree, XtXinv: res.XtXinv }, {});
-  } catch (e) { showToast('Erro na previsão: ' + e.message, 'err'); return; }
+  } catch (e) { showToast(window.t('toast-pred-err') + e.message, 'err'); return; }
 
   const box = document.getElementById('po-pred-result');
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
-      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Previsão para ${res.labelX} = ${xNew}</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">${window.t('lbl-forecast-for')} ${res.labelX} = ${xNew}</div>
       <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
-        IP 95% (individual): [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]<br>
-        Grau ${res.degree} | R²adj = ${res.r2adj.toFixed(4)}
+        ${window.t('lbl-ip')} 95% ${window.t('lbl-ind-interval')}: [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]<br>
+        ${window.t('lbl-degree')} ${res.degree} | R²adj = ${res.r2adj.toFixed(4)}
       </div>
     </div>`;
 }
@@ -331,7 +331,7 @@ async function poGenerateAI(res) {
 }
 
 export async function poSaveAnalysis() {
-  if (!poLastResult) { showToast('Execute uma análise primeiro.', 'err'); return; }
+  if (!poLastResult) { showToast(window.t('toast-run-first'), 'err'); return; }
   document.getElementById('po-cloud-saving').style.display = 'flex';
   try {
     const res = poLastResult;
@@ -348,11 +348,11 @@ export async function poSaveAnalysis() {
         xs: res.xs, ys: res.ys,
       },
     });
-    showToast('Regressão polinomial salva 🚀', 'ok');
+    showToast(window.t('toast-saved-poly'), 'ok');
     await loadHistory();
     await updateProfileStats();
   } catch (err) {
-    showToast('Erro ao salvar: ' + (err.message || err), 'err');
+    showToast(window.t('toast-save-err') + (err.message || err), 'err');
   } finally {
     document.getElementById('po-cloud-saving').style.display = 'none';
   }
@@ -381,7 +381,7 @@ export async function loadPolynomialAnalysis(a) {
     for (let i = d.xs.length; i < 8; i++) poAddRow();
     poUpdateCount();
   }
-  showToast('Regressão polinomial carregada ✏️', 'info');
+  showToast(window.t('toast-loaded-poly'), 'info');
 }
 
 export async function poExportExcel() {
