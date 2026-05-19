@@ -2326,11 +2326,11 @@
     <div class="auth-logo">
       <span class="auth-logo-text">Slope</span>
     </div>
-    <p class="auth-subtitle">Plataforma de análise estatística com sincronização em nuvem</p>
+    <p class="auth-subtitle" data-i18n="auth-subtitle">Plataforma de análise estatística com sincronização em nuvem</p>
 
     <div class="auth-tabs" id="auth-tabs">
-      <button class="auth-tab active" onclick="showAuthTab('login')">Entrar</button>
-      <button class="auth-tab" onclick="showAuthTab('signup')">Cadastrar</button>
+      <button class="auth-tab active" onclick="showAuthTab('login')" data-i18n="auth-tab-login">Entrar</button>
+      <button class="auth-tab" onclick="showAuthTab('signup')" data-i18n="auth-tab-signup">Cadastrar</button>
     </div>
 
     <!-- Login -->
@@ -2341,16 +2341,16 @@
         <input class="field-input" type="email" id="login-email" placeholder="seu@email.com" required autocomplete="email">
       </div>
       <div class="field-group">
-        <label class="field-label">Senha</label>
+        <label class="field-label" data-i18n="lbl-auth-senha">Senha</label>
         <div class="pw-wrap">
-          <input class="field-input" type="password" id="login-pw" placeholder="Sua senha" required autocomplete="current-password">
+          <input class="field-input" type="password" id="login-pw" placeholder="Sua senha" data-i18n-placeholder="ph-login-pw" required autocomplete="current-password">
           <button type="button" class="pw-toggle" onclick="togglePw('login-pw',this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
-      <div class="auth-link" onclick="showAuthTab('forgot')">Esqueci minha senha</div>
-      <button class="btn-primary" type="submit" id="btn-login">Entrar na conta</button>
-      <div class="auth-divider">ou</div>
-      <button type="button" class="btn-demo" onclick="doDemo()">
+      <div class="auth-link" onclick="showAuthTab('forgot')" data-i18n="auth-forgot-link">Esqueci minha senha</div>
+      <button class="btn-primary" type="submit" id="btn-login" data-i18n="btn-login">Entrar na conta</button>
+      <div class="auth-divider" data-i18n="auth-divider">ou</div>
+      <button type="button" class="btn-demo" onclick="doDemo()" data-i18n="btn-demo">
         ⚡ Entrar como Demo (sem cadastro)
       </button>
     </form>
@@ -2362,59 +2362,59 @@
       <div id="signup-fields">
         <div id="signup-error" class="auth-error"></div>
         <div class="field-group">
-          <label class="field-label">Nome</label>
-          <input class="field-input" type="text" id="signup-name" placeholder="Seu nome" autocomplete="name">
+          <label class="field-label" data-i18n="lbl-auth-name">Nome</label>
+          <input class="field-input" type="text" id="signup-name" placeholder="Seu nome" data-i18n-placeholder="ph-signup-name" autocomplete="name">
         </div>
         <div class="field-group">
           <label class="field-label">E-mail</label>
           <input class="field-input" type="email" id="signup-email" placeholder="seu@email.com" autocomplete="email">
         </div>
         <div class="field-group">
-          <label class="field-label">Senha</label>
+          <label class="field-label" data-i18n="lbl-auth-senha">Senha</label>
           <div class="pw-wrap">
-            <input class="field-input" type="password" id="signup-pw" placeholder="Mínimo 8 caracteres" autocomplete="new-password" oninput="updatePwStrength(this.value)">
+            <input class="field-input" type="password" id="signup-pw" placeholder="Mínimo 8 caracteres" data-i18n-placeholder="ph-signup-pw" autocomplete="new-password" oninput="updatePwStrength(this.value)">
             <button type="button" class="pw-toggle" onclick="togglePw('signup-pw',this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
           <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
         </div>
         <div class="field-group">
-          <label class="field-label">Confirmar senha</label>
+          <label class="field-label" data-i18n="lbl-auth-confirmar">Confirmar senha</label>
           <div class="pw-wrap">
-            <input class="field-input" type="password" id="signup-pw2" placeholder="Repita a senha" autocomplete="new-password">
+            <input class="field-input" type="password" id="signup-pw2" placeholder="Repita a senha" data-i18n-placeholder="ph-signup-pw2" autocomplete="new-password">
             <button type="button" class="pw-toggle" onclick="togglePw('signup-pw2',this)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
         </div>
-        <button class="btn-primary" type="submit" id="btn-signup">Criar conta grátis</button>
+        <button class="btn-primary" type="submit" id="btn-signup" data-i18n="btn-signup">Criar conta grátis</button>
       </div>
 
       <!-- Etapa 2: verificação do código -->
       <div id="signup-verify" style="display:none">
         <div style="text-align:center;margin-bottom:22px">
           <div style="font-size:44px;margin-bottom:10px">📧</div>
-          <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:8px">Confirme seu e-mail</div>
+          <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:8px" data-i18n="verify-title">Confirme seu e-mail</div>
           <div style="font-size:13px;color:var(--txt2);line-height:1.7">
-            Enviamos um código de 6 dígitos para<br>
+            <span data-i18n="verify-desc">Enviamos um código de 6 dígitos para</span><br>
             <strong id="verify-email-hint" style="color:var(--y)"></strong>
           </div>
         </div>
         <div id="verify-error" class="auth-error"></div>
         <div class="field-group" style="margin-bottom:16px">
-          <label class="field-label" style="text-align:center;display:block">Código de verificação</label>
+          <label class="field-label" style="text-align:center;display:block" data-i18n="lbl-auth-code">Código de verificação</label>
           <input class="field-input" id="verify-code-input" type="text"
             maxlength="6" placeholder="000000" inputmode="numeric"
             autocomplete="one-time-code"
             style="text-align:center;font-size:26px;font-weight:700;letter-spacing:.45em;font-family:var(--font-mono);color:var(--y)"
             onkeydown="if(event.key==='Enter'){event.preventDefault();verifySignupCode()}">
         </div>
-        <button class="btn-primary" type="button" id="verify-btn" onclick="verifySignupCode()">
+        <button class="btn-primary" type="button" id="verify-btn" onclick="verifySignupCode()" data-i18n="btn-verify">
           Verificar e criar conta
         </button>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px">
-          <span class="auth-link" style="font-size:12px" onclick="backToSignupForm()">← Voltar</span>
+          <span class="auth-link" style="font-size:12px" onclick="backToSignupForm()" data-i18n="verify-back">← Voltar</span>
           <span style="color:var(--txt3)">
             <button type="button" id="verify-resend-btn" class="auth-link"
               style="font-size:12px;background:none;border:none;cursor:pointer;padding:0"
-              onclick="resendSignupCode()">Reenviar código</button>
+              onclick="resendSignupCode()" data-i18n="verify-resend">Reenviar código</button>
             <span id="verify-resend-countdown"></span>
           </span>
         </div>
@@ -2426,13 +2426,13 @@
     <div class="form-forgot" id="form-forgot">
       <div id="forgot-error" class="auth-error"></div>
       <div id="forgot-success" class="auth-success"></div>
-      <div class="back-link" onclick="showAuthTab('login')">← Voltar ao login</div>
-      <p style="font-size:13px;color:var(--txt2)">Digite seu e-mail para redefinir sua senha.</p>
+      <div class="back-link" onclick="showAuthTab('login')" data-i18n="forgot-back">← Voltar ao login</div>
+      <p style="font-size:13px;color:var(--txt2)" data-i18n="forgot-desc">Digite seu e-mail para redefinir sua senha.</p>
       <div class="field-group">
         <label class="field-label">E-mail</label>
         <input class="field-input" type="email" id="forgot-email" placeholder="seu@email.com">
       </div>
-      <button class="btn-primary" onclick="doForgot()">Enviar link de redefinição</button>
+      <button class="btn-primary" onclick="doForgot()" data-i18n="btn-forgot">Enviar link de redefinição</button>
     </div>
   </div>
 </div>
@@ -7117,6 +7117,44 @@ window.openCurso = openCurso;
       'btn-login':           'Entrar na conta',
       'btn-signup':          'Criar conta grátis',
       'btn-verify':          'Verificar e criar conta',
+      'btn-demo':            '⚡ Entrar como Demo (sem cadastro)',
+      'btn-forgot':          'Enviar link de redefinição',
+      /* auth overlay — textos estáticos */
+      'auth-subtitle':       'Plataforma de análise estatística com sincronização em nuvem',
+      'auth-tab-login':      'Entrar',
+      'auth-tab-signup':     'Cadastrar',
+      'auth-forgot-link':    'Esqueci minha senha',
+      'auth-divider':        'ou',
+      /* auth — labels */
+      'lbl-auth-senha':      'Senha',
+      'lbl-auth-name':       'Nome',
+      'lbl-auth-confirmar':  'Confirmar senha',
+      'lbl-auth-code':       'Código de verificação',
+      /* auth — placeholders */
+      'ph-login-pw':         'Sua senha',
+      'ph-signup-name':      'Seu nome',
+      'ph-signup-pw':        'Mínimo 8 caracteres',
+      'ph-signup-pw2':       'Repita a senha',
+      /* auth — verificação */
+      'verify-title':        'Confirme seu e-mail',
+      'verify-desc':         'Enviamos um código de 6 dígitos para',
+      'verify-back':         '← Voltar',
+      'verify-resend':       'Reenviar código',
+      /* auth — esqueci senha */
+      'forgot-back':         '← Voltar ao login',
+      'forgot-desc':         'Digite seu e-mail para redefinir sua senha.',
+      /* auth — mensagens de erro / sucesso */
+      'err-login':           'E-mail ou senha incorretos.',
+      'err-name-short':      'Nome deve ter pelo menos 2 caracteres.',
+      'err-email-empty':     'Digite seu e-mail.',
+      'err-pw-short':        'Senha deve ter mínimo 8 caracteres.',
+      'err-pw-mismatch':     'As senhas não coincidem.',
+      'err-signup':          'Erro ao criar conta.',
+      'err-verify-length':   'Digite os 6 dígitos do código.',
+      'err-verify-invalid':  'Código inválido ou expirado. Tente novamente.',
+      'err-verify':          'Erro ao verificar código.',
+      'ok-forgot':           'Link de redefinição enviado para seu e-mail.',
+      'err-forgot':          'Erro ao enviar link.',
       /* btn — run */
       'btn-run':             '▶ Gerar análise',
       /* poly — auto degree */
@@ -7830,6 +7868,44 @@ window.openCurso = openCurso;
       'btn-login':           'Sign in',
       'btn-signup':          'Create free account',
       'btn-verify':          'Verify and create account',
+      'btn-demo':            '⚡ Try Demo (no sign up)',
+      'btn-forgot':          'Send reset link',
+      /* auth overlay — static texts */
+      'auth-subtitle':       'Statistical analysis platform with cloud sync',
+      'auth-tab-login':      'Sign in',
+      'auth-tab-signup':     'Sign up',
+      'auth-forgot-link':    'Forgot my password',
+      'auth-divider':        'or',
+      /* auth — labels */
+      'lbl-auth-senha':      'Password',
+      'lbl-auth-name':       'Name',
+      'lbl-auth-confirmar':  'Confirm password',
+      'lbl-auth-code':       'Verification code',
+      /* auth — placeholders */
+      'ph-login-pw':         'Your password',
+      'ph-signup-name':      'Your name',
+      'ph-signup-pw':        'At least 8 characters',
+      'ph-signup-pw2':       'Repeat password',
+      /* auth — verification */
+      'verify-title':        'Confirm your email',
+      'verify-desc':         'We sent a 6-digit code to',
+      'verify-back':         '← Back',
+      'verify-resend':       'Resend code',
+      /* auth — forgot password */
+      'forgot-back':         '← Back to login',
+      'forgot-desc':         'Enter your email to reset your password.',
+      /* auth — error / success messages */
+      'err-login':           'Incorrect email or password.',
+      'err-name-short':      'Name must be at least 2 characters.',
+      'err-email-empty':     'Please enter your email.',
+      'err-pw-short':        'Password must be at least 8 characters.',
+      'err-pw-mismatch':     'Passwords do not match.',
+      'err-signup':          'Error creating account.',
+      'err-verify-length':   'Please enter all 6 digits.',
+      'err-verify-invalid':  'Invalid or expired code. Please try again.',
+      'err-verify':          'Error verifying code.',
+      'ok-forgot':           'Reset link sent to your email.',
+      'err-forgot':          'Error sending link.',
       /* btn — run */
       'btn-run':             '▶ Run analysis',
       /* poly — auto degree */
