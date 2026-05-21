@@ -4414,5 +4414,71 @@ sections.forEach(function(s) { observer.observe(s); });
   applyLang(lang);
 })();
 </script>
+<script src="mercado-financeiro-trans.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CONTENT_PT = {};
+  function capturePT() {
+    document.querySelectorAll('.section').forEach(function (s) { CONTENT_PT['s:' + s.id] = s.innerHTML; });
+    document.querySelectorAll('.module-divider').forEach(function (d) { CONTENT_PT['d:' + d.id] = d.innerHTML; });
+    document.querySelectorAll('.module-panel').forEach(function (p) {
+      var nav = p.querySelector('.module-nav');
+      if (nav) CONTENT_PT['n:' + p.dataset.module] = nav.innerHTML;
+    });
+    CONTENT_PT.title = document.title;
+  }
+  var MODULE_LABELS_EN = [
+    'Module 1 · Introduction','Module 2 · Economics','Module 3 · Fixed Income',
+    'Module 4 · Equities','Module 5 · Derivatives','Module 6 · Advanced Mgmt.',
+    'Module 7 · United States','Module 8 · Global Markets','Conclusion','Extra Module · Slope'
+  ];
+  function applyContentLang(l) {
+    if (l === 'en') {
+      document.title = 'Financial Markets Course · Slope';
+      document.querySelectorAll('.section').forEach(function(el) {
+        if (window.SEC_EN && SEC_EN[el.id]) el.innerHTML = SEC_EN[el.id];
+      });
+      document.querySelectorAll('.module-divider').forEach(function(el) {
+        if (window.DIV_EN && DIV_EN[el.id]) el.innerHTML = DIV_EN[el.id];
+      });
+      document.querySelectorAll('.module-panel').forEach(function(panel) {
+        var nav = panel.querySelector('.module-nav');
+        if (nav && window.NAV_EN && NAV_EN[panel.dataset.module]) nav.innerHTML = NAV_EN[panel.dataset.module];
+      });
+      document.querySelectorAll('.module-dot').forEach(function(dot, i) {
+        dot.title = MODULE_LABELS_EN[i] || '';
+      });
+    } else {
+      document.title = CONTENT_PT.title || '';
+      document.querySelectorAll('.section').forEach(function(el) {
+        var k = 's:' + el.id; if (CONTENT_PT[k]) el.innerHTML = CONTENT_PT[k];
+      });
+      document.querySelectorAll('.module-divider').forEach(function(el) {
+        var k = 'd:' + el.id; if (CONTENT_PT[k]) el.innerHTML = CONTENT_PT[k];
+      });
+      document.querySelectorAll('.module-panel').forEach(function(panel) {
+        var nav = panel.querySelector('.module-nav');
+        var k = 'n:' + panel.dataset.module;
+        if (nav && CONTENT_PT[k]) nav.innerHTML = CONTENT_PT[k];
+      });
+      document.querySelectorAll('.module-dot').forEach(function(dot, i) {
+        dot.title = (typeof MODULE_LABELS !== 'undefined' && MODULE_LABELS[i]) || '';
+      });
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    capturePT();
+    var lang = localStorage.getItem('slope-lang') || 'pt';
+    if (lang === 'en') applyContentLang('en');
+  });
+  var _orig = window.toggleLang;
+  window.toggleLang = function() {
+    if (_orig) _orig();
+    var lang = localStorage.getItem('slope-lang') || 'pt';
+    applyContentLang(lang);
+  };
+})();
+</script>
 </body>
 </html>
