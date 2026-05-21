@@ -162,8 +162,8 @@ export function showPreview(data) {
   const headers = data[0].map(String);
   const selX = document.getElementById('col-x');
   const selY = document.getElementById('col-y');
-  selX.innerHTML = headers.map(h => `<option>${h}</option>`).join('');
-  selY.innerHTML = headers.map((h, i) => `<option ${i === 1 ? 'selected' : ''}>${h}</option>`).join('');
+  selX.innerHTML = headers.map(h => `<option>${esc(h)}</option>`).join('');
+  selY.innerHTML = headers.map((h, i) => `<option ${i === 1 ? 'selected' : ''}>${esc(h)}</option>`).join('');
 
   const previewRows = data.slice(0, 8).map(r => `<tr>${r.map(c => `<td style="padding:5px 8px;border-bottom:1px solid var(--brd);font-size:12px">${esc(String(c))}</td>`).join('')}</tr>`).join('');
   document.getElementById('preview-tbl').innerHTML = `

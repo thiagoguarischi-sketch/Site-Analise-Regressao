@@ -19,6 +19,11 @@ export async function viewAnalysis(id) {
     if (!a) throw new Error('Análise não encontrada.');
 
     const d = a.dados || {};
+    // Defesa em profundidade: campos numéricos exibidos crus são coagidos —
+    // um valor não numérico (dados adulterados) é escapado e não injeta HTML.
+    ['n', 'k', 'p', 'd', 'q', 'degree', 'futureN'].forEach(f => {
+      if (d[f] != null && typeof d[f] !== 'number') d[f] = esc(d[f]);
+    });
     const isSimples = a.tipo === 'simples';
     const isLogistica = a.tipo === 'logistica';
     const isPolinomial = a.tipo === 'polinomial';

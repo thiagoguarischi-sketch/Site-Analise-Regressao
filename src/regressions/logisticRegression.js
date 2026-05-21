@@ -39,8 +39,9 @@ export function lgAddVar() {
   lgInitRows();
 }
 
-export function lgRemoveVar(name) {
-  lgVars = lgVars.filter(v => v.name !== name);
+export function lgRemoveVar(idx) {
+  // Recebe índice (não o nome) — evita XSS por nome de variável no onclick.
+  lgVars = lgVars.filter((_, i) => i !== idx);
   lgRenderVarChips();
   lgRenderTableHeader();
   lgInitRows();
@@ -55,7 +56,7 @@ function lgRenderVarChips() {
   el.innerHTML = lgVars.map((v, i) => `
     <span class="var-chip">
       X${i + 1}: ${esc(v.name)}
-      <button class="var-chip-rm" onclick="lgRemoveVar('${esc(v.name)}')" title="Remover">×</button>
+      <button class="var-chip-rm" onclick="lgRemoveVar(${i})" title="Remover">×</button>
     </span>`).join('');
 }
 
@@ -297,7 +298,7 @@ export function runLogisticPrediction() {
         Previsão para: ${res.varNames.map((n, i) => `${esc(n)}=${xVals[i]}`).join(', ')}
       </div>
       <div class="pred-val" style="color:${pred === 1 ? 'var(--y)' : 'var(--acc)'}">
-        ${res.labelY} = ${pred} (${pred === 1 ? window.t('lbl-class-1') : window.t('lbl-class-0')})
+        ${esc(res.labelY)} = ${pred} (${pred === 1 ? window.t('lbl-class-1') : window.t('lbl-class-0')})
       </div>
       <div class="pred-interval">
         P(Y=1) = <b>${(prob * 100).toFixed(2)}%</b> &nbsp;|&nbsp; Limiar: ${threshold}<br>

@@ -12,7 +12,7 @@ router.get('/analyses', requireAuth, async (req, res) => {
     res.json({ analyses: data });
   } catch (err) {
     console.error('[GET analyses] ERRO COMPLETO:', err);
-    res.status(500).json({ error: 'Erro ao buscar análises.', detail: err.message });
+    res.status(500).json({ error: 'Erro ao buscar análises.' });
   }
 });
 
@@ -41,7 +41,7 @@ router.post('/save-analysis', requireAuth, async (req, res) => {
     res.status(201).json({ id: result.id, message: 'Análise salva.' });
   } catch (err) {
     console.error('[POST save-analysis] ERRO COMPLETO:', err);
-    res.status(500).json({ error: 'Erro ao salvar.', detail: err.message });
+    res.status(500).json({ error: 'Erro ao salvar.' });
   }
 });
 
@@ -59,29 +59,9 @@ router.delete('/analysis/:id', requireAuth, async (req, res) => {
   } catch (err) {
     const status = err.status || 500;
     console.error('[DELETE analysis] ERRO COMPLETO:', err);
-    res.status(status).json({ error: err.message || 'Erro ao excluir.', detail: err.message });
+    // Só expõe a mensagem em erros esperados (4xx); 5xx retorna texto genérico.
+    res.status(status).json({ error: status >= 500 ? 'Erro ao excluir análise.' : (err.message || 'Erro ao excluir.') });
   }
-});
-
-// GET /api/debug — diagnostico sem auth (remover em producao)
-router.get('/debug', async (req, res) => {
-  const { supabase } = require('../middleware/auth');
-  const info = {
-    SUPABASE_URL: process.env.SUPABASE_URL || 'NAO DEFINIDA',
-    SERVICE_KEY_SET: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    SERVICE_KEY_PREFIX: process.env.SUPABASE_SERVICE_ROLE_KEY
-      ? process.env.SUPABASE_SERVICE_ROLE_KEY.slice(0, 20) + '...'
-      : 'vazia',
-  };
-
-  try {
-    const { error } = await supabase.from('analises').select('id').limit(1);
-    info.supabase_connect = error ? ('ERRO: ' + error.message) : 'OK';
-  } catch (e) {
-    info.supabase_connect = 'EXCECAO: ' + e.message;
-  }
-
-  res.json(info);
 });
 
 module.exports = router;

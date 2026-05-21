@@ -12,6 +12,48 @@ const { computeRidge, computeLasso, computeOLS_rr, rrLambdaSweep } = require('..
 const { stCompute, arimaCompute, garchCompute, varCompute } = require('../compute/timeSeries');
 const { tQ } = require('../compute/statistics');
 
+// ── Limites anti-DoS ───────────────────────────────────────────────────────
+// params e tamanhos de array são limitados para evitar consumo descontrolado
+// de CPU (inversão de matrizes gigantes, loops de iteração "infinitos").
+function _checkLimits(params = {}, dados = {}) {
+  const MAX_N = 5000, MAX_K = 60;
+  const len = v => (Array.isArray(v) ? v.length : 0);
+
+  for (const key of ['xs', 'ys', 'Y', 'values', 'labels', 'labelsList']) {
+    if (len(dados[key]) > MAX_N) return 'Conjunto de dados excede o limite (máx. 5000 pontos).';
+  }
+  if (Array.isArray(dados.Xs)) {
+    if (dados.Xs.length > MAX_K) return 'Número de variáveis excede o limite (máx. 60).';
+    for (const col of dados.Xs) if (len(col) > MAX_N) return 'Conjunto de dados excede o limite.';
+  }
+  if (Array.isArray(dados.matrix)) {
+    if (dados.matrix.length > MAX_N) return 'Conjunto de dados excede o limite.';
+    for (const row of dados.matrix) if (len(row) > MAX_K) return 'Número de variáveis excede o limite (máx. 60).';
+  }
+
+  // Vetores/matrizes em params (usados nas predições) — limita custo O(n²/n³).
+  for (const v of Object.values(params)) {
+    if (Array.isArray(v) && v.length > 200) return 'Parâmetro excede o tamanho permitido.';
+  }
+
+  // Aceita número ou string numérica; rejeita não-numérico e fora do intervalo.
+  const inRange = (v, lo, hi) => {
+    if (v == null || v === '') return true;
+    const n = Number(v);
+    return Number.isFinite(n) && n >= lo && n <= hi;
+  };
+  if (!inRange(params.degree, 1, 12))       return 'Parâmetro "degree" deve estar entre 1 e 12.';
+  if (!inRange(params.maxIter, 1, 100000))  return 'Parâmetro "maxIter" deve estar entre 1 e 100000.';
+  if (!inRange(params.iters, 1, 100000))    return 'Parâmetro "iters" deve estar entre 1 e 100000.';
+  if (!inRange(params.p, 1, 20))            return 'Parâmetro "p" deve estar entre 1 e 20.';
+  if (!inRange(params.d, 0, 3))             return 'Parâmetro "d" deve estar entre 0 e 3.';
+  if (!inRange(params.q, 0, 20))            return 'Parâmetro "q" deve estar entre 0 e 20.';
+  if (!inRange(params.futureN, 1, 500))     return 'Parâmetro "futureN" deve estar entre 1 e 500.';
+  if (!inRange(params.windowSize, 1, 1000)) return 'Parâmetro "windowSize" inválido.';
+  if (Array.isArray(params.taus) && params.taus.length > 25) return 'Número de quantis excede o limite.';
+  return null;
+}
+
 /**
  * POST /api/analyze
  * Body: { tipo, params, dados }
@@ -36,6 +78,9 @@ router.post('/analyze', requireAuth, (req, res) => {
     const { tipo, params = {}, dados = {} } = req.body;
 
     if (!tipo) return res.status(400).json({ error: 'Campo "tipo" obrigatório.' });
+
+    const limitErr = _checkLimits(params, dados);
+    if (limitErr) return res.status(400).json({ error: limitErr });
 
     let result;
 

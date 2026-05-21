@@ -25,7 +25,10 @@ async function _uid() {
 }
 
 function _initials(name, email) {
-  return (name || email || '?').split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+  // Mantém apenas letras/dígitos — evita injeção via inicial '<' em innerHTML.
+  const ini = (name || email || '?').split(' ').map(n => n[0]).filter(Boolean)
+    .slice(0, 2).join('').toUpperCase().replace(/[^0-9A-ZÀ-Ý]/g, '');
+  return ini || '?';
 }
 
 function _showSetup() {
@@ -51,7 +54,10 @@ export async function loadFriendsPanel() {
 // ── Busca de usuários ──
 
 export async function searchFriends() {
-  const q = document.getElementById('friends-search-input').value.trim();
+  const raw = document.getElementById('friends-search-input').value.trim();
+  // Allowlist: remove metacaracteres do PostgREST ( , ( ) % * . etc ) que
+  // permitiriam injetar condições extras no filtro .or() abaixo.
+  const q = raw.replace(/[^\p{L}\p{N}@._\- ]/gu, '').slice(0, 60);
   if (q.length < 2) { showToast(window.t('frnd-toast-min2'), 'err'); return; }
 
   const uid = await _uid();
@@ -146,7 +152,18 @@ export async function rejectFriendRequest(friendshipId) {
   await _loadPendingRequests();
 }
 
-export async function removeFriend(friendshipId, name) {
+export async function removeFriend(friendshipId) {
+  // O nome é resolvido pelo cache (não trafega via onclick) para evitar
+  // XSS por nome de perfil malicioso interpolado dentro do atributo.
+  let name = window.t('frnd-default-user');
+  if (_friendsCache) {
+    const fr = _friendsCache.friends.find(x => x.id === friendshipId);
+    if (fr) {
+      const otherId = fr.requester_id === _friendsCache.uid ? fr.addressee_id : fr.requester_id;
+      const u = _friendsCache.profileMap[otherId];
+      if (u) name = u.full_name || u.email || name;
+    }
+  }
   if (!confirm(window.t('frnd-confirm-remove').replace('%s', name))) return;
   const { error } = await db.from('friendships').delete().eq('id', friendshipId);
   if (error) { showToast(window.t('frnd-toast-rem-err'), 'err'); return; }
@@ -315,7 +332,7 @@ function _renderFriendsList({ friends, profileMap, unreadMap, uid }) {
           <button class="share-btn" style="color:var(--x);border-color:rgba(123,111,255,.3);white-space:nowrap"
             onclick="openChat('${otherId}')">${window.t('frnd-btn-msg')}</button>
           <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3);font-size:11px;white-space:nowrap"
-            onclick="removeFriend('${f.id}','${esc(u.full_name || window.t('frnd-default-user'))}')">✕</button>
+            onclick="removeFriend('${f.id}')">✕</button>
         </div>
       </div>`;
   }).join('');

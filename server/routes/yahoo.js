@@ -8,6 +8,7 @@ const YF_HEADERS = {
 };
 
 const PERIOD_DAYS = { '1mo': 30, '3mo': 90, '6mo': 180, '1y': 365, '2y': 730, '5y': 1825 };
+const VALID_INTERVALS = ['1d', '1wk', '1mo'];
 
 function _toUnix(dateStr) {
   return Math.floor(new Date(dateStr + 'T00:00:00Z').getTime() / 1000);
@@ -68,8 +69,10 @@ router.get('/yahoo/search', async (req, res) => {
 
 // GET /api/yahoo/chart?symbol=AAPL&from=2024-01-01&to=2024-12-31&interval=1d
 router.get('/yahoo/chart', async (req, res) => {
-  const { symbol, from, to, period = '1y', interval = '1d' } = req.query;
+  const { symbol, from, to, period = '1y' } = req.query;
   if (!symbol) return res.status(400).json({ error: 'Parâmetro "symbol" obrigatório.' });
+  // interval validado por allowlist — evita injeção de parâmetros na URL do Yahoo.
+  const interval = VALID_INTERVALS.includes(req.query.interval) ? req.query.interval : '1d';
 
   const maxTo = _yesterday();
   let period1, period2;

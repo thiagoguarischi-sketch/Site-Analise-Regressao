@@ -356,6 +356,13 @@ export async function changePw() {
   if (newPw !== newPw2) { showToast(window.t('toast-pw-mismatch'), 'err'); return; }
 
   try {
+    // Reautenticação: confirma a senha atual antes de permitir a troca.
+    // Sem isso, uma sessão sequestrada trocaria a senha sem conhecê-la.
+    const { data: { user } } = await db.auth.getUser();
+    if (!user?.email) { showToast('Erro ao validar a sessão. Faça login novamente.', 'err'); return; }
+    const { error: reauthErr } = await db.auth.signInWithPassword({ email: user.email, password: oldPw });
+    if (reauthErr) { showToast('Senha atual incorreta.', 'err'); return; }
+
     await db.auth.updateUser({ password: newPw });
     document.getElementById('old-pw').value = '';
     document.getElementById('new-pw').value = '';

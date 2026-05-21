@@ -87,7 +87,7 @@ function renderPadrao(res) {
     <div class="interp-box">
       ${window.t('corr-equation-lbl')} <b>Ŷ = ${fmt(res.b0)} + ${fmt(res.b1)}·X</b><br>
       ${window.t('corr-prefix')} ${window.t(strengthKey)} ${window.t('corr-and')} ${window.t(dirKey)} (r = ${fmt(res.r)}).
-      ${window.t('corr-explains')} <b>${(res.r2 * 100).toFixed(1)}%</b> ${window.t('corr-variance')} ${res.labelY}.
+      ${window.t('corr-explains')} <b>${(res.r2 * 100).toFixed(1)}%</b> ${window.t('corr-variance')} ${esc(res.labelY)}.
     </div>
   `;
 
@@ -98,7 +98,7 @@ function renderPadrao(res) {
     </tr>`).join('');
   document.getElementById('resid-tbl-padrao').innerHTML = `
     <table class="data-table">
-      <thead><tr><th>#</th><th>${res.labelX}</th><th>${res.labelY}</th><th>Ŷ</th><th>${window.t('tbl-residual')}</th></tr></thead>
+      <thead><tr><th>#</th><th>${esc(res.labelX)}</th><th>${esc(res.labelY)}</th><th>Ŷ</th><th>${window.t('tbl-residual')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
@@ -231,8 +231,8 @@ export function runPrediction() {
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
-      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">${window.t('lbl-forecast-for')} ${res.labelX} = ${xNew}</div>
-      <div class="pred-val">${res.labelY} ≈ ${yhat.toFixed(4)}</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">${window.t('lbl-forecast-for')} ${esc(res.labelX)} = ${xNew}</div>
+      <div class="pred-val">${esc(res.labelY)} ≈ ${yhat.toFixed(4)}</div>
       <div class="pred-interval">
         ${window.t('lbl-ic')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-mean-interval')}: [${icLo.toFixed(4)}, ${icHi.toFixed(4)}]<br>
         ${window.t('lbl-ip')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-ind-interval')}: [${ipLo.toFixed(4)}, ${ipHi.toFixed(4)}]
@@ -527,8 +527,9 @@ export function mAddVar() {
   mInitRows();
 }
 
-export function mRemoveVar(name) {
-  mVars = mVars.filter(v => v.name !== name);
+export function mRemoveVar(idx) {
+  // Recebe índice (não o nome) — evita XSS por nome de variável no onclick.
+  mVars = mVars.filter((_, i) => i !== idx);
   mRenderVarChips();
   mRenderTableHeader();
   mInitRows();
@@ -543,7 +544,7 @@ function mRenderVarChips() {
   el.innerHTML = mVars.map((v, i) => `
     <span class="var-chip">
       X${i + 1}: ${esc(v.name)}
-      <button class="var-chip-rm" onclick="mRemoveVar('${esc(v.name)}')" title="Remover">×</button>
+      <button class="var-chip-rm" onclick="mRemoveVar(${i})" title="Remover">×</button>
     </span>`).join('');
 }
 
@@ -900,7 +901,7 @@ export async function runMultiplePrediction() {
       <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">
         ${window.t('lbl-forecast-for')}: ${res.varNames.map((n, i) => `${esc(n)}=${xVals[i]}`).join(', ')}
       </div>
-      <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
+      <div class="pred-val">${esc(res.labelY)} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
         ${window.t('lbl-ic')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-mean-interval')}: [${pred.icLo.toFixed(4)}, ${pred.icHi.toFixed(4)}]<br>
         ${window.t('lbl-ip')} ${(conf * 100).toFixed(0)}% ${window.t('lbl-ind-interval')}: [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]

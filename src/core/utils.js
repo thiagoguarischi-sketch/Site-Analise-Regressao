@@ -6,8 +6,16 @@ export const sum = arr => arr.reduce((s, v) => s + v, 0);
 export const fmt = v => (v == null || !isFinite(v)) ? '—' : v.toFixed(4);
 export const fmtP = v => (v == null || !isFinite(v)) ? '—' : v < 0.0001 ? '<0.0001' : v.toFixed(4);
 
+// Escapa para uso seguro em HTML — inclui aspas, cobrindo também
+// contextos de atributo (ex.: title="..."). NÃO é suficiente para
+// strings JS dentro de atributos on*: nesses casos não interpole dados.
 export function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 export function fmtDate(iso) {

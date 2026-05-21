@@ -24,6 +24,12 @@ export async function loadHistory() {
     historyContainer.innerHTML = '';
 
     analyses.forEach(a => {
+      // Defesa em profundidade: coage campos numéricos exibidos crus —
+      // valores não numéricos (dados adulterados) são escapados.
+      const _dd = a.dados || {};
+      ['n', 'k', 'p', 'd', 'q', 'degree', 'lambda'].forEach(f => {
+        if (_dd[f] != null && typeof _dd[f] !== 'number') _dd[f] = esc(_dd[f]);
+      });
       const lang = localStorage.getItem('slope-lang') || 'pt';
       const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
       const dataFormatada = new Date(a.created_at).toLocaleString(locale);

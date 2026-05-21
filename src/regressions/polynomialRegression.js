@@ -280,8 +280,8 @@ async function renderPolynomialResults(res, xs, ys, lx, ly) {
     <table style="width:100%;border-collapse:collapse">
       <thead><tr>
         <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">#</th>
-        <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${lx}</th>
-        <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${ly}</th>
+        <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${esc(lx)}</th>
+        <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${esc(ly)}</th>
         <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">Ŷ</th>
         <th style="background:var(--bg3);padding:5px 8px;font-size:10px;color:var(--x);text-align:left">${window.t('tbl-residual')}</th>
       </tr></thead>
@@ -303,8 +303,8 @@ export async function poRunPrediction() {
   box.style.display = 'block';
   box.innerHTML = `
     <div class="pred-result">
-      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">${window.t('lbl-forecast-for')} ${res.labelX} = ${xNew}</div>
-      <div class="pred-val">${res.labelY} ≈ ${pred.yhat.toFixed(4)}</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">${window.t('lbl-forecast-for')} ${esc(res.labelX)} = ${xNew}</div>
+      <div class="pred-val">${esc(res.labelY)} ≈ ${pred.yhat.toFixed(4)}</div>
       <div class="pred-interval">
         ${window.t('lbl-ip')} 95% ${window.t('lbl-ind-interval')}: [${pred.ipLo.toFixed(4)}, ${pred.ipHi.toFixed(4)}]<br>
         ${window.t('lbl-degree')} ${res.degree} | R²adj = ${res.r2adj.toFixed(4)}

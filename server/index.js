@@ -1,6 +1,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const analysesRoutes = require('./routes/analyses');
@@ -13,7 +14,26 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middlewares
-app.use(cors({ origin: process.env.ALLOWED_ORIGIN || '*' }));
+// Cabeçalhos de segurança (HSTS, noSniff, frameguard, etc.).
+// CORP cross-origin para a API poder ser consumida pelo frontend.
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
+// CORS — allowlist explícita (NUNCA '*' numa API autenticada).
+// Produção: defina ALLOWED_ORIGIN no .env (lista separada por vírgula).
+// Sem ALLOWED_ORIGIN (desenvolvimento): aceita apenas localhost/127.0.0.1.
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGIN || '')
+  .split(',').map(s => s.trim()).filter(Boolean);
+const _isLocalhost = o => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o);
+app.use(cors({
+  origin(origin, cb) {
+    // Sem header Origin (curl, same-origin, apps nativas) é permitido.
+    if (!origin) return cb(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    if (ALLOWED_ORIGINS.length === 0 && _isLocalhost(origin)) return cb(null, true);
+    cb(new Error('Origem não permitida pelo CORS.'));
+  },
+}));
+
 app.use(express.json({ limit: '1mb' }));
 
 // Rate limit global
@@ -23,6 +43,16 @@ const limiter = rateLimit({
   message: { error: 'Muitas requisições. Tente novamente.' },
 });
 app.use('/api/', limiter);
+
+// Rate limit dedicado e mais estrito para os proxies externos (Yahoo/BCB),
+// que não exigem autenticação e poderiam ser abusados como proxy aberto.
+const proxyLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 40,
+  message: { error: 'Muitas requisições a serviços externos. Tente novamente em instantes.' },
+});
+app.use('/api/yahoo', proxyLimiter);
+app.use('/api/bcb', proxyLimiter);
 
 // Routes
 app.use('/api', analysesRoutes);

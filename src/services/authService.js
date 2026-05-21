@@ -2,12 +2,7 @@
 
 import { db } from './supabaseService.js';
 import { AI_EDGE_URL, SUPABASE_ANON_KEY } from '../config/constants.js';
-
-export function hashPw(pw) {
-  let h = 5381;
-  for (let i = 0; i < pw.length; i++) h = (h * 33) ^ pw.charCodeAt(i);
-  return (h >>> 0).toString(36) + pw.length.toString(36) + 'rl2024';
-}
+import { esc } from '../core/utils.js';
 
 export async function signUp(email, password, name) {
   const { data, error } = await db.auth.signUp({
@@ -75,9 +70,14 @@ export function aiLoadingHTML() {
 }
 
 export function aiResultHTML(text) {
+  // A resposta da IA é conteúdo não confiável (LLM + dados do usuário no
+  // prompt): escapa o HTML antes de aplicar a formatação de parágrafos.
+  const safe = esc(text)
+    .replace(/\n\n/g, '</p><p style="margin-top:8px">')
+    .replace(/\n/g, '<br>');
   return `<div class="ai-insight">
     <div class="ai-insight-title">✦ INTERPRETAÇÃO COM IA</div>
-    <div class="ai-insight-text">${text.replace(/\n\n/g, '</p><p style="margin-top:8px">').replace(/\n/g, '<br>')}</div>
+    <div class="ai-insight-text">${safe}</div>
   </div>`;
 }
 

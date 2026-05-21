@@ -3,6 +3,12 @@
   <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- CSP: restringe a origem de scripts e bloqueia object/base/form-action.
+     'unsafe-inline' em script-src é exigido pelos handlers onclick= inline
+     (removê-lo exige refatorar para addEventListener — hardening futuro).
+     A proteção de framing (frame-ancestors / X-Frame-Options) precisa vir
+     como header HTTP no host que serve este HTML — meta não a aplica. -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Slope · Plataforma de análise estatística</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5281,6 +5287,7 @@ CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
 })();
 
 </script>
+<script src="env-config.js"></script>
 <script type="module" src="src/app.js"></script>
 
 <script>

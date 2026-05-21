@@ -220,7 +220,7 @@ export function qrRunPrediction() {
     const color = QR_COLORS[String(tau)]?.line || '#fff';
     return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--brd);font-size:13px">
       <span style="color:${color};font-weight:600">τ = ${tau}</span>
-      <span>${ly} ≈ <b>${yhat.toFixed(4)}</b></span>
+      <span>${esc(ly)} ≈ <b>${yhat.toFixed(4)}</b></span>
     </div>`;
   }).join('');
 

@@ -599,8 +599,8 @@ function varRenderResults(res) {
      ${badge(nObs, 'Obs. efetivas')}
      ${badge(fmt(aic, 2), 'AIC')}
      ${badge(fmt(bic, 2), 'BIC')}` +
-    vn.map((n, j) => badge(fmt(ymArr[j], 2), `Média — ${n}`)).join('') +
-    vn.map((n, j) => badge(fmt(sdArr[j], 2), `DP — ${n}`)).join('');
+    vn.map((n, j) => badge(fmt(ymArr[j], 2), `Média — ${esc(n)}`)).join('') +
+    vn.map((n, j) => badge(fmt(sdArr[j], 2), `DP — ${esc(n)}`)).join('');
 
   stDestroyChart('main');
   STC.main = createVARMainChart('st-chart-main', matrix, labelsList, forecast, futureN, vn);
@@ -618,7 +618,7 @@ function varRenderResults(res) {
       const irf = Array.from({ length: H + 1 }, (_, h) => Phi[h][resp][imp]);
       const card = document.createElement('div');
       card.className = 'diag-card';
-      card.innerHTML = `<div class="diag-title" style="font-size:10px">Impulso: <b>${vn[imp]}</b> → Resposta: <b>${vn[resp]}</b></div>
+      card.innerHTML = `<div class="diag-title" style="font-size:10px">Impulso: <b>${esc(vn[imp])}</b> → Resposta: <b>${esc(vn[resp])}</b></div>
         <div class="diag-chart-wrap"><canvas id="${id}"></canvas></div>`;
       irfContainer.appendChild(card);
       requestAnimationFrame(() => {
@@ -629,8 +629,8 @@ function varRenderResults(res) {
 
   // Granger causality table
   const gRows = granger.map(g => `<tr>
-    <td><b>${vn[g.from]}</b></td>
-    <td>${vn[g.to]}</td>
+    <td><b>${esc(vn[g.from])}</b></td>
+    <td>${esc(vn[g.to])}</td>
     <td style="font-family:monospace">${isNaN(g.fStat) ? '—' : g.fStat.toFixed(3)}</td>
     <td style="font-family:monospace">${isNaN(g.pval) ? '—' : g.pval.toFixed(4)}</td>
     <td style="color:var(--y);font-weight:700">${g.sig || '—'}</td>
@@ -643,7 +643,7 @@ function varRenderResults(res) {
     <p style="font-size:10px;color:var(--txt3);margin-top:6px">* aprox. via chi²(p). Sig: *** p&lt;0.01, ** p&lt;0.05, * p&lt;0.10</p>`;
 
   // Projection table
-  const projHeaders = ['Período', ...vn.map(n => n + ' (prev.)')].map(h => `<th>${h}</th>`).join('');
+  const projHeaders = ['Período', ...vn.map(n => n + ' (prev.)')].map(h => `<th>${esc(h)}</th>`).join('');
   const projRows = Array.from({ length: futureN }, (_, i) => {
     const cells = forecast[i].map(v => `<td style="color:var(--y);font-weight:600">${fmt(v, 3)}</td>`).join('');
     return `<tr><td>+${i + 1}</td>${cells}</tr>`;
@@ -683,7 +683,7 @@ async function stGenerateAI(res) {
     prompt = isEn
       ? `You are an econometrics and VAR model expert. Analyze in English (3-4 short paragraphs):\n\n${statsVar}\n\nInclude: 1) dynamics of variable relationships and Granger causality 2) expected IRF and shock persistence 3) fit quality and VAR limitations 4) when to use VAR vs univariate models.`
       : `Você é especialista em econometria e modelos VAR. Analise em português (3-4 parágrafos curtos):\n\nModelo: VAR(${res.p}) com ${res.k} variáveis | T = ${res.T} | Obs. efetivas = ${res.nObs}\nVariáveis: ${res.varNames.join(', ')}\nMédias: ${res.ymArr.map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}\nAIC = ${res.aic.toFixed(3)} | BIC = ${res.bic.toFixed(3)}\nCausalidade de Granger significativa: ${esc(grangerSig)}\nPrevisão próx. ${res.futureN} períodos (última): ${res.forecast[res.futureN - 1].map((v, i) => `${res.varNames[i]}=${v.toFixed(2)}`).join(', ')}\n\nInclua: 1) dinâmica das relações entre variáveis e Granger-causalidade 2) IRF esperado e persistência dos choques 3) qualidade do ajuste e limitações do VAR 4) quando usar VAR vs modelos univariados.`;
-    fallback = `VAR(${res.p}), ${res.k} ${isEn ? 'variables' : 'variáveis'}. AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}. ${isEn ? 'Causality' : 'Causalidade'}: ${grangerSig}.`;
+    fallback = `VAR(${res.p}), ${res.k} ${isEn ? 'variables' : 'variáveis'}. AIC=${res.aic.toFixed(2)}, BIC=${res.bic.toFixed(2)}. ${isEn ? 'Causality' : 'Causalidade'}: ${esc(grangerSig)}.`;
   } else {
     const statsClassic = `Series: ${esc(res.labelY)} | Period: ${esc(res.labelX)}\nn = ${res.n} periods\nTrend: b₀=${res.b0.toFixed(4)}, b₁=${res.b1.toFixed(4)} per period\nMean=${res.ym.toFixed(4)}, SD=${res.stdev.toFixed(4)}, CV=${res.cv.toFixed(1)}%\nAvg growth=${res.avgGrowth.toFixed(2)}% per period\nBest: ${esc(res.labels[res.maxIdx] || String(res.maxIdx + 1))} (${res.maxVal.toFixed(2)})\nWorst: ${esc(res.labels[res.minIdx] || String(res.minIdx + 1))} (${res.minVal.toFixed(2)})\nProjection next ${res.futureN} periods: ${res.projValues.map(v => v.toFixed(2)).join(', ')}`;
     prompt = isEn

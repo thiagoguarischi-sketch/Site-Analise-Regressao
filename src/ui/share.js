@@ -15,7 +15,30 @@ let _analyses = [];
 let _overlayAnalysis = null;
 let _incomingShared = null;
 let _friendPickAnalysisId = null;
+let _friendPickFriends = [];
 let _receivedCache = null;
+
+// Tipos de análise aceitos — qualquer payload externo (link #share=,
+// friend_shares) é validado contra esta allowlist antes de ser usado.
+const VALID_TIPOS = ['simples', 'multipla', 'logistica', 'polinomial', 'serie', 'quantilica', 'regularizada'];
+
+// Saneia um objeto de análise vindo de fonte NÃO confiável (URL de terceiro,
+// friend_shares). Retorna null se inválido. `tipo` é checado por allowlist e
+// os textos são coagidos a string com tamanho limitado. O conteúdo de `dados`
+// continua livre — a proteção contra XSS é o escape nos pontos de render.
+function _sanitizeSharedAnalysis(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  if (!VALID_TIPOS.includes(raw.tipo)) return null;
+  if (raw.dados == null || typeof raw.dados !== 'object') return null;
+  return {
+    nome:       typeof raw.nome === 'string' ? raw.nome.slice(0, 200) : 'Análise',
+    tipo:       raw.tipo,
+    dados:      raw.dados,
+    label_x:    typeof raw.label_x === 'string' ? raw.label_x.slice(0, 120) : null,
+    label_y:    typeof raw.label_y === 'string' ? raw.label_y.slice(0, 120) : null,
+    created_at: typeof raw.created_at === 'string' ? raw.created_at : new Date().toISOString(),
+  };
+}
 
 async function _uid() {
   const { data: { user } } = await db.auth.getUser();
@@ -23,7 +46,10 @@ async function _uid() {
 }
 
 function _initials(name, email) {
-  return (name || email || '?').split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+  // Mantém apenas letras/dígitos — evita injeção via inicial '<' em innerHTML.
+  const ini = (name || email || '?').split(' ').map(n => n[0]).filter(Boolean)
+    .slice(0, 2).join('').toUpperCase().replace(/[^0-9A-ZÀ-Ý]/g, '');
+  return ini || '?';
 }
 
 function _locale() {
@@ -83,7 +109,7 @@ function _renderShareCard(a) {
         <div style="flex:1;min-width:0">
           <span class="history-badge ${badgeClass}" style="margin-bottom:6px;display:inline-block">${tipoLabel}</span>
           <div class="history-title">${esc(a.nome)}</div>
-          <div class="history-desc">${metric.label} = <b style="color:var(--y)">${metric.val}</b> &nbsp;•&nbsp; n = ${d.n ?? '—'}</div>
+          <div class="history-desc">${esc(metric.label)} = <b style="color:var(--y)">${esc(metric.val)}</b> &nbsp;•&nbsp; n = ${esc(d.n ?? '—')}</div>
           <div class="history-date">${window.t('share-saved-on')} ${date}</div>
         </div>
       </div>
@@ -158,6 +184,7 @@ export async function openShareWithFriendModal(analysisId) {
   overlay.classList.add('open');
 
   const friends = await _loadAcceptedFriends();
+  _friendPickFriends = friends;
 
   if (!friends.length) {
     content.innerHTML = `
@@ -184,7 +211,7 @@ export async function openShareWithFriendModal(analysisId) {
       ${window.t('share-send-info')}
     </div>
     ${friends.map(f => `
-      <div class="friend-card" style="cursor:pointer" onclick="sendToFriend('${analysisId}','${f.id}','${esc(f.full_name || f.email || 'Usuário')}')">
+      <div class="friend-card" style="cursor:pointer" onclick="sendToFriend('${analysisId}','${f.id}')">
         <div class="friend-avatar">${_initials(f.full_name, f.email)}</div>
         <div style="flex:1;min-width:0">
           <div class="friend-name">${esc(f.full_name || 'Usuário')}</div>
@@ -201,9 +228,12 @@ export function closeFriendPickOverlay() {
   _friendPickAnalysisId = null;
 }
 
-export async function sendToFriend(analysisId, receiverId, receiverName) {
+export async function sendToFriend(analysisId, receiverId) {
   const a = _analyses.find(x => x.id === analysisId);
   if (!a) return;
+  // Nome do destinatário resolvido pelo cache (não trafega via onclick).
+  const friend = _friendPickFriends.find(f => f.id === receiverId);
+  const receiverName = friend ? (friend.full_name || friend.email || 'Usuário') : 'Usuário';
   const uid = await _uid();
   const { error } = await db.from('friend_shares').insert({
     sender_id: uid,
@@ -256,7 +286,7 @@ function _renderReceivedList(container, shares, profileMap) {
       serie:       window.t('share-tipo-serie'),
       quantilica:  window.t('share-tipo-quantilica'),
       regularizada:window.t('share-tipo-regularizada'),
-    }[s.analysis_tipo] || s.analysis_tipo;
+    }[s.analysis_tipo] || esc(s.analysis_tipo);
     const icon = { simples:'📈', multipla:'📊', logistica:'🎯', polinomial:'〰️', serie:'📅', quantilica:'🎻', regularizada:'⚖️' }[s.analysis_tipo] || '📊';
     const date = new Date(s.created_at).toLocaleString(_locale());
     return `
@@ -301,7 +331,7 @@ export async function loadReceivedShare(shareId) {
     .eq('receiver_id', uid)
     .single();
   if (error || !data) { showToast(window.t('share-received-err'), 'err'); return; }
-  await _doLoadAnalysis({
+  const a = _sanitizeSharedAnalysis({
     nome: data.analysis_nome,
     tipo: data.analysis_tipo,
     dados: data.analysis_dados,
@@ -309,6 +339,8 @@ export async function loadReceivedShare(shareId) {
     label_y: data.label_y,
     created_at: data.created_at,
   });
+  if (!a) { showToast(window.t('share-received-err'), 'err'); return; }
+  await _doLoadAnalysis(a);
 }
 
 export async function deleteReceivedShare(shareId, btn) {
@@ -400,8 +432,8 @@ function _buildMetricCards(a) {
 
   return items.map(it => `
     <div style="text-align:center;padding:0 8px">
-      <div class="share-metric-val">${it.val ?? '—'}</div>
-      <div class="share-metric-lab">${it.label}</div>
+      <div class="share-metric-val">${esc(it.val ?? '—')}</div>
+      <div class="share-metric-lab">${esc(it.label)}</div>
     </div>
   `).join('');
 }
@@ -444,7 +476,9 @@ export function checkSharedLink() {
   const hash = location.hash;
   if (!hash.startsWith('#share=')) return;
   try {
-    _incomingShared = JSON.parse(decodeURIComponent(escape(atob(hash.slice(7)))));
+    const raw = JSON.parse(decodeURIComponent(escape(atob(hash.slice(7)))));
+    _incomingShared = _sanitizeSharedAnalysis(raw);
+    if (!_incomingShared) { console.warn('Link de compartilhamento inválido.'); return; }
     _showReadonlyShared(_incomingShared);
   } catch {
     console.warn('Link de compartilhamento inválido.');
@@ -472,7 +506,9 @@ export async function checkPendingSharedAnalysis() {
   if (!raw) return false;
   sessionStorage.removeItem(PENDING_KEY);
   try {
-    await _doLoadAnalysis(JSON.parse(raw));
+    const a = _sanitizeSharedAnalysis(JSON.parse(raw));
+    if (!a) return false;
+    await _doLoadAnalysis(a);
     return true;
   } catch {
     return false;
@@ -556,11 +592,11 @@ function _tipoLabel(a) {
     simples:     window.t('share-tipo-simples'),
     multipla:    window.t('share-tipo-multipla'),
     logistica:   window.t('share-tipo-logistica'),
-    polinomial:  `${window.t('share-tipo-polinomial')} ${d.degree ?? '?'}`,
+    polinomial:  `${window.t('share-tipo-polinomial')} ${esc(d.degree ?? '?')}`,
     serie:       window.t('share-tipo-serie'),
     quantilica:  window.t('share-tipo-quantilica'),
     regularizada:window.t('share-tipo-regularizada'),
-  }[a.tipo] || a.tipo;
+  }[a.tipo] || esc(a.tipo);
 }
 
 function _tipoIcon(tipo) {
