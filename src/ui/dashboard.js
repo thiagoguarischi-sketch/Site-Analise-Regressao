@@ -4,7 +4,7 @@ import {
   signUp, signIn, signOut, getCurrentUser,
 } from '../services/authService.js';
 import { deleteAccountRequest } from '../services/analysisService.js';
-import { db, setSession, clearSession } from '../services/supabaseService.js';
+import { db, setSession, clearSession, isAuthenticated } from '../services/supabaseService.js';
 import { showToast } from './notifications.js';
 import { loadHistory, updateProfileStats } from './tables.js';
 import { loadShareList, checkSharedLink, checkPendingSharedAnalysis } from './share.js';
@@ -382,6 +382,15 @@ export async function tryRestoreSession() {
 
 // ── Navegação principal ──
 
+// Bloqueia o painel financeiro para quem não tem sessão Supabase (modo demo):
+// aplica blur + overlay de login. A proteção real dos dados é o requireAuth
+// no backend; este gate é apenas a camada visual de "prévia bloqueada".
+async function gateFinancePanel() {
+  const panel = document.getElementById('panel-yahoo');
+  if (!panel) return;
+  panel.classList.toggle('mf-locked', !(await isAuthenticated()));
+}
+
 export function switchTab(panel, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn, .sidebar-btn').forEach(b => b.classList.remove('active'));
@@ -391,6 +400,7 @@ export function switchTab(panel, btn) {
   if (panel === 'perfil')       updateProfileStats();
   if (panel === 'compartilhar') loadShareList();
   if (panel === 'amigos') loadFriendsPanel();
+  if (panel === 'yahoo') gateFinancePanel();
 }
 
 export function goProfile() {

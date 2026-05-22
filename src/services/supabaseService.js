@@ -39,6 +39,13 @@ export async function authHeaders() {
   return session ? { Authorization: `Bearer ${session.access_token}` } : {};
 }
 
+// True só quando há sessão Supabase real (login por e-mail). O modo demo
+// nunca cria sessão, então retorna false — usado para gating visual da UI.
+export async function isAuthenticated() {
+  const { data: { session } } = await db.auth.getSession();
+  return !!session;
+}
+
 export async function cloudGet(key, shared = false) {
   try {
     if (hasCloudStorage) {
