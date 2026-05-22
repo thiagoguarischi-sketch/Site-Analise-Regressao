@@ -65,3 +65,11 @@ desktop.ini
 dist/
 build/
 coverage/
+
+# ==========================
+
+# FERRAMENTAS / WORKTREES
+
+# ==========================
+
+.claude/
