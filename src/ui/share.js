@@ -1,7 +1,7 @@
 // Compartilhamento de análises: gera links, resumos em texto e pré-visualização.
 
 import { fetchAnalyses } from '../services/analysisService.js';
-import { db } from '../services/supabaseService.js';
+import { fetchFriends, postShare, fetchShares, fetchShare, removeShare } from '../services/socialService.js';
 import { showToast } from './notifications.js';
 import { esc, fmt } from '../core/utils.js';
 import { loadSimpleAnalysis, loadMultipleAnalysis } from '../regressions/linearRegression.js';
@@ -40,11 +40,6 @@ function _sanitizeSharedAnalysis(raw) {
   };
 }
 
-async function _uid() {
-  const { data: { user } } = await db.auth.getUser();
-  return user?.id;
-}
-
 function _initials(name, email) {
   // Mantém apenas letras/dígitos — evita injeção via inicial '<' em innerHTML.
   const ini = (name || email || '?').split(' ').map(n => n[0]).filter(Boolean)
@@ -57,16 +52,12 @@ function _locale() {
 }
 
 async function _loadAcceptedFriends() {
-  const uid = await _uid();
-  const { data: friendships } = await db
-    .from('friendships')
-    .select('requester_id, addressee_id')
-    .eq('status', 'accepted')
-    .or(`requester_id.eq.${uid},addressee_id.eq.${uid}`);
-  if (!friendships?.length) return [];
-  const ids = friendships.map(f => f.requester_id === uid ? f.addressee_id : f.requester_id);
-  const { data: profiles } = await db.from('profiles').select('id, full_name, email').in('id', ids);
-  return profiles || [];
+  try {
+    const friends = await fetchFriends();
+    return friends.map(f => f.friend);
+  } catch (e) {
+    return [];
+  }
 }
 
 // ── Painel de compartilhamento ──
@@ -234,17 +225,15 @@ export async function sendToFriend(analysisId, receiverId) {
   // Nome do destinatário resolvido pelo cache (não trafega via onclick).
   const friend = _friendPickFriends.find(f => f.id === receiverId);
   const receiverName = friend ? (friend.full_name || friend.email || 'Usuário') : 'Usuário';
-  const uid = await _uid();
-  const { error } = await db.from('friend_shares').insert({
-    sender_id: uid,
-    receiver_id: receiverId,
-    analysis_nome: a.nome,
-    analysis_tipo: a.tipo,
-    analysis_dados: a.dados,
-    label_x: a.label_x || null,
-    label_y: a.label_y || null,
-  });
-  if (error) { showToast(window.t('share-send-err'), 'err'); return; }
+  try {
+    await postShare(receiverId, {
+      nome: a.nome, tipo: a.tipo, dados: a.dados,
+      label_x: a.label_x || null, label_y: a.label_y || null,
+    });
+  } catch (e) {
+    showToast(window.t('share-send-err'), 'err');
+    return;
+  }
   closeFriendPickOverlay();
   showToast(`${window.t('share-send-title')} → ${receiverName} 📬`, 'ok');
 }
@@ -253,31 +242,23 @@ async function _loadReceivedShares() {
   const container = document.getElementById('share-received-list');
   if (!container) return;
 
-  const uid = await _uid();
-  if (!uid) return;
+  let shares;
+  try {
+    shares = await fetchShares();
+  } catch (e) { shares = []; }
 
-  const { data: shares, error } = await db
-    .from('friend_shares')
-    .select('id, sender_id, analysis_nome, analysis_tipo, analysis_dados, label_x, label_y, created_at')
-    .eq('receiver_id', uid)
-    .order('created_at', { ascending: false });
-
-  if (error || !shares?.length) {
+  if (!shares.length) {
     container.innerHTML = `<p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">${window.t('share-received-none')}</p>`;
     return;
   }
 
-  const senderIds = [...new Set(shares.map(s => s.sender_id))];
-  const { data: profiles } = await db.from('profiles').select('id, full_name, email').in('id', senderIds);
-  const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
-
-  _receivedCache = { shares, profileMap };
-  _renderReceivedList(container, shares, profileMap);
+  _receivedCache = shares;
+  _renderReceivedList(container, shares);
 }
 
-function _renderReceivedList(container, shares, profileMap) {
+function _renderReceivedList(container, shares) {
   container.innerHTML = shares.map(s => {
-    const sender = profileMap[s.sender_id] || {};
+    const sender = s.sender || {};
     const tipoLabel = {
       simples:     window.t('share-tipo-simples'),
       multipla:    window.t('share-tipo-multipla'),
@@ -318,19 +299,15 @@ export function shareRerender() {
   }
   if (_receivedCache) {
     const container = document.getElementById('share-received-list');
-    if (container) _renderReceivedList(container, _receivedCache.shares, _receivedCache.profileMap);
+    if (container) _renderReceivedList(container, _receivedCache);
   }
 }
 
 export async function loadReceivedShare(shareId) {
-  const uid = await _uid();
-  const { data, error } = await db
-    .from('friend_shares')
-    .select('analysis_nome, analysis_tipo, analysis_dados, label_x, label_y, created_at')
-    .eq('id', shareId)
-    .eq('receiver_id', uid)
-    .single();
-  if (error || !data) { showToast(window.t('share-received-err'), 'err'); return; }
+  let data;
+  try {
+    data = await fetchShare(shareId);
+  } catch (e) { showToast(window.t('share-received-err'), 'err'); return; }
   const a = _sanitizeSharedAnalysis({
     nome: data.analysis_nome,
     tipo: data.analysis_tipo,
@@ -345,8 +322,13 @@ export async function loadReceivedShare(shareId) {
 
 export async function deleteReceivedShare(shareId, btn) {
   if (!confirm(window.t('share-remove-confirm'))) return;
+  try {
+    await removeShare(shareId);
+  } catch (e) {
+    showToast(window.t('share-received-err'), 'err');
+    return;
+  }
   btn.closest('.share-card').remove();
-  await db.from('friend_shares').delete().eq('id', shareId);
   showToast(window.t('share-removed-toast'), 'info');
 }
 

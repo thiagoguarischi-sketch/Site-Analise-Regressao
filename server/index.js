@@ -9,6 +9,7 @@ const accountRoutes  = require('./routes/account');
 const computeRoutes  = require('./routes/compute');
 const yahooRoutes    = require('./routes/yahoo');
 const bcbRoutes      = require('./routes/bcb');
+const socialRoutes   = require('./routes/social');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -60,6 +61,7 @@ app.use('/api', accountRoutes);
 app.use('/api', computeRoutes);
 app.use('/api', yahooRoutes);
 app.use('/api', bcbRoutes);
+app.use('/api', socialRoutes);
 
 // Health check
 app.get('/health', (_, res) => res.json({ ok: true }));
