@@ -111,8 +111,4 @@ Policies baseadas em usuário
 
 Regra principal:
 
-<<<<<<< HEAD
 auth.uid() = user_id
-=======
-auth.uid() = user_id
->>>>>>> e564de3 (Backend folder created)
