@@ -3850,14 +3850,14 @@
           <label class="form-label" data-i18n="form-lbl-nome">Nome</label>
           <input class="form-input" type="text" id="edit-name">
         </div>
-        <div class="form-row">
+        <div class="form-row" id="profile-email-row">
           <label class="form-label">E-mail</label>
           <input class="form-input" type="email" id="edit-email">
         </div>
         <button class="btn-primary" onclick="saveProfile()" style="margin-top:8px" data-i18n="btn-salvar-alt">Salvar alterações</button>
       </div>
 
-      <div class="card">
+      <div class="card" id="profile-card-password">
         <div class="form-section-title" data-i18n="form-change-pw">Alterar Senha</div>
         <div class="form-row">
           <label class="form-label" data-i18n="form-lbl-pw-old">Senha atual</label>
@@ -3879,7 +3879,7 @@
         <p style="font-size:13px;color:var(--txt2);margin-bottom:12px" data-i18n="danger-zone-msg">Estas ações são irreversíveis.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-ghost" onclick="doLogout()" style="border-color:rgba(255,107,138,.3);color:var(--acc)" data-i18n="btn-sair-conta">Sair da conta</button>
-          <button class="btn-ghost" onclick="deleteAccount()" style="border-color:rgba(255,107,138,.3);color:var(--acc)" data-i18n="btn-excluir-conta">Excluir conta</button>
+          <button id="btn-excluir-conta" class="btn-ghost" onclick="deleteAccount()" style="border-color:rgba(255,107,138,.3);color:var(--acc)" data-i18n="btn-excluir-conta">Excluir conta</button>
         </div>
       </div>
     </div>

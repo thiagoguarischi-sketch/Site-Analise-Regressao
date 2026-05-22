@@ -264,6 +264,7 @@ export async function loginUser(user) {
       uid: user.id || user.uid,
       name: user.user_metadata?.full_name || user.name || (user.email ? user.email.split('@')[0] : 'Usuário'),
       email: user.email || '',
+      isDemo: user.isDemo || false,
     };
 
     document.getElementById('auth-overlay').classList.add('hidden');
@@ -278,6 +279,12 @@ export async function loginUser(user) {
     document.getElementById('edit-name').value = currentUser.name;
     document.getElementById('edit-email').value = currentUser.email;
     document.getElementById('cloud-banner').style.display = 'flex';
+
+    // Oculta opções de alterar e-mail, senha e excluir conta para usuários demo
+    const demoOnly = currentUser.isDemo ? 'none' : '';
+    document.getElementById('profile-email-row').style.display    = demoOnly;
+    document.getElementById('profile-card-password').style.display = demoOnly;
+    document.getElementById('btn-excluir-conta').style.display     = demoOnly;
 
     initRows();
 
