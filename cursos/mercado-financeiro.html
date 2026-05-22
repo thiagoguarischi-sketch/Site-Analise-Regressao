@@ -4433,6 +4433,21 @@ sections.forEach(function(s) { observer.observe(s); });
     'Module 4 · Equities','Module 5 · Derivatives','Module 6 · Advanced Mgmt.',
     'Module 7 · United States','Module 8 · Global Markets','Conclusion','Extra Module · Slope'
   ];
+  function escAttr(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+  function rebuildDots(labels) {
+    var activePanel = document.querySelector('.module-panel.active');
+    var activeN = activePanel ? (parseInt(activePanel.dataset.module, 10) || 0) : 0;
+    document.querySelectorAll('.module-progress').forEach(function(container) {
+      container.innerHTML = labels.map(function(label, i) {
+        return '<div class="module-dot' +
+          (i === activeN ? ' active' : '') +
+          (i < activeN ? ' visited' : '') +
+          '" onclick="showModule(' + i + ')" title="' + escAttr(label) + '"></div>';
+      }).join('');
+    });
+  }
   function applyContentLang(l) {
     if (l === 'en') {
       document.title = 'Financial Markets Course · Slope';
@@ -4446,9 +4461,7 @@ sections.forEach(function(s) { observer.observe(s); });
         var nav = panel.querySelector('.module-nav');
         if (nav && window.NAV_EN && NAV_EN[panel.dataset.module]) nav.innerHTML = NAV_EN[panel.dataset.module];
       });
-      document.querySelectorAll('.module-dot').forEach(function(dot, i) {
-        dot.title = MODULE_LABELS_EN[i] || '';
-      });
+      rebuildDots(MODULE_LABELS_EN);
     } else {
       document.title = CONTENT_PT.title || '';
       document.querySelectorAll('.section').forEach(function(el) {
@@ -4462,9 +4475,7 @@ sections.forEach(function(s) { observer.observe(s); });
         var k = 'n:' + panel.dataset.module;
         if (nav && CONTENT_PT[k]) nav.innerHTML = CONTENT_PT[k];
       });
-      document.querySelectorAll('.module-dot').forEach(function(dot, i) {
-        dot.title = (typeof MODULE_LABELS !== 'undefined' && MODULE_LABELS[i]) || '';
-      });
+      rebuildDots(typeof MODULE_LABELS !== 'undefined' ? MODULE_LABELS : []);
     }
   }
   document.addEventListener('DOMContentLoaded', function() {
