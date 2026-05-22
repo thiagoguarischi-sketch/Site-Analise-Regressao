@@ -3,7 +3,7 @@
 export const SUPABASE_URL = 'https://mzedoasnrmrpfpgweljj.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_VvRVsHUnNObPX4OVo5GbxQ_aMhHHz5X';
 
-export const API_BASE = 'http://localhost:3000/api';
+export const API_BASE = (window.__RL_CONFIG__ && window.__RL_CONFIG__.API_BASE) || 'http://localhost:3000/api';
 export const AI_EDGE_URL = SUPABASE_URL + '/functions/v1/ai-insight';
 
 export const STORAGE_KEY = (uid) => `rl_analyses_${uid}`;

@@ -15,6 +15,7 @@ server/node_modules/
 
 .env
 server/.env
+env-config.js
 
 # ==========================
 
