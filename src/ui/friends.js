@@ -1,7 +1,9 @@
 // Módulo de amigos: busca, pedidos, lista de amizades e mensagens.
 // Acesso a dados via BFF (/api/social/*) — a autorização é feita no servidor.
-// O cliente Supabase é usado apenas para auth (db.auth) e para a assinatura
-// Realtime do chat (db.channel), que é uma leitura sob RLS do Supabase.
+// O cliente Supabase (db) é usado EXCLUSIVAMENTE para autenticação (db.auth):
+// nenhuma tabela é lida diretamente do navegador. A entrega ao vivo do chat
+// usa polling do BFF (não Realtime), de modo que a segurança não depende de
+// RLS estar configurada — a fronteira de autorização é 100% o servidor.
 
 import { db } from '../services/supabaseService.js';
 import { showToast } from './notifications.js';
@@ -9,15 +11,20 @@ import { esc } from '../core/utils.js';
 import {
   searchProfiles, fetchFriends, fetchRequests,
   sendRequest, acceptRequest, rejectRequest, unfriend,
-  fetchChat, postMessage, markRead,
+  fetchChat, postMessage,
 } from '../services/socialService.js';
 
 // ── Estado do chat ──
 let _chatFriendId   = null;
 let _chatFriendName = null;
 let _chatUid        = null;
-let _chatSub        = null;
+let _chatPoll       = null;        // timer do polling de novas mensagens
+let _seenMsgIds     = new Set();   // ids já renderizados (evita duplicar no poll)
 let _profileCache   = {}; // friendId → { id, full_name, email }
+
+// Intervalo do polling do chat (ms). O GET de histórico do BFF já marca as
+// mensagens recebidas como lidas, então cada poll mantém o estado atualizado.
+const CHAT_POLL_MS = 4000;
 
 // ── Cache para re-render ao trocar idioma ──
 let _pendingCache = null; // { received, sent }
@@ -312,24 +319,38 @@ export async function openChat(friendId) {
   await _loadChatHistory();   // o GET de histórico já marca as recebidas como lidas
   _loadPendingRequests();     // atualiza o badge da sidebar
 
-  // Realtime: entrega ao vivo das mensagens recebidas. Única leitura que
-  // permanece no cliente — assinatura read-only sob RLS do Supabase.
-  if (_chatSub) db.removeChannel(_chatSub);
-  _chatSub = db.channel(`chat_${[_chatUid, friendId].sort().join('_')}`)
-    .on('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'messages',
-      filter: `receiver_id=eq.${_chatUid}`,
-    }, async (payload) => {
-      if (payload.new.sender_id !== _chatFriendId) return;
-      _appendBubble(payload.new, false);
-      try { await markRead(_chatFriendId); } catch (e) { /* ignore */ }
-    })
-    .subscribe();
+  // Entrega ao vivo via polling do BFF (não Realtime): nenhuma leitura de
+  // tabela ocorre no navegador, então a segurança não depende de RLS.
+  _startChatPolling();
+}
+
+// Faz polling do histórico no BFF e renderiza apenas as mensagens novas.
+function _startChatPolling() {
+  _stopChatPolling();
+  _chatPoll = setInterval(async () => {
+    const friendId = _chatFriendId;
+    if (!friendId) return;
+    let data;
+    try {
+      data = await fetchChat(friendId);   // BFF: autoriza + marca como lidas
+    } catch (e) { return; }
+    if (friendId !== _chatFriendId) return; // chat trocado durante a requisição
+    data.forEach(m => {
+      if (_seenMsgIds.has(m.id)) return;
+      _seenMsgIds.add(m.id);
+      // Mensagens próprias já foram renderizadas no envio; só anexa as recebidas.
+      if (!m.mine) _appendBubble(m, false);
+    });
+  }, CHAT_POLL_MS);
+}
+
+function _stopChatPolling() {
+  if (_chatPoll) { clearInterval(_chatPoll); _chatPoll = null; }
 }
 
 export function closeChat() {
   document.getElementById('chat-overlay')?.classList.remove('open');
-  if (_chatSub) { db.removeChannel(_chatSub); _chatSub = null; }
+  _stopChatPolling();
   _chatFriendId = null;
 }
 
@@ -349,12 +370,14 @@ export async function sendMessage() {
     input.value = content;
     return;
   }
+  if (msg && msg.id != null) _seenMsgIds.add(msg.id); // evita duplicar no poll
   _appendBubble(msg, true);
 }
 
 async function _loadChatHistory() {
   const container = document.getElementById('chat-messages');
   container.innerHTML = `<p style="text-align:center;color:var(--txt3);font-size:13px;padding:20px">${window.t('frnd-chat-loading')}</p>`;
+  _seenMsgIds = new Set(); // reinicia o controle de deduplicação a cada chat
 
   let data;
   try {
@@ -372,6 +395,7 @@ async function _loadChatHistory() {
   container.innerHTML = '';
   let lastDay = '';
   data.forEach(m => {
+    if (m.id != null) _seenMsgIds.add(m.id); // já renderizada — poll não duplica
     const day = new Date(m.created_at).toLocaleDateString(_locale(), { day: '2-digit', month: 'short' });
     if (day !== lastDay) {
       lastDay = day;
