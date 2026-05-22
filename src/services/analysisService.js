@@ -18,12 +18,3 @@ export async function deleteAnalysisRequest(id) {
 export async function deleteAccountRequest() {
   return apiRequest('/account', 'DELETE');
 }
-
-export async function getAnalysesFromSupabase() {
-  try {
-    return await fetchAnalyses();
-  } catch (err) {
-    console.error('ERRO AO BUSCAR HISTÓRICO:', err);
-    return [];
-  }
-}

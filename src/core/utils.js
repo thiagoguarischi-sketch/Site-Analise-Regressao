@@ -23,9 +23,12 @@ export function fmtDate(iso) {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
 }
 
-export function safeNum(v) {
-  const n = parseFloat(v);
-  return isNaN(n) ? '' : n;
+// Iniciais para avatares (amigos/chat). Mantém apenas letras/dígitos —
+// evita injeção via inicial '<' quando interpolada em innerHTML.
+export function initials(name, email) {
+  const ini = (name || email || '?').split(' ').map(n => n[0]).filter(Boolean)
+    .slice(0, 2).join('').toUpperCase().replace(/[^0-9A-ZÀ-Ý]/g, '');
+  return ini || '?';
 }
 
 export function rmse(resid) {
@@ -58,9 +61,3 @@ export function sigStars(p) {
        : '';
 }
 
-export function durbinWatson(resid) {
-  let num = 0, den = 0;
-  for (let i = 1; i < resid.length; i++) num += (resid[i] - resid[i - 1]) ** 2;
-  resid.forEach(r => den += r ** 2);
-  return num / den;
-}

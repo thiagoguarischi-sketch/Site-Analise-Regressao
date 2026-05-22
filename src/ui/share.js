@@ -3,7 +3,7 @@
 import { fetchAnalyses } from '../services/analysisService.js';
 import { fetchFriends, postShare, fetchShares, fetchShare, removeShare } from '../services/socialService.js';
 import { showToast } from './notifications.js';
-import { esc, fmt } from '../core/utils.js';
+import { esc, fmt, initials as _initials } from '../core/utils.js';
 import { loadSimpleAnalysis, loadMultipleAnalysis } from '../regressions/linearRegression.js';
 import { loadLogisticAnalysis }   from '../regressions/logisticRegression.js';
 import { loadPolynomialAnalysis } from '../regressions/polynomialRegression.js';
@@ -38,13 +38,6 @@ function _sanitizeSharedAnalysis(raw) {
     label_y:    typeof raw.label_y === 'string' ? raw.label_y.slice(0, 120) : null,
     created_at: typeof raw.created_at === 'string' ? raw.created_at : new Date().toISOString(),
   };
-}
-
-function _initials(name, email) {
-  // Mantém apenas letras/dígitos — evita injeção via inicial '<' em innerHTML.
-  const ini = (name || email || '?').split(' ').map(n => n[0]).filter(Boolean)
-    .slice(0, 2).join('').toUpperCase().replace(/[^0-9A-ZÀ-Ý]/g, '');
-  return ini || '?';
 }
 
 function _locale() {

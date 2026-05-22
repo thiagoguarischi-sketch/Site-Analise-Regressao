@@ -1,6 +1,8 @@
-// Distribuições, testes estatísticos e funções utilitárias matemáticas.
-
-import { mean, sum } from './utils.js';
+// Distribuições e funções matemáticas usadas no frontend.
+// O cálculo estatístico pesado das regressões roda no backend (BFF /analyze);
+// aqui ficam apenas as funções ainda necessárias na renderização do cliente:
+// tQ/tCDF (intervalos de confiança), normalQ (Q-Q plot) e sigmoid (predição
+// logística).
 
 export function tCDF(t, df) {
   const x = df / (df + t * t);
@@ -15,11 +17,6 @@ export function tQ(p, df) {
     t -= f / fp;
   }
   return t;
-}
-
-export function fCDF(f, d1, d2) {
-  const x = d2 / (d2 + d1 * f);
-  return incompleteBeta(x, d2 / 2, d1 / 2);
 }
 
 export function logBeta(a, b) {
@@ -82,59 +79,6 @@ export function erf(x) {
   return Math.sign(x) * y;
 }
 
-export function shapiroWilk(x) {
-  const n = x.length;
-  if (n < 3) return { W: 1, p: 1 };
-  const xs = [...x].sort((a, b) => a - b);
-  const xm = mean(xs);
-  const SS = sum(xs.map(v => (v - xm) ** 2));
-  const m = xs.map((_, i) => normalQ((i + 1 - 0.375) / (n + 0.25)));
-  const c = Math.sqrt(sum(m.map(v => v ** 2)));
-  const mn = m.map(v => v / c);
-  let num = 0;
-  for (let i = 0; i < Math.floor(n / 2); i++) num += mn[n - 1 - i] * (xs[n - 1 - i] - xs[i]);
-  const W = num ** 2 / SS;
-  const mu = -1.2725 + 1.0521 * Math.log(n);
-  const sigma = 1.0308 - 0.26763 * Math.log(n);
-  const z = (Math.log(1 - Math.min(W, 0.9999)) - mu) / sigma;
-  const p = 1 - 0.5 * (1 + erf(z / Math.sqrt(2)));
-  return { W: Math.max(0, Math.min(1, W)), p: Math.max(0, Math.min(1, p)) };
-}
-
-export function breuschPagan(xs, resids) {
-  const n = xs.length;
-  const e2 = resids.map(r => r ** 2);
-  const e2m = mean(e2);
-  const Sxx = sum(xs.map(x => (x - mean(xs)) ** 2));
-  const Sxy = sum(xs.map((x, i) => (x - mean(xs)) * (e2[i] - e2m)));
-  const b1 = Sxy / Sxx, b0 = e2m - b1 * mean(xs);
-  const fitted = xs.map(x => b0 + b1 * x);
-  const SSR = sum(fitted.map(f => (f - e2m) ** 2));
-  const SSE = sum(e2.map((e, i) => (e - fitted[i]) ** 2));
-  const R2 = SSR / (SSR + SSE);
-  const LM = n * R2;
-  const p = 1 - chiCDF(LM, 1);
-  return { stat: LM, p };
-}
-
-export function chiCDF(x, k) {
-  return incompleteBeta(x / (x + 2 * (k / 2)), k / 2, 0.5) * 0 + regularizedGamma(k / 2, x / 2);
-}
-
-export function regularizedGamma(a, x) {
-  let s = 1 / a, t = s;
-  for (let n = 1; n < 200; n++) { t *= x / (a + n); s += t; if (Math.abs(t) < 1e-10) break; }
-  return s * Math.exp(-x + a * Math.log(x) - lgamma(a));
-}
-
 export function sigmoid(z) {
   return 1 / (1 + Math.exp(-Math.max(-500, Math.min(500, z))));
-}
-
-export function pinball(u, tau) {
-  return u >= 0 ? tau * u : (tau - 1) * u;
-}
-
-export function pinballGrad(u, tau) {
-  return u >= 0 ? tau : (tau - 1);
 }

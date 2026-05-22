@@ -7,7 +7,7 @@
 
 import { db } from '../services/supabaseService.js';
 import { showToast } from './notifications.js';
-import { esc } from '../core/utils.js';
+import { esc, initials as _initials } from '../core/utils.js';
 import {
   searchProfiles, fetchFriends, fetchRequests,
   sendRequest, acceptRequest, rejectRequest, unfriend,
@@ -37,13 +37,6 @@ const _locale = () => document.documentElement.lang === 'en' ? 'en-US' : 'pt-BR'
 async function _uid() {
   const { data: { user } } = await db.auth.getUser();
   return user?.id;
-}
-
-function _initials(name, email) {
-  // Mantém apenas letras/dígitos — evita injeção via inicial '<' em innerHTML.
-  const ini = (name || email || '?').split(' ').map(n => n[0]).filter(Boolean)
-    .slice(0, 2).join('').toUpperCase().replace(/[^0-9A-ZÀ-Ý]/g, '');
-  return ini || '?';
 }
 
 function _showSetup() {
