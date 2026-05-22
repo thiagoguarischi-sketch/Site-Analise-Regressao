@@ -1,6 +1,7 @@
 import { showToast } from './notifications.js';
 import { yfGetLoadedSeries } from './yahooFinance.js';
 import { bcbGetLoadedSeries } from './bcbFinance.js';
+import { esc } from '../core/utils.js';
 
 // ── Configurações dos modelos de regressão ────────────────────────────────────
 const _REG_CFG = {
@@ -40,7 +41,7 @@ function _buildOptions(src, selectedId = '') {
   const series = src === 'yf' ? yfGetLoadedSeries() : bcbGetLoadedSeries();
   if (!series.length) return `<option value="">— sem dados carregados —</option>`;
   return series
-    .map(s => `<option value="${_a(s.id)}"${s.id === selectedId ? ' selected' : ''}>${s.label}</option>`)
+    .map(s => `<option value="${_a(s.id)}"${s.id === selectedId ? ' selected' : ''}>${esc(s.label)}</option>`)
     .join('');
 }
 
@@ -208,7 +209,7 @@ function _renderVarList() {
 
     const series   = row.src === 'yf' ? yf : bcb;
     const serOpts  = series.length
-      ? series.map(s => `<option value="${_a(s.id)}">${s.label}</option>`).join('')
+      ? series.map(s => `<option value="${_a(s.id)}">${esc(s.label)}</option>`).join('')
       : `<option value="">— sem dados —</option>`;
     const showCol  = row.src === 'yf';
     const rmBtn    = _varRows.length > 2

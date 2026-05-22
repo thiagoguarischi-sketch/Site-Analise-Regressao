@@ -20,6 +20,12 @@ function _cacheSet(key, data) {
   _cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
 }
 
+// Aceita apenas datas ISO estritas (YYYY-MM-DD). Impede que caracteres como
+// '-' ou '&' em `from`/`to` injetem parâmetros extras na URL da API do BCB.
+function _isIsoDate(s) {
+  return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+}
+
 function _fmtDate(dateStr) {
   const parts = (dateStr || '').split('-');
   if (parts.length !== 3) return '';
@@ -96,6 +102,9 @@ router.get('/bcb/serie', async (req, res) => {
   const { codigo, from, to } = req.query;
   if (!codigo || !/^\d+$/.test(codigo)) {
     return res.status(400).json({ error: 'Parâmetro "codigo" inválido.' });
+  }
+  if ((from && !_isIsoDate(from)) || (to && !_isIsoDate(to))) {
+    return res.status(400).json({ error: 'Datas devem estar no formato AAAA-MM-DD.' });
   }
 
   const cacheKey = `serie:${codigo}:${from || ''}:${to || ''}`;
