@@ -177,6 +177,9 @@ async function deleteFriendship(userId, friendshipId, expectedStatus) {
 
 async function getMessages(userId, friendId) {
   if (!isUuid(friendId)) throw _err('ID inválido.', 400);
+  // Só é possível ler a conversa com um amigo aceito — sem isto, qualquer
+  // usuário autenticado leria mensagens privadas conhecendo só o UUID alvo.
+  if (!(await _areFriends(userId, friendId))) throw _err('Vocês não são amigos.', 403);
   const { data, error } = await supabase
     .from('messages')
     .select('id, sender_id, content, created_at')

@@ -3,7 +3,7 @@
 import { fetchAnalyses } from '../services/analysisService.js';
 import { fetchFriends, postShare, fetchShares, fetchShare, removeShare } from '../services/socialService.js';
 import { showToast } from './notifications.js';
-import { esc, fmt, initials as _initials } from '../core/utils.js';
+import { esc, fmt, safeId, initials as _initials } from '../core/utils.js';
 import { loadSimpleAnalysis, loadMultipleAnalysis } from '../regressions/linearRegression.js';
 import { loadLogisticAnalysis }   from '../regressions/logisticRegression.js';
 import { loadPolynomialAnalysis } from '../regressions/polynomialRegression.js';
@@ -86,8 +86,9 @@ function _renderShareCard(a) {
   const metric = _keyMetric(a);
   const date = new Date(a.created_at).toLocaleString(_locale());
 
+  const id = safeId(a.id);
   return `
-    <div class="share-card" id="scard-${a.id}">
+    <div class="share-card" id="scard-${id}">
       <div style="display:flex;align-items:flex-start;gap:10px">
         <div style="font-size:28px;margin-top:2px">${_tipoIcon(a.tipo)}</div>
         <div style="flex:1;min-width:0">
@@ -98,10 +99,10 @@ function _renderShareCard(a) {
         </div>
       </div>
       <div class="share-actions">
-        <button class="share-btn" onclick="copyShareLink('${a.id}')">${window.t('share-btn-link')}</button>
-        <button class="share-btn" onclick="copyShareText('${a.id}')">${window.t('share-btn-summary')}</button>
-        <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.35)" onclick="openShareWithFriendModal('${a.id}')">${window.t('share-btn-friend')}</button>
-        <button class="share-btn share-btn-preview" onclick="previewShareCard('${a.id}')">${window.t('share-btn-preview')}</button>
+        <button class="share-btn" onclick="copyShareLink('${id}')">${window.t('share-btn-link')}</button>
+        <button class="share-btn" onclick="copyShareText('${id}')">${window.t('share-btn-summary')}</button>
+        <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.35)" onclick="openShareWithFriendModal('${id}')">${window.t('share-btn-friend')}</button>
+        <button class="share-btn share-btn-preview" onclick="previewShareCard('${id}')">${window.t('share-btn-preview')}</button>
       </div>
     </div>
   `;
@@ -195,7 +196,7 @@ export async function openShareWithFriendModal(analysisId) {
       ${window.t('share-send-info')}
     </div>
     ${friends.map(f => `
-      <div class="friend-card" style="cursor:pointer" onclick="sendToFriend('${analysisId}','${f.id}')">
+      <div class="friend-card" style="cursor:pointer" onclick="sendToFriend('${safeId(analysisId)}','${safeId(f.id)}')">
         <div class="friend-avatar">${_initials(f.full_name, f.email)}</div>
         <div style="flex:1;min-width:0">
           <div class="friend-name">${esc(f.full_name || 'Usuário')}</div>
@@ -276,8 +277,8 @@ function _renderReceivedList(container, shares) {
           </div>
         </div>
         <div class="share-actions">
-          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="loadReceivedShare('${s.id}')">${window.t('share-received-load-btn')}</button>
-          <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="deleteReceivedShare('${s.id}',this)">${window.t('share-remove-btn')}</button>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="loadReceivedShare('${safeId(s.id)}')">${window.t('share-received-load-btn')}</button>
+          <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="deleteReceivedShare('${safeId(s.id)}',this)">${window.t('share-remove-btn')}</button>
         </div>
       </div>`;
   }).join('');

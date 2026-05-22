@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { requireAuth } = require('../middleware/auth');
 
 const BCB_HEADERS = {
   'Accept': 'application/json',
@@ -45,7 +46,7 @@ function _parseBcbDate(dateStr) {
 }
 
 // GET /api/bcb/search?q=selic
-router.get('/bcb/search', async (req, res) => {
+router.get('/bcb/search', requireAuth, async (req, res) => {
   const { q = '' } = req.query;
   const query = q.trim();
   if (!query) return res.json({ series: [] });
@@ -98,7 +99,7 @@ router.get('/bcb/search', async (req, res) => {
 });
 
 // GET /api/bcb/serie?codigo=432&from=2024-01-01&to=2024-12-31
-router.get('/bcb/serie', async (req, res) => {
+router.get('/bcb/serie', requireAuth, async (req, res) => {
   const { codigo, from, to } = req.query;
   if (!codigo || !/^\d+$/.test(codigo)) {
     return res.status(400).json({ error: 'Parâmetro "codigo" inválido.' });

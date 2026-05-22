@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { requireAuth } = require('../middleware/auth');
 
 const YF_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -45,7 +46,7 @@ async function _fetchYF(url, timeoutMs = 10000, retries = 1) {
 }
 
 // GET /api/yahoo/search?q=AAPL
-router.get('/yahoo/search', async (req, res) => {
+router.get('/yahoo/search', requireAuth, async (req, res) => {
   const { q = '' } = req.query;
   if (!q.trim()) return res.json({ quotes: [] });
 
@@ -68,7 +69,7 @@ router.get('/yahoo/search', async (req, res) => {
 });
 
 // GET /api/yahoo/chart?symbol=AAPL&from=2024-01-01&to=2024-12-31&interval=1d
-router.get('/yahoo/chart', async (req, res) => {
+router.get('/yahoo/chart', requireAuth, async (req, res) => {
   const { symbol, from, to, period = '1y' } = req.query;
   if (!symbol) return res.status(400).json({ error: 'Parâmetro "symbol" obrigatório.' });
   // interval validado por allowlist — evita injeção de parâmetros na URL do Yahoo.

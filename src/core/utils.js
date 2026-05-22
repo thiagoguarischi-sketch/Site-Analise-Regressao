@@ -18,6 +18,15 @@ export function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
+// Retorna o valor apenas se for um UUID; caso contrário, ''. Único jeito
+// seguro de interpolar um id num atributo on* (esc() não basta lá, pois o
+// browser decodifica entidades antes do parser JS): um UUID só contém
+// [0-9a-f-], sem caracteres capazes de quebrar o contexto JS/HTML.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function safeId(v) {
+  return UUID_RE.test(String(v ?? '')) ? String(v) : '';
+}
+
 export function fmtDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });

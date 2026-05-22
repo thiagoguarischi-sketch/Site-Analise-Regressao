@@ -1,5 +1,6 @@
 import { showToast } from './notifications.js';
 import { API_BASE }  from '../config/constants.js';
+import { authHeaders } from '../services/supabaseService.js';
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 let _tickers      = [];   // [{symbol, name, exch, type}]
@@ -73,7 +74,7 @@ async function _doSearch() {
 
   list.innerHTML = `<div class="yf-loading">${window.t?.('mf-buscando') ?? 'Buscando…'}</div>`;
   try {
-    const r = await fetch(`${API_BASE}/yahoo/search?q=${encodeURIComponent(q)}`);
+    const r = await fetch(`${API_BASE}/yahoo/search?q=${encodeURIComponent(q)}`, { headers: await authHeaders() });
     const { quotes = [], error } = await r.json();
     if (error)          { list.innerHTML = `<div class="yf-no-results">${error}</div>`; return; }
     if (!quotes.length) { list.innerHTML = `<div class="yf-no-results">Nenhum resultado para "${q}".</div>`; return; }
@@ -160,8 +161,9 @@ export async function yfLoadAll() {
   showToast(`Carregando ${_tickers.length} ativo${_tickers.length > 1 ? 's' : ''}…`, 'info');
 
   try {
+    const headers = await authHeaders();
     const results = await Promise.all(_tickers.map(t =>
-      fetch(`${API_BASE}/yahoo/chart?symbol=${encodeURIComponent(t.symbol)}&from=${fromVal}&to=${toVal}&interval=${interval}`)
+      fetch(`${API_BASE}/yahoo/chart?symbol=${encodeURIComponent(t.symbol)}&from=${fromVal}&to=${toVal}&interval=${interval}`, { headers })
         .then(r => r.json())
         .catch(() => ({ error: 'Falha na requisição' }))
     ));

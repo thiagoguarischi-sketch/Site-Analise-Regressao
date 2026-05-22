@@ -1,5 +1,6 @@
 import { showToast } from './notifications.js';
 import { API_BASE }  from '../config/constants.js';
+import { authHeaders } from '../services/supabaseService.js';
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 let _series       = [];   // [{codigo, nome, periodicidade, unidade}]
@@ -80,7 +81,7 @@ async function _doSearch() {
 
   list.innerHTML = `<div class="yf-loading">${window.t?.('mf-buscando-bcb') ?? 'Buscando no Banco Central…'}</div>`;
   try {
-    const r = await fetch(`${API_BASE}/bcb/search?q=${encodeURIComponent(q)}`);
+    const r = await fetch(`${API_BASE}/bcb/search?q=${encodeURIComponent(q)}`, { headers: await authHeaders() });
     const { series = [], error } = await r.json();
     if (error)           { list.innerHTML = `<div class="yf-no-results">${error}</div>`; return; }
     if (!series.length)  { list.innerHTML = `<div class="yf-no-results">Nenhuma série encontrada para "${q}".</div>`; return; }
@@ -162,8 +163,9 @@ export async function bcbLoadAll() {
   showToast(`Carregando ${_series.length} série${_series.length > 1 ? 's' : ''}…`, 'info');
 
   try {
+    const headers = await authHeaders();
     const results = await Promise.all(_series.map(s =>
-      fetch(`${API_BASE}/bcb/serie?codigo=${encodeURIComponent(s.codigo)}&from=${fromVal}&to=${toVal}`)
+      fetch(`${API_BASE}/bcb/serie?codigo=${encodeURIComponent(s.codigo)}&from=${fromVal}&to=${toVal}`, { headers })
         .then(r => r.json())
         .catch(() => ({ error: 'Falha na requisição' }))
     ));

@@ -7,7 +7,7 @@
 
 import { db } from '../services/supabaseService.js';
 import { showToast } from './notifications.js';
-import { esc, initials as _initials } from '../core/utils.js';
+import { esc, safeId, initials as _initials } from '../core/utils.js';
 import {
   searchProfiles, fetchFriends, fetchRequests,
   sendRequest, acceptRequest, rejectRequest, unfriend,
@@ -82,13 +82,13 @@ export async function searchFriends() {
 
     container.innerHTML = users.map(u => {
       const rel = u.rel;
-      let action = `<button class="share-btn" onclick="sendFriendRequest('${u.id}')">${window.t('frnd-btn-add')}</button>`;
+      let action = `<button class="share-btn" onclick="sendFriendRequest('${safeId(u.id)}')">${window.t('frnd-btn-add')}</button>`;
       if (rel?.status === 'accepted')
         action = `<span style="font-size:12px;color:var(--y);font-weight:600">${window.t('frnd-st-friends')}</span>`;
       else if (rel?.status === 'pending' && rel.isMine)
         action = `<span style="font-size:12px;color:var(--txt3)">${window.t('frnd-st-waiting')}</span>`;
       else if (rel?.status === 'pending' && !rel.isMine)
-        action = `<button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${rel.id}')">${window.t('frnd-btn-accept')}</button>`;
+        action = `<button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${safeId(rel.id)}')">${window.t('frnd-btn-accept')}</button>`;
 
       return `
         <div class="friend-card">
@@ -203,8 +203,8 @@ function _renderPending({ received, sent }) {
             <div class="friend-email">${esc(u.email || '')}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0">
-            <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${f.id}')">${window.t('frnd-btn-accept')}</button>
-            <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="rejectFriendRequest('${f.id}')">✕</button>
+            <button class="share-btn" style="color:var(--y);border-color:rgba(0,212,160,.4)" onclick="acceptFriendRequest('${safeId(f.id)}')">${window.t('frnd-btn-accept')}</button>
+            <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3)" onclick="rejectFriendRequest('${safeId(f.id)}')">✕</button>
           </div>
         </div>`;
     }).join('');
@@ -280,9 +280,9 @@ function _renderFriendsList(friends) {
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
           <button class="share-btn" style="color:var(--x);border-color:rgba(123,111,255,.3);white-space:nowrap"
-            onclick="openChat('${u.id}')">${window.t('frnd-btn-msg')}</button>
+            onclick="openChat('${safeId(u.id)}')">${window.t('frnd-btn-msg')}</button>
           <button class="share-btn" style="color:var(--acc);border-color:rgba(255,107,107,.3);font-size:11px;white-space:nowrap"
-            onclick="removeFriend('${f.friendshipId}')">✕</button>
+            onclick="removeFriend('${safeId(f.friendshipId)}')">✕</button>
         </div>
       </div>`;
   }).join('');

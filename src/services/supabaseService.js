@@ -31,6 +31,14 @@ export async function apiRequest(path, method = 'GET', body = null) {
   return json;
 }
 
+// Cabeçalho Authorization (Bearer) para chamadas ao BFF que exigem login
+// mas não usam apiRequest (ex.: proxies Yahoo/BCB). Retorna {} sem sessão —
+// o backend então responde 401 e a UI exibe a mensagem de erro.
+export async function authHeaders() {
+  const { data: { session } } = await db.auth.getSession();
+  return session ? { Authorization: `Bearer ${session.access_token}` } : {};
+}
+
 export async function cloudGet(key, shared = false) {
   try {
     if (hasCloudStorage) {

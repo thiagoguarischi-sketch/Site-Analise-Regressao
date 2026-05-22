@@ -45,8 +45,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Rate limit dedicado e mais estrito para os proxies externos (Yahoo/BCB),
-// que não exigem autenticação e poderiam ser abusados como proxy aberto.
+// Rate limit dedicado e mais estrito para os proxies externos (Yahoo/BCB).
+// As rotas exigem autenticação (requireAuth); o limite extra protege contra
+// abuso da cota das APIs externas mesmo por usuários autenticados.
 const proxyLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 40,
