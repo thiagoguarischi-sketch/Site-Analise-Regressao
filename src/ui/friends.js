@@ -6,6 +6,7 @@
 // RLS estar configurada — a fronteira de autorização é 100% o servidor.
 
 import { db } from '../services/supabaseService.js';
+import { getCurrentLoggedUser } from './dashboard.js';
 import { showToast } from './notifications.js';
 import { esc, safeId, initials as _initials } from '../core/utils.js';
 import {
@@ -44,6 +45,16 @@ function _showSetup() {
   if (el) el.style.display = 'block';
 }
 
+function _showDemo() {
+  const el = document.getElementById('friends-demo-msg');
+  if (el) el.style.display = 'block';
+  const empty = `<p style="color:var(--txt3);font-size:13px;text-align:center;padding:8px 0">—</p>`;
+  const pending = document.getElementById('friends-pending');
+  const list    = document.getElementById('friends-list');
+  if (pending) pending.innerHTML = empty;
+  if (list)    list.innerHTML    = empty;
+}
+
 function _updateSidebarBadge(count) {
   const badge = document.getElementById('friends-badge');
   if (!badge) return;
@@ -54,6 +65,10 @@ function _updateSidebarBadge(count) {
 // ── Entrada principal ──
 
 export async function loadFriendsPanel() {
+  if (getCurrentLoggedUser()?.isDemo) {
+    _showDemo();
+    return;
+  }
   await Promise.all([
     _loadFriendsList(),
     _loadPendingRequests(),

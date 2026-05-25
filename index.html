@@ -4433,6 +4433,17 @@ CREATE POLICY "Destinatário aceita pedido" ON public.friendships FOR UPDATE
 CREATE POLICY "Partes podem remover" ON public.friendships FOR DELETE
   USING (auth.uid() = requester_id OR auth.uid() = addressee_id);</pre>
       </div>
+
+      <!-- Mensagem para usuário demo -->
+      <div class="card" id="friends-demo-msg" style="display:none;margin-top:16px;border-color:rgba(124,131,253,.25)">
+        <div class="card-title" style="font-size:14px;color:var(--x)">
+          <div class="card-title-icon" style="background:rgba(124,131,253,.15);font-size:14px">🔒</div>
+          <span data-i18n="frnd-demo-title">Disponível após login</span>
+        </div>
+        <p style="font-size:13px;color:var(--txt2);line-height:1.7" data-i18n="frnd-demo-desc">
+          Crie uma conta gratuita ou faça login para adicionar amigos, trocar pedidos de amizade e conversar com outros usuários da plataforma.
+        </p>
+      </div>
     </div>
 
     <!-- PANEL: Guia de Modelos -->
@@ -6932,6 +6943,8 @@ window.openCurso = openCurso;
       'frnd-list-title':    'Meus amigos',
       'frnd-setup-title':   'Configuração necessária',
       'frnd-setup-desc':    'O recurso de amigos requer duas tabelas no Supabase. Execute o SQL abaixo no <strong>SQL Editor</strong> do seu projeto Supabase:',
+      'frnd-demo-title':    'Disponível após login',
+      'frnd-demo-desc':     'Crie uma conta gratuita ou faça login para adicionar amigos, trocar pedidos de amizade e conversar com outros usuários da plataforma.',
       'frnd-chat-ph':       'Digite uma mensagem...',
       'frnd-chat-send':     'Enviar (Enter)',
       /* amigos — dinâmicos (JS) */
@@ -7686,6 +7699,8 @@ window.openCurso = openCurso;
       'frnd-list-title':    'My friends',
       'frnd-setup-title':   'Setup required',
       'frnd-setup-desc':    'The friends feature requires two tables in Supabase. Run the SQL below in the <strong>SQL Editor</strong> of your Supabase project:',
+      'frnd-demo-title':    'Available after login',
+      'frnd-demo-desc':     'Create a free account or sign in to add friends, send friend requests, and chat with other users on the platform.',
       'frnd-chat-ph':       'Type a message...',
       'frnd-chat-send':     'Send (Enter)',
       /* friends — dynamic (JS) */

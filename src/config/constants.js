@@ -1,10 +1,19 @@
 // Centraliza constantes globais (Supabase, BFF, storage keys, paleta Excel BI).
+// Credenciais e URLs são injetadas em tempo de execução via env-config.js
+// (veja env-config.example.js). NUNCA hardcode chaves neste arquivo.
 
-export const SUPABASE_URL = 'https://mzedoasnrmrpfpgweljj.supabase.co';
-export const SUPABASE_ANON_KEY = 'sb_publishable_VvRVsHUnNObPX4OVo5GbxQ_aMhHHz5X';
+const _cfg = window.__RL_CONFIG__ || {};
 
-export const API_BASE = (window.__RL_CONFIG__ && window.__RL_CONFIG__.API_BASE) || 'http://localhost:3000/api';
-export const AI_EDGE_URL = SUPABASE_URL + '/functions/v1/ai-insight';
+function _required(key) {
+  const v = _cfg[key];
+  if (!v) throw new Error(`[Slope] "${key}" não configurado. Crie env-config.js a partir de env-config.example.js`);
+  return v;
+}
+
+export const SUPABASE_URL      = _required('SUPABASE_URL');
+export const SUPABASE_ANON_KEY = _required('SUPABASE_ANON_KEY');
+export const API_BASE          = _cfg.API_BASE || 'http://localhost:3000/api';
+export const AI_EDGE_URL       = SUPABASE_URL + '/functions/v1/ai-insight';
 
 export const STORAGE_KEY = (uid) => `rl_analyses_${uid}`;
 export const SESSION_KEY = 'rl_session_v4';
