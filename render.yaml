@@ -19,3 +19,5 @@ services:
         sync: false
       - key: ALLOWED_ORIGIN
         sync: false
+      - key: STOCK_PROVIDER
+        value: yahoo
