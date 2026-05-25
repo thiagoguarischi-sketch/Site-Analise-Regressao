@@ -1,6 +1,7 @@
 import { showToast } from './notifications.js';
 import { API_BASE }  from '../config/constants.js';
 import { authHeaders } from '../services/supabaseService.js';
+import { esc } from '../core/utils.js';
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 let _series       = [];   // [{codigo, nome, periodicidade, unidade}]
@@ -83,17 +84,17 @@ async function _doSearch() {
   try {
     const r = await fetch(`${API_BASE}/bcb/search?q=${encodeURIComponent(q)}`, { headers: await authHeaders() });
     const { series = [], error } = await r.json();
-    if (error)           { list.innerHTML = `<div class="yf-no-results">${error}</div>`; return; }
-    if (!series.length)  { list.innerHTML = `<div class="yf-no-results">Nenhuma série encontrada para "${q}".</div>`; return; }
+    if (error)           { list.innerHTML = `<div class="yf-no-results">${esc(error)}</div>`; return; }
+    if (!series.length)  { list.innerHTML = `<div class="yf-no-results">Nenhuma série encontrada para "${esc(q)}".</div>`; return; }
 
     list.innerHTML = series.map(s => {
       const already = _series.some(x => x.codigo === s.codigo);
       return `<button class="yf-result-btn${already ? ' yf-result-added' : ''}"
         data-codigo="${_attr(s.codigo)}" data-nome="${_attr(s.nome)}"
         data-periodicidade="${_attr(s.periodicidade)}" data-unidade="${_attr(s.unidade)}">
-        <span class="yf-r-ticker">${s.codigo}</span>
-        <span class="yf-r-name">${s.nome}</span>
-        ${s.periodicidade ? `<span class="yf-r-meta">${s.periodicidade}${s.unidade ? ' · ' + s.unidade : ''}</span>` : ''}
+        <span class="yf-r-ticker">${esc(s.codigo)}</span>
+        <span class="yf-r-name">${esc(s.nome)}</span>
+        ${s.periodicidade ? `<span class="yf-r-meta">${esc(s.periodicidade)}${s.unidade ? ' · ' + esc(s.unidade) : ''}</span>` : ''}
         ${already ? '<span class="yf-r-added">✓</span>' : ''}
       </button>`;
     }).join('');

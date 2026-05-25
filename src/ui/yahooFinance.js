@@ -1,6 +1,7 @@
 import { showToast } from './notifications.js';
 import { API_BASE }  from '../config/constants.js';
 import { authHeaders } from '../services/supabaseService.js';
+import { esc } from '../core/utils.js';
 
 // ── Estado ────────────────────────────────────────────────────────────────────
 let _tickers      = [];   // [{symbol, name, exch, type}]
@@ -76,8 +77,8 @@ async function _doSearch() {
   try {
     const r = await fetch(`${API_BASE}/yahoo/search?q=${encodeURIComponent(q)}`, { headers: await authHeaders() });
     const { quotes = [], error } = await r.json();
-    if (error)          { list.innerHTML = `<div class="yf-no-results">${error}</div>`; return; }
-    if (!quotes.length) { list.innerHTML = `<div class="yf-no-results">Nenhum resultado para "${q}".</div>`; return; }
+    if (error)          { list.innerHTML = `<div class="yf-no-results">${esc(error)}</div>`; return; }
+    if (!quotes.length) { list.innerHTML = `<div class="yf-no-results">Nenhum resultado para "${esc(q)}".</div>`; return; }
 
     list.innerHTML = quotes.map(q => {
       const name    = q.shortname || q.longname || '';
@@ -87,9 +88,9 @@ async function _doSearch() {
       return `<button class="yf-result-btn${already ? ' yf-result-added' : ''}"
         data-symbol="${_attr(q.symbol)}" data-name="${_attr(name)}"
         data-exch="${_attr(exch)}"       data-type="${_attr(type)}">
-        <span class="yf-r-ticker">${q.symbol}</span>
-        <span class="yf-r-name">${name}</span>
-        <span class="yf-r-meta">${exch}${type ? ' · ' + type : ''}</span>
+        <span class="yf-r-ticker">${esc(q.symbol)}</span>
+        <span class="yf-r-name">${esc(name)}</span>
+        <span class="yf-r-meta">${esc(exch)}${type ? ' · ' + esc(type) : ''}</span>
         ${already ? '<span class="yf-r-added">✓</span>' : ''}
       </button>`;
     }).join('');

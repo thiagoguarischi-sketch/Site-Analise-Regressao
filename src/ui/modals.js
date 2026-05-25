@@ -2,7 +2,7 @@
 
 import { fetchAnalyses, deleteAnalysisRequest } from '../services/analysisService.js';
 import { showToast } from './notifications.js';
-import { esc, fmt, fmtP } from '../core/utils.js';
+import { esc, fmt, fmtP, safeId } from '../core/utils.js';
 
 import {
   loadSimpleAnalysis,
@@ -144,8 +144,8 @@ export async function viewAnalysis(id) {
         ${rows}
       </div>
       <div class="modal-actions">
-        <button class="btn-primary" style="font-size:13px" onclick="editAnalysis('${a.id}');closeModal()">✏️ Editar dados</button>
-        <button class="btn-ghost" style="font-size:13px;border-color:rgba(255,107,107,.3);color:var(--acc)" onclick="deleteAnalysis('${a.id}');closeModal()">🗑 Excluir</button>
+        <button class="btn-primary" style="font-size:13px" onclick="editAnalysis('${safeId(a.id)}');closeModal()">✏️ Editar dados</button>
+        <button class="btn-ghost" style="font-size:13px;border-color:rgba(255,107,107,.3);color:var(--acc)" onclick="deleteAnalysis('${safeId(a.id)}');closeModal()">🗑 Excluir</button>
         <button class="btn-ghost" style="font-size:13px" onclick="closeModal()">Fechar</button>
       </div>
     `;

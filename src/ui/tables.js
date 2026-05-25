@@ -2,7 +2,7 @@
 
 import { fetchAnalyses } from '../services/analysisService.js';
 import { apiRequest } from '../services/supabaseService.js';
-import { esc, fmt, fmtDate } from '../core/utils.js';
+import { esc, fmt, fmtDate, safeId } from '../core/utils.js';
 
 export async function loadHistory() {
   const historyContainer = document.getElementById('history-list');
@@ -96,9 +96,9 @@ export async function loadHistory() {
         <div class="history-desc">${r2Label} = <b style="color:var(--y)">${r2Val}</b> &nbsp;•&nbsp; n = ${a.dados?.n ?? '—'}</div>
         <div class="history-date">${window.t('hist-saved-on')} ${dataFormatada}</div>
         <div class="history-actions">
-          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="viewAnalysis('${a.id}')">🔍 ${window.t('hist-btn-view')}</button>
-          <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="editAnalysis('${a.id}')">✏️ ${window.t('hist-btn-edit')}</button>
-          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;border-color:rgba(255,107,107,.3);color:var(--acc)" onclick="deleteAnalysis('${a.id}')">🗑 ${window.t('hist-btn-delete')}</button>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="viewAnalysis('${safeId(a.id)}')">🔍 ${window.t('hist-btn-view')}</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px" onclick="editAnalysis('${safeId(a.id)}')">✏️ ${window.t('hist-btn-edit')}</button>
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px;border-color:rgba(255,107,107,.3);color:var(--acc)" onclick="deleteAnalysis('${safeId(a.id)}')">🗑 ${window.t('hist-btn-delete')}</button>
         </div>
       `;
       historyContainer.appendChild(card);
